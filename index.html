@@ -197,7 +197,6 @@
       <div id="taskNotice" class="notice info hidden"></div>
 
       <button id="submitTaskBtn" class="btn primary full">סיימנו את המשימה! ✅</button>
-      <button id="simulationBtn" class="btn secondary full" style="margin-top:9px">🧪 העלאת תמונת בדיקה אוטומטית</button>
     </div>
   </dialog>
 
@@ -296,7 +295,7 @@
       },
       adminEmail: "omris18@gmail.com",
       trip: { startDate:"2026-07-26", endDate:"2026-08-19", timezone:"Asia/Bangkok" },
-      testMode: { enabled:true, forcedDate:"2026-07-26", showSimulationButton:true },
+      testMode: { enabled:true, forcedDate:"2026-07-26", showSimulationButton:false },
       families: [
         {id:"bohadana",name:"בוהדנה"},
         {id:"ovadia",name:"עובדיה"},
@@ -374,7 +373,7 @@
         "auth/invalid-credential":"האימייל או הסיסמה אינם נכונים.",
         "auth/unauthorized-domain":"יש להוסיף את omris18.github.io ל־Authentication → Settings → Authorized domains.",
         "permission-denied":"כללי Firestore אינם מאפשרים את הפעולה. יש לפרסם את קובץ firestore.rules המצורף.",
-        "storage/unauthorized":"כללי Storage אינם מאפשרים את ההעלאה. יש לפרסם את קובץ storage.rules המצורף.",
+        "storage/unauthorized":"Firebase חסם את הגישה לתמונה. יש לפרסם את כללי Storage המעודכנים המצורפים.",
         "storage/bucket-not-found":"Firebase Storage עדיין לא הופעל בפרויקט.",
         "storage/quota-exceeded":"מכסת האחסון הסתיימה.",
         "storage/retry-limit-exceeded":"החיבור חלש מדי. נסו שוב בעוד רגע.",
@@ -428,7 +427,6 @@
       document.title=`משפחת ${family.name} | תאילנד 2026`;
       $("familyBtn").onclick=()=>alert(`משפחת ${family.name}`);
       renderToday();renderJourney();renderPassport();renderFlights();
-      $("simulationBtn").classList.toggle("hidden",!CONFIG.testMode.showSimulationButton);
     }
     function renderToday(){
       if(today<CONFIG.trip.startDate){
@@ -539,22 +537,7 @@
       }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
       finally{btn.disabled=false;btn.innerHTML=original}
     };
-    function createSimulationBlob(){
-      const c=document.createElement("canvas");c.width=1200;c.height=900;const x=c.getContext("2d");
-      const g=x.createLinearGradient(0,0,1200,900);g.addColorStop(0,"#0ea5e9");g.addColorStop(1,"#7c3aed");x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
-      x.fillStyle="rgba(255,255,255,.16)";for(let i=0;i<14;i++){x.beginPath();x.arc(Math.random()*1200,Math.random()*900,25+Math.random()*90,0,Math.PI*2);x.fill()}
-      x.textAlign="center";x.fillStyle="#fff";x.font="900 74px Arial";x.fillText("THAILAND 2026",600,360);x.font="700 54px Arial";x.fillText(`Family ${family.name}`,600,455);x.font="500 35px Arial";x.fillText(`Test upload · ${activeDate}`,600,535);
-      return new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(new Error("לא ניתן ליצור תמונת בדיקה")),"image/jpeg",.84));
-    }
-    $("simulationBtn").onclick=async()=>{
-      const btn=$("simulationBtn"),original=btn.innerHTML;
-      try{
-        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> יוצר ומעלה תמונה…';
-        const blob=await createSimulationBlob();await uploadFiles([blob],"תמונת בדיקה אוטומטית",true);
-        setNotice($("taskNotice"),"תמונת הבדיקה נשמרה ב־Firebase. כעת פתחו את דף המנהל ובחרו 26.07.2026 ✅","ok");
-      }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
-      finally{btn.disabled=false;btn.innerHTML=original}
-    };
+
 
     function confetti(){
       const box=$("confetti");box.innerHTML="";box.classList.remove("hidden");

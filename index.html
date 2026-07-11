@@ -598,15 +598,31 @@
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const familyId = new URLSearchParams(location.search).get("f") || new URLSearchParams(location.search).get("family") || "sadeh";
+    const APP_VERSION = "5.0.0";
+    const urlParams = new URLSearchParams(location.search);
+    const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
+    const familyKey = urlParams.get("key") || "";
     const family = CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
-    const isAdminRoute = new URLSearchParams(location.search).has("admin");
+    const isAdminRoute = urlParams.has("admin");
     const localCompletedKey = `thailand2026:${family.id}:completed`;
     const localUploadsKey = `thailand2026:${family.id}:uploads`;
     let completed = new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
     let activeDate = null, activeDayNum = 1, selectedFiles = [], currentUser = null;
 
     let app,auth,db,storage;
+
+    function runVersionMigration(){
+      const versionKey="thailand2026:appVersion";
+      const oldVersion=localStorage.getItem(versionKey);
+      if(oldVersion!==APP_VERSION){
+        Object.keys(localStorage).forEach(key=>{
+          if(key.startsWith("thailand2026:") && key!==versionKey){
+            localStorage.removeItem(key);
+          }
+        });
+        localStorage.setItem(versionKey,APP_VERSION);
+      }
+    }
 
     function initSplash(){
       if(isAdminRoute){
@@ -662,7 +678,7 @@
         "auth/operation-not-allowed":"יש להפעיל Anonymous וגם Email/Password ב־Firebase Authentication.",
         "auth/invalid-credential":"האימייל או הסיסמה אינם נכונים.",
         "auth/unauthorized-domain":"יש להוסיף את omris18.github.io ל־Authentication → Settings → Authorized domains.",
-        "permission-denied":"כללי Firestore אינם מאפשרים את הפעולה. יש לפרסם את קובץ firestore.rules המצורף.",
+        "permission-denied":"Firebase דחה את הגישה. בדקו שהקישור כולל key משפחתי תקין ושכללי Firestore ו-Storage המעודכנים פורסמו.",
         "storage/unauthorized":"Firebase חסם את הגישה לתמונה. יש לפרסם את כללי Storage המעודכנים המצורפים.",
         "storage/bucket-not-found":"Firebase Storage עדיין לא הופעל בפרויקט.",
         "storage/quota-exceeded":"מכסת האחסון הסתיימה.",
@@ -672,6 +688,18 @@
       return map[code] || err?.message || "אירעה שגיאה לא צפויה.";
     }
 
+    async function establishFamilySession(){
+      if(!currentUser) throw new Error("לא נוצר משתמש אנונימי.");
+      if(!familyKey) throw new Error("הקישור חסר קוד משפחתי. יש להשתמש בקישור המלא שצרוב בתג ה-NFC.");
+      await setDoc(doc(db,"familySessions",currentUser.uid),{
+        familyId:family.id,
+        familyKey,
+        appVersion:APP_VERSION,
+        createdAt:serverTimestamp(),
+        updatedAt:serverTimestamp()
+      },{merge:true});
+    }
+
     async function initFirebase(){
       try{
         app=initializeApp(CONFIG.firebase);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app);
@@ -679,9 +707,10 @@
         if(!isAdminRoute){
           if(!auth.currentUser) await signInAnonymously(auth);
           currentUser=auth.currentUser;
-          setNotice($("connectionBanner"),`מחובר לענן כמשפחת ${family.name} ✅`,"ok");
+          await establishFamilySession();
+          setNotice($("connectionBanner"),`מחובר ומסונכרן כמשפחת ${family.name} ✅ · גרסה ${APP_VERSION}`,"ok");
           await recordScan();
-          await loadOwnCompletions();
+          await loadFamilyCompletions();
         }
         return true;
       }catch(err){
@@ -701,60 +730,19 @@
       }catch(err){console.warn("scan not recorded",err)}
     }
 
-    async function loadOwnCompletions(){
+    async function loadFamilyCompletions(){
       if(!currentUser) return;
       try{
-        const q=query(collection(db,"completions"),where("uid","==",currentUser.uid));
+        const q=query(collection(db,"completions"),where("familyId","==",family.id));
         const snap=await getDocs(q);
+        completed=new Set();
         snap.forEach(d=>completed.add(d.data().tripDate));
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
-        renderInteractiveMap();renderPassport();
-      }catch(err){console.warn("completion sync skipped",err)}
-    }
-
-
-    function stopState(stop){
-      if(today > stop.date) return "completed";
-      if(today === stop.date) return "current";
-      return "future";
-    }
-
-    function currentStopIndex(){
-      let idx=0;
-      CONFIG.mapStops.forEach((s,i)=>{ if(today>=s.date) idx=i; });
-      return idx;
-    }
-
-    function renderInteractiveMap(){
-      const box=$("mapStops");box.innerHTML="";
-      const currentIdx=currentStopIndex();
-      CONFIG.mapStops.forEach((stop,index)=>{
-        const state=stopState(stop);
-        const wrap=document.createElement("div");
-        wrap.className=`map-stop ${state}`;
-        wrap.style.left=`${stop.x}%`;wrap.style.top=`${stop.y}%`;
-        const hotel=CONFIG.hotels.find(h=>h.shortName===stop.hotel);
-        wrap.innerHTML=`<div class="map-day-badge">${stop.day}</div>
-          <div class="map-stop-card" role="button" tabindex="0">
-            <div class="map-stop-head"><span class="map-stop-icon">${stop.icon}</span><div><strong>${esc(stop.name)}</strong><small>${fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small></div></div>
-            <div class="map-stop-actions">
-              <button class="map-mini-btn open-stop-day">פתחו את היום</button>
-              ${hotel?`<a class="map-mini-btn" href="${mapsUrl(hotel)}" target="_blank" rel="noopener noreferrer">ניווט</a>`:""}
-            </div>
-          </div>`;
-        const open=()=>openDay(stop.date,stop.day);
-        wrap.querySelector(".open-stop-day").onclick=open;
-        wrap.querySelector(".map-stop-card").addEventListener("keydown",e=>{if(e.key==="Enter")open()});
-        box.appendChild(wrap);
-      });
-
-      const stop=CONFIG.mapStops[currentIdx];
-      $("movingPlane").style.left=`${stop.x}%`;$("movingPlane").style.top=`${stop.y}%`;
-      $("movingPlaneLabel").style.left=`${stop.x}%`;$("movingPlaneLabel").style.top=`${stop.y}%`;
-      $("movingPlaneLabel").textContent=`משפחת ${family.name} כאן`;
-      $("mapStatusText").textContent=today<CONFIG.trip.startDate?"עוד מעט יוצאים לדרך":today>CONFIG.trip.endDate?"המסע הושלם":`כעת באזור ${stop.name}`;
-      const progress=Math.max(0,Math.min(1,currentIdx/(CONFIG.mapStops.length-1)));
-      $("routeProgress").style.strokeDashoffset=String(1-progress);
+        renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
+      }catch(err){
+        console.error(err);
+        setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+      }
     }
 
     function renderFamily(){
@@ -923,9 +911,10 @@
         const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",isSimulation,createdAt:serverTimestamp()};
         const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
       }
-      await setDoc(doc(db,"completions",`${currentUser.uid}_${activeDate}`),{
-        familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,
-        caption:caption||"",photoCount:files.length,isSimulation,completedAt:serverTimestamp()
+      await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
+        familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
+        completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
+        isSimulation,completedAt:serverTimestamp()
       },{merge:true});
       completed.add(activeDate);localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
@@ -962,14 +951,31 @@
       const gallery=$("familyGallery"),notice=$("albumNotice");gallery.innerHTML="";
       try{
         if(!currentUser) throw new Error("אין חיבור.");
-        const q=query(collection(db,"uploads"),where("uid","==",currentUser.uid),orderBy("createdAt","desc"));
+        const q=query(collection(db,"uploads"),where("familyId","==",family.id));
         const snap=await getDocs(q);
-        if(snap.empty){setNotice(notice,"עדיין לא העליתם תמונות מהמכשיר הזה.","info");return}
+        const items=[];
+        snap.forEach(d=>items.push({id:d.id,...d.data()}));
+        items.sort((a,b)=>{
+          const ta=a.createdAt?.toMillis?.()||0;
+          const tb=b.createdAt?.toMillis?.()||0;
+          return tb-ta;
+        });
+        if(!items.length){
+          setNotice(notice,"עדיין לא הועלו תמונות למשפחה.","info");
+          return;
+        }
         hideNotice(notice);
-        snap.forEach(d=>{const p=d.data();const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<img src="${esc(p.downloadUrl)}" alt="תמונה מיום ${esc(p.dayNumber)}" loading="lazy"><div class="photo-meta"><strong>יום ${esc(p.dayNumber)} · ${fmtDate(p.tripDate)}</strong>${esc(p.caption||"")}</div>`;gallery.appendChild(card)});
-      }catch(err){console.error(err);setNotice(notice,firebaseErrorText(err),"error")}
+        items.forEach(p=>{
+          const card=document.createElement("article");
+          card.className="photo-card";
+          card.innerHTML=`<img src="${esc(p.downloadUrl)}" alt="תמונה מיום ${esc(p.dayNumber)}" loading="lazy"><div class="photo-meta"><strong>יום ${esc(p.dayNumber)} · ${fmtDate(p.tripDate)}</strong>${esc(p.caption||"")}</div>`;
+          gallery.appendChild(card);
+        });
+      }catch(err){
+        console.error(err);
+        setNotice(notice,firebaseErrorText(err),"error");
+      }
     }
-
 
     function formatIcsDate(dateStr,timeStr){
       const [y,m,d]=dateStr.split("-").map(Number);
@@ -1042,12 +1048,17 @@
         const [scansSnap,doneSnap,uploadsSnap]=await Promise.all([
           getDocs(query(collection(db,"scans"),where("tripDate","==",date))),
           getDocs(query(collection(db,"completions"),where("tripDate","==",date))),
-          getDocs(query(collection(db,"uploads"),where("tripDate","==",date),orderBy("createdAt","desc")))
+          getDocs(query(collection(db,"uploads"),where("tripDate","==",date)))
         ]);
         const scans=new Map(),done=new Map(),photos=new Map(),allPhotos=[];
         scansSnap.forEach(d=>{const x=d.data(),old=scans.get(x.familyId);if(!old||fmtTime(x.createdAt)>fmtTime(old.createdAt))scans.set(x.familyId,x)});
         doneSnap.forEach(d=>done.set(d.data().familyId,d.data()));
         uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allPhotos.push(x);if(!photos.has(x.familyId))photos.set(x.familyId,[]);photos.get(x.familyId).push(x)});
+        allPhotos.sort((a,b)=>{
+          const ta=a.createdAt?.toMillis?.()||0;
+          const tb=b.createdAt?.toMillis?.()||0;
+          return tb-ta;
+        });
         $("statScans").textContent=scans.size;$("statDone").textContent=done.size;$("statPhotos").textContent=allPhotos.length;
         $("adminRows").innerHTML=CONFIG.families.map(f=>{
           const s=scans.get(f.id),c=done.get(f.id),p=photos.get(f.id)||[];
@@ -1082,6 +1093,7 @@
     }
 
     async function boot(){
+      runVersionMigration();
       initSplash();
       if(isAdminRoute){
         $("familyApp").classList.add("hidden");$("adminApp").classList.remove("hidden");fillAdminDates();

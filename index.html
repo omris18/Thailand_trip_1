@@ -222,8 +222,8 @@
     .passport-puzzle-section{margin-top:20px;background:#fff;border:1px solid #eadfc7;border-radius:20px;padding:14px}
     .passport-puzzle-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
     .passport-puzzle-head h3{margin:0}.passport-puzzle-head span{font-size:12px;color:var(--muted);font-weight:800}
-    .family-puzzle{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);aspect-ratio:2/1;border-radius:16px;overflow:hidden;border:2px solid #e7dcc3;background:#e5e7eb}
-    .puzzle-tile{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.85)}
+    .family-puzzle{display:grid;direction:ltr;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);aspect-ratio:2/1;border-radius:16px;overflow:hidden;border:2px solid #e7dcc3;background:#e5e7eb}
+    .puzzle-tile{position:relative;direction:rtl;overflow:hidden;border:1px solid rgba(255,255,255,.85)}
     .puzzle-tile .tile-image{position:absolute;inset:0;background-repeat:no-repeat;background-size:400% 200%;filter:saturate(1.03)}
     .puzzle-tile.locked .tile-image{filter:blur(9px) grayscale(1);transform:scale(1.08);opacity:.25}
     .puzzle-lock{position:absolute;inset:0;display:grid;place-items:center;background:rgba(30,41,59,.6);color:#fff;font-size:24px;font-weight:900}
@@ -598,7 +598,7 @@
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const APP_VERSION = "5.0.0";
+    const APP_VERSION = "5.0.1";
     const urlParams = new URLSearchParams(location.search);
     const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
     const familyKey = urlParams.get("key") || "";

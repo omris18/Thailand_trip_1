@@ -110,9 +110,63 @@
       main{padding:0 11px}.hero h1{font-size:32px}.day-row{grid-template-columns:1fr 76px 1fr;min-height:113px}.day-node{width:65px;height:65px}
       .day-card{padding:9px}.day-card strong{font-size:11px}.status-card{align-items:flex-start}.btn.small{padding:8px 10px}.preview{grid-template-columns:repeat(2,1fr)}
     }
+
+    /* --- App experience upgrades --- */
+    .splash{
+      position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+      background:linear-gradient(180deg,#38bdf8 0%,#7dd3fc 46%,#fef3c7 100%);
+      overflow:hidden;color:#fff;text-align:center;transition:opacity .55s ease,visibility .55s ease
+    }
+    .splash.hidden-splash{opacity:0;visibility:hidden}
+    .splash-sun{position:absolute;left:8%;top:9%;width:94px;height:94px;border-radius:50%;
+      background:rgba(255,255,255,.55);box-shadow:0 0 60px rgba(255,255,255,.55)}
+    .splash-cloud{position:absolute;font-size:58px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.08));opacity:.9;animation:cloudMove 7s linear infinite}
+    .splash-cloud.c1{top:17%;left:-20%}.splash-cloud.c2{top:31%;right:-22%;animation-delay:-3s}
+    .splash-content{position:relative;z-index:4;padding:20px;width:min(520px,92vw)}
+    .splash-logo{font-size:58px;animation:popIn .75s cubic-bezier(.2,.8,.2,1)}
+    .splash h1{font-size:clamp(38px,11vw,66px);margin:4px 0 6px;font-weight:900;text-shadow:0 4px 16px rgba(15,23,42,.2)}
+    .splash p{font-size:18px;font-weight:700;margin:0 0 28px}
+    .flight-track{position:relative;height:110px;margin-top:16px}
+    .flight-line{position:absolute;left:7%;right:7%;top:55px;border-top:3px dashed rgba(255,255,255,.75)}
+    .plane-animated{position:absolute;top:22px;left:5%;font-size:48px;transform:rotate(5deg);animation:planeFly 3.6s cubic-bezier(.35,.02,.2,1) forwards}
+    .flag-il,.flag-th{position:absolute;top:65px;font-size:34px}.flag-il{left:2%}.flag-th{right:2%}
+    .splash-skip{margin-top:8px;border:0;border-radius:999px;padding:10px 18px;background:rgba(255,255,255,.18);
+      color:#fff;border:1px solid rgba(255,255,255,.35);font-weight:800;backdrop-filter:blur(8px);cursor:pointer}
+    @keyframes planeFly{0%{left:5%;transform:translateY(12px) rotate(-10deg)}45%{transform:translateY(-10px) rotate(6deg)}100%{left:84%;transform:translateY(4px) rotate(11deg)}}
+    @keyframes cloudMove{from{transform:translateX(0)}to{transform:translateX(140vw)}}
+    @keyframes popIn{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+    .trip-progress-card{background:#fff;border-radius:22px;padding:15px 16px;margin:0 0 17px;box-shadow:var(--shadow)}
+    .trip-progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+    .trip-progress-head strong{font-size:15px}.trip-progress-head span{font-weight:900;color:var(--purple)}
+    .trip-progress-bar{height:13px;background:#e9d5ff;border-radius:999px;overflow:hidden}
+    .trip-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#ec4899,#f97316);border-radius:999px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+    .trip-progress-sub{font-size:12px;color:var(--muted);margin-top:7px}
+    .success-overlay{position:fixed;inset:0;z-index:9998;display:grid;place-items:center;background:rgba(15,23,42,.62);backdrop-filter:blur(5px);opacity:0;visibility:hidden;transition:.3s}
+    .success-overlay.show{opacity:1;visibility:visible}
+    .success-card{background:#fff;border-radius:28px;padding:28px 24px;text-align:center;width:min(430px,90vw);box-shadow:0 24px 70px rgba(0,0,0,.3);animation:popIn .45s ease}
+    .success-icon{font-size:64px}.success-card h2{margin:6px 0}.success-card p{color:var(--muted)}
+
   </style>
 </head>
 <body>
+
+  <section id="splashScreen" class="splash" aria-label="פתיחת המסע">
+    <div class="splash-sun"></div>
+    <div class="splash-cloud c1">☁️</div>
+    <div class="splash-cloud c2">☁️</div>
+    <div class="splash-content">
+      <div class="splash-logo">🇹🇭</div>
+      <h1>THAILAND 2026</h1>
+      <p id="splashFamily">המסע המשפחתי מתחיל</p>
+      <div class="flight-track">
+        <div class="flight-line"></div>
+        <span class="flag-il">🇮🇱</span>
+        <span class="plane-animated">✈️</span>
+        <span class="flag-th">🇹🇭</span>
+      </div>
+      <button id="skipSplash" class="splash-skip">דלג לפתיחה</button>
+    </div>
+  </section>
   <div id="familyApp" class="app">
     <header class="hero">
       <div class="hero-inner">
@@ -136,6 +190,12 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+
+      <section class="trip-progress-card">
+        <div class="trip-progress-head"><strong>התקדמות בטיול</strong><span id="tripProgressPercent">0%</span></div>
+        <div class="trip-progress-bar"><div id="tripProgressFill" class="trip-progress-fill"></div></div>
+        <div id="tripProgressSub" class="trip-progress-sub">מתכוננים למסע</div>
+      </section>
 
       <section class="section-title">
         <div><div class="eyebrow">השביל שלנו</div><h2>ימי הטיול</h2></div>
@@ -266,6 +326,16 @@
     </div>
   </section>
 
+
+  <section id="successOverlay" class="success-overlay">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <h2>כל הכבוד!</h2>
+      <p id="successText">המשימה הושלמה והחותמת נוספה לדרכון.</p>
+      <button id="closeSuccess" class="btn primary full">ממשיכים במסע</button>
+    </div>
+  </section>
+
   <div id="confetti" class="confetti hidden"></div>
 
   <script type="module">
@@ -344,7 +414,35 @@
     const localUploadsKey = `thailand2026:${family.id}:uploads`;
     let completed = new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
     let activeDate = null, activeDayNum = 1, selectedFiles = [], currentUser = null;
+
     let app,auth,db,storage;
+
+    function initSplash(){
+      if(isAdminRoute){
+        $("splashScreen")?.remove();
+        return;
+      }
+      $("splashFamily").textContent=`משפחת ${family.name} יוצאת להרפתקה`;
+      const splash=$("splashScreen");
+      const close=()=>splash.classList.add("hidden-splash");
+      $("skipSplash").onclick=close;
+      setTimeout(close,3900);
+      setTimeout(()=>splash.remove(),4600);
+    }
+
+    function updateTripProgress(){
+      let percent=0,sub="מתכוננים למסע";
+      if(today<CONFIG.trip.startDate){percent=0;sub=`יוצאים לדרך ב־${fmtDate(CONFIG.trip.startDate)}`;}
+      else if(today>CONFIG.trip.endDate){percent=100;sub="המסע הושלם!";}
+      else{
+        const dayIndex=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000);
+        percent=Math.max(0,Math.min(100,Math.round((dayIndex/(daysTotal-1))*100)));
+        sub=`יום ${dayIndex+1} מתוך ${daysTotal}`;
+      }
+      $("tripProgressPercent").textContent=`${percent}%`;
+      $("tripProgressSub").textContent=sub;
+      requestAnimationFrame(()=>$("tripProgressFill").style.width=`${percent}%`);
+    }
 
     function currentTripDate(){
       if(CONFIG.testMode.enabled) return CONFIG.testMode.forcedDate;
@@ -426,7 +524,7 @@
       $("welcome").textContent=`ברוכים הבאים, משפחת ${family.name}!`;
       document.title=`משפחת ${family.name} | תאילנד 2026`;
       $("familyBtn").onclick=()=>alert(`משפחת ${family.name}`);
-      renderToday();renderJourney();renderPassport();renderFlights();
+      renderToday();renderJourney();renderPassport();renderFlights();updateTripProgress();
     }
     function renderToday(){
       if(today<CONFIG.trip.startDate){
@@ -524,7 +622,7 @@
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
-      renderJourney();renderPassport();confetti();
+      renderJourney();renderPassport();confetti();showSuccess();
       return photoDocs;
     }
     $("submitTaskBtn").onclick=async()=>{
@@ -538,6 +636,12 @@
       finally{btn.disabled=false;btn.innerHTML=original}
     };
 
+
+    function showSuccess(){
+      $("successText").textContent=`יום ${activeDayNum} הושלם והחותמת נוספה לדרכון של משפחת ${family.name}.`;
+      $("successOverlay").classList.add("show");
+    }
+    $("closeSuccess").onclick=()=>$("successOverlay").classList.remove("show");
 
     function confetti(){
       const box=$("confetti");box.innerHTML="";box.classList.remove("hidden");
@@ -625,6 +729,7 @@
     }
 
     async function boot(){
+      initSplash();
       if(isAdminRoute){
         $("familyApp").classList.add("hidden");$("adminApp").classList.remove("hidden");fillAdminDates();
         await initFirebase();

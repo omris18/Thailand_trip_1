@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>שביל הטיול לתאילנד 🌴</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0E3538;
+    --night-2:#12464A;
+    --sand:#F3D9A4;
+    --coral:#FF7B54;
+    --mango:#FFB26B;
+    --lime:#9BDE7E;
+    --sky:#7FD8E8;
+    --ink:#123033;
+    --paper:#FFF9EF;
+    --muted:#8FB6B4;
+    --radius:22px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Heebo',system-ui,Arial,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 50% -100px, var(--night-2), transparent),
+      var(--night);
+    color:var(--paper);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Secular One','Heebo',sans-serif;font-weight:400;letter-spacing:.5px}
+
+  /* ---------- כותרת ---------- */
+  header{text-align:center;padding:34px 18px 6px;position:relative}
+  .eyebrow{
+    display:inline-block;font-size:13px;color:var(--mango);
+    border:1px solid rgba(255,178,107,.4);border-radius:999px;padding:4px 14px;
+    margin-bottom:12px;letter-spacing:1px;
+  }
+  header h1{font-size:clamp(28px,7vw,44px);line-height:1.15}
+  header h1 .fam{color:var(--coral)}
+  .sub{color:var(--muted);margin-top:8px;font-size:15px}
+  .today-chip{
+    margin-top:12px;display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.07);border-radius:999px;padding:6px 16px;font-size:14px;
+  }
+  .today-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5}}
+  #demoBanner{
+    display:none;margin:14px auto 0;max-width:520px;background:rgba(255,178,107,.15);
+    border:1px solid rgba(255,178,107,.4);border-radius:14px;padding:10px 14px;font-size:13px;color:var(--mango);
+  }
+
+  /* ---------- שביל ---------- */
+  #trail{position:relative;max-width:520px;margin:14px auto 40px;padding:20px 0 60px}
+  #roadSvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .road-base{fill:none;stroke:var(--sand);stroke-width:32;stroke-linecap:round;opacity:.92}
+  .road-line{fill:none;stroke:var(--night);stroke-width:3;stroke-dasharray:14 16;stroke-linecap:round;opacity:.55}
+  .road-done{fill:none;stroke:var(--lime);stroke-width:6;stroke-linecap:round;opacity:.85}
+
+  .stop{position:absolute;transform:translate(-50%,-50%);text-align:center;width:92px;z-index:2}
+  .node{
+    width:68px;height:68px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-family:'Secular One';font-size:22px;color:var(--ink);
+    background:var(--paper);border:5px solid var(--mango);
+    box-shadow:var(--shadow);cursor:pointer;margin:0 auto;position:relative;
+    transition:transform .15s;
+  }
+  .node:active{transform:scale(.93)}
+  .node small{font-size:9.5px;font-family:'Heebo';font-weight:700;letter-spacing:1px}
+  .stop .date{font-size:12px;color:var(--sand);margin-top:5px;font-weight:500}
+
+  .stop.done .node{border-color:var(--lime);background:#EAF9E2}
+  .stop.done .node::after{
+    content:'✓';position:absolute;top:-10px;inset-inline-end:-8px;
+    width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--ink);
+    font-size:15px;display:flex;align-items:center;justify-content:center;font-family:'Heebo';font-weight:700;
+    border:2px solid var(--paper);
+  }
+  .stop.current .node{border-color:var(--coral);animation:glow 1.8s infinite}
+  @keyframes glow{
+    0%,100%{box-shadow:0 0 0 0 rgba(255,123,84,.55), var(--shadow)}
+    50%{box-shadow:0 0 0 16px rgba(255,123,84,0), var(--shadow)}
+  }
+  .stop.locked .node{filter:grayscale(.85);opacity:.55;border-color:#9aa}
+  .stop.locked .node::after{content:'🔒';position:absolute;top:-8px;inset-inline-end:-6px;font-size:14px}
+  .here{
+    position:absolute;font-size:28px;transform:translate(-50%,-115%);
+    animation:bob 1.4s ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(0,0,0,.4));
+    pointer-events:none;z-index:5;
+  }
+  @keyframes bob{0%,100%{margin-top:0}50%{margin-top:-7px}}
+
+  /* בועות מידע (מלון/טיסה) */
+  .bubble{
+    position:absolute;transform:translateY(-50%);
+    max-width:158px;background:rgba(255,249,239,.10);
+    backdrop-filter:blur(4px);
+    border:1px solid rgba(243,217,164,.35);
+    border-radius:16px;padding:9px 12px;cursor:pointer;
+    font-size:12px;line-height:1.35;text-align:start;z-index:2;
+    transition:background .2s;
+  }
+  .bubble:hover{background:rgba(255,249,239,.2)}
+  .bubble b{display:block;color:var(--sand);font-size:12.5px}
+  .bubble span{color:var(--muted)}
+  .bubble .fl{color:var(--sky);display:block;margin-top:3px;font-size:11.5px}
+  .bubble::before{content:'';position:absolute;top:50%;width:14px;height:2px;background:rgba(243,217,164,.45)}
+  .bubble.side-right::before{inset-inline-start:-14px}
+  .bubble.side-left::before{inset-inline-end:-14px}
+  .bubble.flight-only{border-color:rgba(127,216,232,.45)}
+
+  .finish{text-align:center;font-size:15px;color:var(--sand)}
+  .finish .flag{font-size:34px;display:block}
+
+  /* ---------- מודאלים ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(6,25,27,.75);backdrop-filter:blur(3px);
+    display:none;align-items:flex-end;justify-content:center;z-index:50;
+  }
+  .overlay.open{display:flex}
+  .sheet{
+    background:var(--paper);color:var(--ink);
+    width:100%;max-width:540px;max-height:88vh;overflow-y:auto;
+    border-radius:26px 26px 0 0;padding:26px 22px 34px;
+    animation:up .25s ease-out;
+  }
+  @media(min-width:580px){
+    .overlay{align-items:center}
+    .sheet{border-radius:26px;margin:20px}
+  }
+  @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  .sheet h2{font-size:23px;margin-bottom:4px}
+  .sheet .tag{font-size:13px;color:#7c8f8d;margin-bottom:14px}
+  .sheet label{display:block;font-weight:700;font-size:14px;margin:14px 0 6px}
+  textarea,input[type=password]{
+    width:100%;border:2px solid #d8d2c2;border-radius:14px;padding:12px;font-family:inherit;font-size:15px;background:#fff;
+  }
+  textarea{min-height:90px;resize:vertical}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    border:none;border-radius:999px;padding:13px 22px;font-family:'Heebo';font-weight:700;font-size:15px;
+    cursor:pointer;transition:transform .1s;text-decoration:none;
+  }
+  .btn:active{transform:scale(.96)}
+  .btn-main{background:var(--coral);color:#fff;width:100%;margin-top:18px}
+  .btn-nav{background:var(--ink);color:#fff;flex:1}
+  .btn-waze{background:#33ccff;color:#04303c;flex:1}
+  .btn-row{display:flex;gap:10px;margin-top:14px}
+  .close-x{
+    float:left;background:#e7dfcd;border:none;width:34px;height:34px;border-radius:50%;
+    font-size:16px;cursor:pointer;color:var(--ink);
+  }
+  .task-box{background:#FBF0DA;border:1.5px dashed var(--mango);border-radius:16px;padding:14px;font-size:15px;line-height:1.5}
+  .info-box{background:#E9F6F8;border-radius:14px;padding:12px 14px;font-size:14px;margin-top:10px;line-height:1.5}
+  .info-box b{color:#0d5c6b}
+  .photo-add{
+    margin-top:8px;border:2px dashed #cfc6b0;border-radius:16px;padding:16px;text-align:center;
+    color:#7c8f8d;cursor:pointer;font-size:14px;background:#fff;
+  }
+  .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .thumbs img{width:64px;height:64px;object-fit:cover;border-radius:10px;border:2px solid #e2dac6}
+  .done-note{background:#EAF9E2;border-radius:14px;padding:12px 14px;font-size:14px;margin-top:14px;color:#2c5e2a}
+  .msg{font-size:13px;margin-top:8px;color:#a05a2c;min-height:16px}
+
+  .fam-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .fam-grid button{
+    background:#fff;border:2px solid #d8d2c2;border-radius:16px;padding:16px 10px;
+    font-family:'Heebo';font-weight:700;font-size:15px;cursor:pointer;color:var(--ink);
+  }
+  .fam-grid button:active{border-color:var(--coral)}
+
+  /* ---------- מנהל ---------- */
+  #adminBtn{
+    position:fixed;bottom:16px;inset-inline-start:16px;z-index:40;
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--paper);
+    border-radius:999px;padding:9px 16px;font-size:13px;cursor:pointer;font-family:'Heebo';
+  }
+  .admin-scroll{overflow-x:auto}
+  .admin-table{border-collapse:collapse;font-size:12px;margin-top:10px;min-width:100%}
+  .admin-table th,.admin-table td{border-bottom:1px solid #e5ddc9;padding:6px 5px;text-align:center;white-space:nowrap}
+  .admin-table th{color:#7c8f8d;font-size:11px}
+  .admin-table td:first-child,.admin-table th:first-child{
+    text-align:start;font-weight:700;position:sticky;inset-inline-start:0;background:var(--paper);
+  }
+  .ok{color:#3f9a3a;font-weight:700}
+  .no{color:#c2b9a4}
+  .fam-block{border:1.5px solid #e5ddc9;border-radius:16px;padding:14px;margin-top:12px}
+  .fam-block h3{font-size:17px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .fam-block .sub-line{font-size:13px;color:#5f6f6d;margin-top:6px;line-height:1.6}
+  .mini-thumbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .mini-thumbs img{width:52px;height:52px;object-fit:cover;border-radius:8px}
+  .zip-btn{background:var(--ink);color:#fff;border:none;border-radius:999px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:'Heebo';font-weight:700;white-space:nowrap}
+  .spin{display:inline-block;animation:rot 1s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="eyebrow" id="tripName"></span>
+  <h1>ברוכים הבאים,<br><span class="fam" id="famName">אורחים יקרים</span> 👋</h1>
+  <p class="sub" id="tripSub"></p>
+  <div><span class="today-chip" id="todayChip" style="display:none">
+    <span class="dot"></span><span id="todayText"></span>
+  </span></div>
+  <div id="demoBanner">⚠️ מצב תצוגה מקומי — Firebase עדיין לא חובר. הנתונים נשמרים רק במכשיר הזה. ראו README.</div>
+</header>
+
+<div id="trail"></div>
+
+<button id="adminBtn" onclick="openAdminLogin()">🔑 מנהל</button>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* =====================================================================
+   🔥 חיבור Firebase — הדביקו כאן את ההגדרות מפרויקט ה-Firebase שלכם
+   (הוראות מלאות בקובץ README.md). אם משאירים ריק — האתר רץ במצב
+   תצוגה מקומי לצורך בדיקות בלבד.
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+
+/* =====================================================================
+   ⚙️  הגדרות הטיול — כאן עורכים הכול
+   ===================================================================== */
+const CONFIG = {
+  tripName: "תאילנד 2026 — הטיול הגדול 🌴",
+  tripSub: "26.07 – 19.08 · חמש משפחות, הרפתקה אחת",
+  adminCode: "2026",
+
+  tripStart: "2026-07-26",
+  tripEnd:   "2026-08-19",
+
+  families: [
+    { id: "bohadana", name: "משפחת בוהדנה" },
+    { id: "ovadia",   name: "משפחת עובדיה" },
+    { id: "moshe",    name: "משפחת משה" },
+    { id: "sade",     name: "משפחת שדה" },
+    { id: "buzaglo",  name: "משפחת בוזגלו" },
+  ],
+
+  /* מלונות: from = צ'ק-אין, to = צ'ק-אאוט. query = מה שמחפשים בניווט */
+  hotels: [
+    { name: "Four Points by Sheraton Phuket", area: "פוקט",     from: "2026-07-27", to: "2026-08-02", query: "Four Points by Sheraton Phuket Patong Beach Resort" },
+    { name: "La Vela Khao Lak",               area: "קאו לאק",  from: "2026-08-02", to: "2026-08-04", query: "La Vela Khao Lak" },
+    { name: "Dusit Thani Krabi",              area: "קראבי",    from: "2026-08-04", to: "2026-08-06", query: "Dusit Thani Krabi Beach Resort" },
+    { name: "Lemongrass Pool Villa",          area: "קו סמוי",  from: "2026-08-06", to: "2026-08-10", query: "Lemongrass Pool Villa Koh Samui" },
+    { name: "Banana Fan Sea Resort",          area: "קו סמוי",  from: "2026-08-10", to: "2026-08-12", query: "Banana Fan Sea Resort Koh Samui" },
+    { name: "Centara Grand Mirage",           area: "פאטיה",    from: "2026-08-12", to: "2026-08-16", query: "Centara Grand Mirage Beach Resort Pattaya" },
+    { name: "Eastin Grand Hotel",             area: "בנגקוק",   from: "2026-08-16", to: "2026-08-18", query: "Eastin Grand Hotel Sathorn Bangkok" },
+  ],
+
+  /* טיסות */
+  flights: [
+    { date: "2026-07-26", title: "טיסה לתאילנד ✈️",   detail: "המראה מנתב״ג בשעה 20:45 · עצירה בדובאי · הלילה בטיסה" },
+    { date: "2026-08-06", title: "טיסת פנים ✈️",       detail: "קראבי ← קו סמוי · המראה בשעה 18:25" },
+    { date: "2026-08-12", title: "טיסת פנים ✈️",       detail: "קו סמוי ← פאטיה · המראה בשעה 11:10" },
+    { date: "2026-08-18", title: "טיסה חזרה לישראל ✈️", detail: "המראה בשעה 22:00 · עצירה בדובאי" },
+    { date: "2026-08-19", title: "נחיתה בישראל 🇮🇱",    detail: "ברוכים השבים הביתה!" },
+  ],
+
+  /* משימות: מפתח = תאריך. מה שלא מוגדר מקבל את משימת ברירת המחדל */
+  tasks: {
+    "2026-07-26": "צלמו תמונה משפחתית בשדה התעופה וכתבו: למה אתם הכי מחכים בטיול?",
+    // "2026-07-27": "המשימה של יום שני...",
+  },
+  defaultTask: "המשימה של היום תפורסם בהמשך — עקבו בקבוצה! 😉",
+};
+/* ===================================================================== */
+
+const $ = s => document.querySelector(s);
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+let myFamily = null;
+let subsCache = {};          // `${famId}_${date}` -> submission
+let DAYS = [];               // רשימת ימי הטיול, נבנית מהטווח
+
+/* ---------- בניית ימי הטיול ---------- */
+function buildDays(){
+  DAYS = [];
+  let d = new Date(CONFIG.tripStart + "T00:00:00");
+  const end = new Date(CONFIG.tripEnd + "T00:00:00");
+  let n = 1;
+  while (d <= end){
+    const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    DAYS.push({ n, date: iso });
+    d.setDate(d.getDate()+1);
+    n++;
+  }
+}
+function hotelForDate(date){
+  return CONFIG.hotels.find(h => h.from <= date && date < h.to) || null;
+}
+function flightForDate(date){
+  return CONFIG.flights.find(f => f.date === date) || null;
+}
+function taskForDate(date){
+  return CONFIG.tasks[date] || CONFIG.defaultTask;
+}
+function fmtDate(d){
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
+}
+function fmtDay(d){
+  const dt = new Date(d + "T00:00:00");
+  return dt.toLocaleDateString('he-IL', { weekday:'short' });
+}
+function dayStatus(date){
+  const t = todayStr();
+  if (date < t) return 'past';
+  if (date === t) return 'current';
+  return 'future';
+}
+function currentDayIndex(){
+  const t = todayStr();
+  if (t < DAYS[0].date) return 0;
+  if (t > DAYS[DAYS.length-1].date) return DAYS.length-1;
+  for (let i = DAYS.length-1; i >= 0; i--) if (DAYS[i].date <= t) return i;
+  return 0;
+}
+
+/* =====================================================================
+   שכבת נתונים: Firebase אם חובר, אחרת מצב מקומי (תצוגה בלבד)
+   ===================================================================== */
+let db = null;
+const isLive = !!FIREBASE_CONFIG.apiKey;
+if (isLive){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+  }catch(e){ console.error('Firebase init failed', e); }
+}
+
+const Store = {
+  async saveSubmission(sub){
+    if (db){
+      await db.collection('submissions').doc(`${sub.family}_${sub.date}`).set(sub);
+    } else {
+      const all = JSON.parse(localStorage.getItem('demo_subs')||'{}');
+      all[`${sub.family}_${sub.date}`] = sub;
+      localStorage.setItem('demo_subs', JSON.stringify(all));
+    }
+  },
+  async getSubmissions(famId){ // famId=null → הכול
+    if (db){
+      let q = db.collection('submissions');
+      if (famId) q = q.where('family','==',famId);
+      const snap = await q.get();
+      const out = {};
+      snap.forEach(doc => out[doc.id] = doc.data());
+      return out;
+    } else {
+      const all = JSON.parse(localStorage.getItem('demo_subs')||'{}');
+      if (!famId) return all;
+      const out = {};
+      for (const k in all) if (all[k].family === famId) out[k] = all[k];
+      return out;
+    }
+  },
+  async savePhoto(famId, date, dataUrl){
+    if (db){
+      await db.collection('photos').add({ family: famId, date, data: dataUrl, ts: Date.now() });
+    } else {
+      const all = JSON.parse(localStorage.getItem('demo_photos')||'[]');
+      all.push({ family: famId, date, data: dataUrl, ts: Date.now() });
+      try{ localStorage.setItem('demo_photos', JSON.stringify(all)); }
+      catch(e){ alert('במצב תצוגה מקומי יש מקום מוגבל לתמונות. חברו Firebase לשימוש אמיתי.'); }
+    }
+  },
+  async getPhotos(famId, limit=0){
+    if (db){
+      let q = db.collection('photos').where('family','==',famId);
+      const snap = await q.get();
+      let out = [];
+      snap.forEach(doc => out.push(doc.data()));
+      out.sort((a,b)=>a.ts-b.ts);
+      return limit ? out.slice(0,limit) : out;
+    } else {
+      const all = JSON.parse(localStorage.getItem('demo_photos')||'[]').filter(p=>p.family===famId);
+      return limit ? all.slice(0,limit) : all;
+    }
+  }
+};
+
+/* ---------- בניית השביל ---------- */
+const STEP_Y = 150, TOP_PAD = 70;
+function nodePos(i){
+  const x = (i % 2 === 0) ? 32 : 68;
+  const y = TOP_PAD + i * STEP_Y;
+  return { x, y };
+}
+function buildTrail(){
+  const trail = $('#trail');
+  const n = DAYS.length;
+  const H = TOP_PAD + (n-1)*STEP_Y + 170;
+  trail.style.height = H + 'px';
+  const W = trail.clientWidth || 380;
+
+  let pts = DAYS.map((_,i)=>{ const p = nodePos(i); return { x:p.x*W/100, y:p.y }; });
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i=1;i<pts.length;i++){
+    const p0 = pts[i-1], p1 = pts[i];
+    const my = (p0.y+p1.y)/2;
+    d += ` C ${p0.x} ${my}, ${p1.x} ${my}, ${p1.x} ${p1.y}`;
+  }
+  const curIdx = currentDayIndex();
+  let dDone = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i=1;i<=curIdx;i++){
+    const p0 = pts[i-1], p1 = pts[i];
+    const my = (p0.y+p1.y)/2;
+    dDone += ` C ${p0.x} ${my}, ${p1.x} ${my}, ${p1.x} ${p1.y}`;
+  }
+
+  let html = `<svg id="roadSvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <path class="road-base" d="${d}"/>
+      ${curIdx>0?`<path class="road-done" d="${dDone}"/>`:''}
+      <path class="road-line" d="${d}"/>
+    </svg>`;
+
+  DAYS.forEach((day,i)=>{
+    const p = nodePos(i);
+    const st = dayStatus(day.date);
+    const done = myFamily && subsCache[`${myFamily.id}_${day.date}`];
+    const cls = done ? 'done' : (st==='current' ? 'current' : (st==='future' ? 'locked' : ''));
+    const isCur = i === curIdx;
+    html += `
+      <div class="stop ${cls}" style="top:${p.y}px; inset-inline-start:${p.x}%">
+        ${isCur ? `<div class="here">🚌</div>` : ''}
+        <div class="node" onclick="openDay(${i})"><span>${day.n}</span><small>יום</small></div>
+        <div class="date">${fmtDay(day.date)} ${fmtDate(day.date)}</div>
+      </div>`;
+
+    /* בועת מידע — רק ביום צ'ק-אין למלון או ביום טיסה */
+    const hotel = hotelForDate(day.date);
+    const checkIn = hotel && hotel.from === day.date;
+    const flight = flightForDate(day.date);
+    if (checkIn || flight){
+      const side = (i % 2 === 0) ? 'left' : 'right';
+      const hx = (i % 2 === 0) ? 'inset-inline-start:57%' : 'inset-inline-start:4%';
+      let inner = '';
+      if (checkIn) inner += `<b>🏨 ${hotel.name}</b><span>${hotel.area} · לחצו לניווט</span>`;
+      if (flight)  inner += `<span class="fl">${flight.title} ${flight.detail.split('·')[0]}</span>`;
+      html += `
+        <div class="bubble side-${side} ${checkIn?'':'flight-only'}" style="top:${p.y}px;${hx}"
+             onclick="openDay(${i})">${inner}</div>`;
+    }
+  });
+
+  html += `<div class="finish" style="position:absolute;top:${TOP_PAD + (n-1)*STEP_Y + 80}px;width:100%">
+      <span class="flag">🏁</span>סוף הטיול — נתראה בהרפתקה הבאה!</div>`;
+
+  trail.innerHTML = html;
+
+  setTimeout(()=>{
+    const curStop = trail.querySelectorAll('.stop')[curIdx];
+    if (curStop) curStop.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 350);
+}
+
+/* ---------- מודאלים ---------- */
+function openSheet(html){ $('#sheet').innerHTML = html; $('#overlay').classList.add('open'); }
+function closeSheet(){ $('#overlay').classList.remove('open'); }
+
+function showFamilyPicker(){
+  let btns = CONFIG.families.map(f =>
+    `<button onclick="chooseFamily('${f.id}')">${f.name}</button>`).join('');
+  openSheet(`
+    <h2>מי אתם? 🧡</h2>
+    <p class="tag">בחרו את המשפחה שלכם — נזכור אתכם בסריקות הבאות</p>
+    <div class="fam-grid">${btns}</div>`);
+}
+async function chooseFamily(id){
+  myFamily = CONFIG.families.find(f=>f.id===id);
+  localStorage.setItem('myFamily', id);
+  $('#famName').textContent = myFamily.name;
+  closeSheet();
+  await loadMySubs();
+  buildTrail();
+}
+
+/* מודאל יום */
+let pendingPhotos = [];
+function navButtons(hotel){
+  const gmap = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.query)}`;
+  const waze = `https://waze.com/ul?q=${encodeURIComponent(hotel.query)}&navigate=yes`;
+  return `<div class="btn-row">
+    <a class="btn btn-waze" href="${waze}" target="_blank" rel="noopener">🚗 Waze</a>
+    <a class="btn btn-nav" href="${gmap}" target="_blank" rel="noopener">🗺️ Google Maps</a>
+  </div>`;
+}
+function openDay(i){
+  const day = DAYS[i];
+  const st = dayStatus(day.date);
+  const hotel = hotelForDate(day.date);
+  const flight = flightForDate(day.date);
+
+  let infoHtml = '';
+  if (flight) infoHtml += `<div class="info-box"><b>${flight.title}</b><br>${flight.detail}</div>`;
+  if (hotel){
+    infoHtml += `<div class="info-box"><b>🏨 הלילה ישנים ב:</b> ${hotel.name}, ${hotel.area}</div>${navButtons(hotel)}`;
+  } else if (!flight){
+    infoHtml += `<div class="info-box">לילה ללא מלון בלו״ז — בדקו בקבוצה 🙂</div>`;
+  }
+
+  if (!myFamily){ showFamilyPicker(); return; }
+
+  if (st === 'future'){
+    openSheet(`
+      <button class="close-x" onclick="closeSheet()">✕</button>
+      <h2>🔒 יום ${day.n} · ${fmtDate(day.date)}</h2>
+      <p class="tag">המשימה תיפתח בתאריך הזה</p>
+      ${infoHtml}`);
+    return;
+  }
+
+  const sub = subsCache[`${myFamily.id}_${day.date}`];
+  pendingPhotos = [];
+  openSheet(`
+    <button class="close-x" onclick="closeSheet()">✕</button>
+    <h2>יום ${day.n} · ${fmtDay(day.date)} ${fmtDate(day.date)}</h2>
+    <p class="tag">${myFamily.name}</p>
+    ${infoHtml}
+    <label>המשימה של היום 🎯</label>
+    <div class="task-box">${taskForDate(day.date)}</div>
+    ${sub ? `<div class="done-note">✅ המשימה הוגשה (${new Date(sub.time).toLocaleString('he-IL')}). אפשר להגיש שוב כדי לעדכן.</div>` : ''}
+    <label>הסיפור שלכם</label>
+    <textarea id="taskText" placeholder="כתבו כאן...">${sub ? (sub.text||'').replace(/</g,'&lt;') : ''}</textarea>
+    <label>תמונות 📸</label>
+    <div class="photo-add" onclick="document.getElementById('photoInput').click()">
+      לחצו להוספת תמונות מהטלפון
+    </div>
+    <input type="file" id="photoInput" accept="image/*" multiple style="display:none" onchange="addPhotos(this)">
+    <div class="thumbs" id="thumbs"></div>
+    <p class="msg" id="dayMsg"></p>
+    <button class="btn btn-main" id="submitBtn" onclick="submitDay(${i})">שליחת המשימה 🚀</button>`);
+}
+
+async function addPhotos(input){
+  const files = [...input.files];
+  $('#dayMsg').textContent = 'מכווץ תמונות...';
+  for (const f of files){
+    try{
+      const dataUrl = await compressImage(f);
+      pendingPhotos.push(dataUrl);
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      $('#thumbs').appendChild(img);
+    }catch(e){ console.error(e); }
+  }
+  $('#dayMsg').textContent = pendingPhotos.length ? `${pendingPhotos.length} תמונות מוכנות לשליחה` : '';
+  input.value = '';
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1000;
+        let { width:w, height:h } = img;
+        if (Math.max(w,h) > MAX){ const r = MAX/Math.max(w,h); w = Math.round(w*r); h = Math.round(h*r); }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', 0.65));   // ~150–350KB, מתחת למגבלת המסמך של Firestore
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitDay(i){
+  const day = DAYS[i];
+  const text = $('#taskText').value.trim();
+  if (!text && pendingPhotos.length === 0){
+    $('#dayMsg').textContent = 'כתבו משהו או הוסיפו תמונה לפני השליחה 🙂';
+    return;
+  }
+  const btn = $('#submitBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin">⏳</span> שולח...';
+  try{
+    for (const p of pendingPhotos){
+      await Store.savePhoto(myFamily.id, day.date, p);
+    }
+    const prev = subsCache[`${myFamily.id}_${day.date}`];
+    const sub = {
+      family: myFamily.id,
+      familyName: myFamily.name,
+      date: day.date,
+      text,
+      time: Date.now(),
+      photoCount: (prev ? (prev.photoCount||0) : 0) + pendingPhotos.length,
+    };
+    await Store.saveSubmission(sub);
+    subsCache[`${myFamily.id}_${day.date}`] = sub;
+    closeSheet();
+    buildTrail();
+  }catch(e){
+    console.error(e);
+    btn.disabled = false; btn.textContent = 'שליחת המשימה 🚀';
+    $('#dayMsg').textContent = 'השמירה נכשלה — בדקו חיבור לאינטרנט ונסו שוב.';
+  }
+}
+
+/* ---------- מנהל ---------- */
+function openAdminLogin(){
+  openSheet(`
+    <button class="close-x" onclick="closeSheet()">✕</button>
+    <h2>🔑 כניסת מנהל</h2>
+    <p class="tag">הזינו את קוד המנהל</p>
+    <input type="password" id="adminCode" placeholder="קוד" inputmode="numeric">
+    <p class="msg" id="adminMsg"></p>
+    <button class="btn btn-main" onclick="checkAdmin()">כניסה</button>`);
+}
+function checkAdmin(){
+  if ($('#adminCode').value === CONFIG.adminCode) openAdmin();
+  else $('#adminMsg').textContent = 'קוד שגוי';
+}
+
+async function openAdmin(){
+  openSheet(`<h2>📋 מסך מנהל</h2><p class="tag">טוען נתונים...</p>`);
+  let subs = {};
+  try{ subs = await Store.getSubmissions(null); }
+  catch(e){ console.error(e); }
+
+  const t = todayStr();
+  const curDate = (t >= DAYS[0].date && t <= DAYS[DAYS.length-1].date) ? t : null;
+
+  /* סיכום היום */
+  let todayLine = 'הטיול עדיין לא התחיל / הסתיים';
+  if (curDate){
+    const doneFams = CONFIG.families.filter(f => subs[`${f.id}_${curDate}`]);
+    const missing = CONFIG.families.filter(f => !subs[`${f.id}_${curDate}`]).map(f=>f.name);
+    todayLine = `היום (${fmtDate(curDate)}): הגישו ${doneFams.length}/${CONFIG.families.length}` +
+      (missing.length ? ` · חסרים: ${missing.join(', ')}` : ' · כולם הגישו! 🎉');
+  }
+
+  /* טבלה: שורות = משפחות, עמודות = ימים שכבר עברו/היום */
+  const shownDays = DAYS.filter(d => d.date <= (curDate || DAYS[DAYS.length-1].date));
+  let table = `<div class="admin-scroll"><table class="admin-table"><tr><th>משפחה</th>${
+    shownDays.map(d=>`<th>${fmtDate(d.date)}</th>`).join('')}</tr>`;
+  CONFIG.families.forEach(f=>{
+    table += `<tr><td>${f.name}</td>`;
+    shownDays.forEach(d=>{
+      const s = subs[`${f.id}_${d.date}`];
+      table += `<td>${s ? '<span class="ok">✓</span>' : '<span class="no">—</span>'}</td>`;
+    });
+    table += `</tr>`;
+  });
+  table += `</table></div>`;
+  if (!shownDays.length) table = `<p class="tag">הדוח יתמלא מהיום הראשון של הטיול.</p>`;
+
+  /* בלוקים למשפחה */
+  let blocks = '';
+  CONFIG.families.forEach(f=>{
+    let photoCount = 0, lines = '';
+    DAYS.forEach(d=>{
+      const s = subs[`${f.id}_${d.date}`];
+      if (s){
+        photoCount += (s.photoCount||0);
+        const txt = (s.text||'');
+        lines += `<div>· ${fmtDate(d.date)}: "${txt.slice(0,70)}${txt.length>70?'…':''}" (${s.photoCount||0} 📸)</div>`;
+      }
+    });
+    blocks += `
+      <div class="fam-block">
+        <h3>${f.name}
+          <button class="zip-btn" id="zip_${f.id}" onclick="downloadFamilyZip('${f.id}','${f.name}')"
+            ${photoCount? '' : 'disabled style="opacity:.4"'}>⬇️ ZIP (${photoCount})</button>
+        </h3>
+        <div class="sub-line">${lines || 'עדיין אין הגשות'}</div>
+        <div class="mini-thumbs" id="mini_${f.id}"></div>
+      </div>`;
+  });
+
+  openSheet(`
+    <button class="close-x" onclick="closeSheet()">✕</button>
+    <h2>📋 מסך מנהל</h2>
+    <p class="tag">${todayLine}</p>
+    ${table}
+    <label style="margin-top:20px">הגשות ותמונות לפי משפחה</label>
+    ${blocks}`);
+
+  /* תמונות מוקטנות ברקע */
+  for (const f of CONFIG.families){
+    const box = document.getElementById(`mini_${f.id}`);
+    if (!box) continue;
+    try{
+      const photos = await Store.getPhotos(f.id, 8);
+      photos.forEach(p=>{
+        const img = document.createElement('img');
+        img.src = p.data;
+        box.appendChild(img);
+      });
+    }catch(e){ console.error(e); }
+  }
+}
+
+async function downloadFamilyZip(famId, famName){
+  const btn = document.getElementById('zip_'+famId);
+  if (btn){ btn.disabled = true; btn.innerHTML = '<span class="spin">⏳</span>'; }
+  try{
+    const zip = new JSZip();
+    const photos = await Store.getPhotos(famId);
+    let counters = {};
+    photos.forEach(p=>{
+      counters[p.date] = (counters[p.date]||0) + 1;
+      const base64 = p.data.split(',')[1];
+      zip.file(`${p.date}_${counters[p.date]}.jpg`, base64, { base64:true });
+    });
+    const subs = await Store.getSubmissions(famId);
+    let txt = `הגשות ${famName}\n====================\n`;
+    Object.values(subs).sort((a,b)=>a.date<b.date?-1:1).forEach(s=>{
+      txt += `\n${s.date}:\n${s.text}\n`;
+    });
+    zip.file('submissions.txt', txt);
+    const blob = await zip.generateAsync({ type:'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `photos-${famName.replace(/\s/g,'-')}.zip`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }catch(e){
+    console.error(e);
+    alert('הורדת ה-ZIP נכשלה, נסו שוב.');
+  }
+  if (btn){ btn.disabled = false; btn.textContent = '⬇️ ZIP'; }
+}
+
+/* ---------- אתחול ---------- */
+async function loadMySubs(){
+  subsCache = {};
+  if (!myFamily) return;
+  try{ subsCache = await Store.getSubmissions(myFamily.id); }
+  catch(e){ console.error(e); }
+}
+
+async function init(){
+  buildDays();
+  $('#tripName').textContent = CONFIG.tripName;
+  $('#tripSub').textContent = CONFIG.tripSub;
+  if (!isLive) $('#demoBanner').style.display = 'block';
+
+  const t = todayStr();
+  if (t < CONFIG.tripStart){
+    const days = Math.ceil((new Date(CONFIG.tripStart) - new Date(t)) / 86400000);
+    $('#todayChip').style.display = 'inline-flex';
+    $('#todayText').textContent = `עוד ${days} ימים ממריאים! ✈️`;
+  } else if (t <= CONFIG.tripEnd){
+    const cur = DAYS[currentDayIndex()];
+    $('#todayChip').style.display = 'inline-flex';
+    $('#todayText').textContent = `אנחנו ביום ${cur.n} מתוך ${DAYS.length}`;
+  }
+
+  /* בחירת משפחה: פרמטר ?f= בקישור (לצריבה על תג ספציפי) גובר על הזיכרון המקומי */
+  const params = new URLSearchParams(location.search);
+  const urlFam = params.get('f');
+  const savedFam = localStorage.getItem('myFamily');
+  const famId = urlFam || savedFam;
+  if (famId) myFamily = CONFIG.families.find(f=>f.id===famId) || null;
+  if (myFamily && urlFam) localStorage.setItem('myFamily', myFamily.id);
+
+  if (myFamily){
+    $('#famName').textContent = myFamily.name;
+    await loadMySubs();
+    buildTrail();
+  } else {
+    buildTrail();
+    showFamilyPicker();
+  }
+
+  if (params.has('admin')) openAdminLogin();
+}
+window.addEventListener('resize', ()=>buildTrail());
+init();
+</script>
+</body>
+</html>

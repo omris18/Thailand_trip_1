@@ -457,6 +457,7 @@
         <label class="field"><span>תאריך להצגה</span><select id="adminDate"></select></label>
         <button id="refreshAdmin" class="btn primary">רענון נתונים</button>
         <button id="downloadAllZip" class="btn secondary">⬇️ ZIP לכל התמונות ביום</button>
+        <button id="downloadTripZip" class="btn secondary">📦 ZIP מלא לכל הטיול</button>
       </div>
 
       <section class="stats">
@@ -469,7 +470,7 @@
       <section class="admin-panel">
         <h2>סטטוס משפחות</h2>
         <table>
-          <thead><tr><th>משפחה</th><th>סריקה</th><th>משימה</th><th>תמונות</th><th>עדכון אחרון</th><th>הורדה</th></tr></thead>
+          <thead><tr><th>משפחה</th><th>סריקה</th><th>משימה</th><th>תמונות</th><th>עדכון אחרון</th><th>יום נבחר</th><th>כל הטיול</th></tr></thead>
           <tbody id="adminRows"></tbody>
         </table>
       </section>
@@ -544,6 +545,12 @@
         // כשנסגור את טבלת המשימות נחליף כאן את הסדר המדויק.
         rewardOrder: [1,2,3,4,5,6,7,8]
       },
+      taskPlan: {
+        // כאן נכניס בסוף את 8 המשימות הזהות לכל המשפחות.
+        // כל משימה תקבל מספר, תאריך וחלק פאזל תואם.
+        // דוגמה:
+        // 1: {date:"2026-07-26", title:"...", description:"...", puzzlePiece:1, minPhotos:1}
+      },
       mapStops: [
         {id:"israel-out",name:"יציאה מישראל",date:"2026-07-26",icon:"🇮🇱",x:15,y:13,day:1,flight:true},
         {id:"phuket",name:"פוקט",date:"2026-07-27",icon:"🏝️",x:78,y:23,day:2,hotel:"Four Points Phuket"},
@@ -598,7 +605,7 @@
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const APP_VERSION = "5.0.2";
+    const APP_VERSION = "5.1.0";
     const urlParams = new URLSearchParams(location.search);
     const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
     const familyKey = urlParams.get("key") || "";
@@ -1132,9 +1139,10 @@
         $("statScans").textContent=scans.size;$("statDone").textContent=done.size;$("statPhotos").textContent=allPhotos.length;
         $("adminRows").innerHTML=CONFIG.families.map(f=>{
           const s=scans.get(f.id),c=done.get(f.id),p=photos.get(f.id)||[];
-          return `<tr><td><strong>משפחת ${esc(f.name)}</strong></td><td>${s?'<span class="badge ok">✓ נסרק</span>':'<span class="badge no">לא נסרק</span>'}</td><td>${c?'<span class="badge ok">✓ הושלם</span>':'<span class="badge wait">ממתין</span>'}</td><td>${p.length}</td><td>${fmtTime(c?.completedAt||s?.createdAt)}</td><td><button class="btn secondary small family-zip" data-family="${f.id}" ${p.length?"":"disabled"}>ZIP</button></td></tr>`;
+          return `<tr><td><strong>משפחת ${esc(f.name)}</strong></td><td>${s?'<span class="badge ok">✓ נסרק</span>':'<span class="badge no">לא נסרק</span>'}</td><td>${c?'<span class="badge ok">✓ הושלם</span>':'<span class="badge wait">ממתין</span>'}</td><td>${p.length}</td><td>${fmtTime(c?.completedAt||s?.createdAt)}</td><td><button class="btn secondary small family-zip" data-family="${f.id}" ${p.length?"":"disabled"}>ZIP יום</button></td><td><button class="btn ghost small family-trip-zip" data-family="${f.id}">ZIP מלא</button></td></tr>`;
         }).join("");
         document.querySelectorAll(".family-zip").forEach(b=>b.onclick=()=>downloadZip(date,b.dataset.family,allPhotos.filter(p=>p.familyId===b.dataset.family)));
+        document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=()=>downloadFullTripZip(b.dataset.family));
         $("adminGallery").innerHTML="";
         if(!allPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
         else{
@@ -1144,6 +1152,95 @@
         $("downloadAllZip").onclick=()=>downloadZip(date,"all",allPhotos);
       }catch(err){console.error(err);$("adminRows").innerHTML=`<tr><td colspan="6">${esc(firebaseErrorText(err))}</td></tr>`;setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error")}
     }
+    async function fetchAllTripData(){
+      const [uploadsSnap,completionsSnap,scansSnap]=await Promise.all([
+        getDocs(collection(db,"uploads")),
+        getDocs(collection(db,"completions")),
+        getDocs(collection(db,"scans"))
+      ]);
+      const uploads=[],completions=[],scans=[];
+      uploadsSnap.forEach(d=>uploads.push({id:d.id,...d.data()}));
+      completionsSnap.forEach(d=>completions.push({id:d.id,...d.data()}));
+      scansSnap.forEach(d=>scans.push({id:d.id,...d.data()}));
+      uploads.sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||"") || (a.familyName||"").localeCompare(b.familyName||""));
+      return {uploads,completions,scans};
+    }
+
+    function csvEscape(value){
+      const s=String(value??"");
+      return `"${s.replaceAll('"','""')}"`;
+    }
+
+    function buildTripCsv(data){
+      const rows=[["familyId","familyName","tripDate","dayNumber","caption","storagePath","createdAt"]];
+      data.uploads.forEach(p=>rows.push([
+        p.familyId,p.familyName,p.tripDate,p.dayNumber,p.caption,p.storagePath,
+        p.createdAt?.toDate?.().toISOString?.()||""
+      ]));
+      return rows.map(r=>r.map(csvEscape).join(",")).join("\r\n");
+    }
+
+    async function downloadFullTripZip(familyFilter="all"){
+      const buttons=[...document.querySelectorAll("button")];
+      buttons.forEach(b=>b.disabled=true);
+      try{
+        const data=await fetchAllTripData();
+        const uploads=familyFilter==="all"
+          ? data.uploads
+          : data.uploads.filter(p=>p.familyId===familyFilter);
+
+        if(!uploads.length){
+          alert("אין תמונות להורדה.");
+          return;
+        }
+
+        const zip=new JSZip();
+        const familyMap=new Map(CONFIG.families.map(f=>[f.id,f.name]));
+
+        for(let i=0;i<uploads.length;i++){
+          const p=uploads[i];
+          const dayNum=String(p.dayNumber||1).padStart(2,"0");
+          const dayFolder=`יום-${dayNum}-${p.tripDate}`;
+          const familyName=p.familyName||familyMap.get(p.familyId)||p.familyId;
+          const familyFolder=`משפחת-${familyName}`;
+          const blob=await getBlob(ref(storage,p.storagePath));
+          const fileName=`${String(i+1).padStart(4,"0")}.jpg`;
+          zip.folder(dayFolder).folder(familyFolder).file(fileName,blob);
+        }
+
+        zip.file("סיכום-העלאות.csv",buildTripCsv({...data,uploads}));
+        zip.file("README.txt",
+`Thailand 2026
+מבנה הקובץ:
+יום-XX-YYYY-MM-DD/
+  משפחת-שם/
+    תמונות
+
+גרסת אתר: ${APP_VERSION}
+`);
+
+        const result=await zip.generateAsync({
+          type:"blob",
+          compression:"DEFLATE",
+          compressionOptions:{level:6}
+        });
+
+        const suffix=familyFilter==="all"?"כל-הטיול":`משפחת-${familyMap.get(familyFilter)||familyFilter}`;
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(result);
+        a.download=`Thailand-2026-${suffix}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=>URL.revokeObjectURL(a.href),2500);
+      }catch(err){
+        console.error(err);
+        alert(firebaseErrorText(err));
+      }finally{
+        buttons.forEach(b=>b.disabled=false);
+      }
+    }
+
     async function downloadZip(date,label,photos){
       if(!photos.length)return alert("אין תמונות להורדה.");
       const btns=[...document.querySelectorAll("button")];btns.forEach(b=>b.disabled=true);
@@ -1177,7 +1274,10 @@
           }
         });
         $("loginBtn").onclick=adminLogin;$("adminPassword").addEventListener("keydown",e=>{if(e.key==="Enter")adminLogin()});
-        $("logoutBtn").onclick=()=>signOut(auth);$("refreshAdmin").onclick=loadAdmin;$("adminDate").onchange=loadAdmin;
+        $("logoutBtn").onclick=()=>signOut(auth);
+        $("refreshAdmin").onclick=loadAdmin;
+        $("adminDate").onchange=loadAdmin;
+        $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
       }else{
         renderFamily();await initFirebase();
         if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);

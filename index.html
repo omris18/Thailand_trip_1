@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#6d28d9">
+  <meta name="description" content="המסע המשפחתי שלנו בתאילנד 2026">
+  <title>תאילנד 2026 – המסע המשפחתי</title>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#6d28d9;--purple2:#9333ea;--pink:#ec4899;--orange:#f97316;
+      --green:#16a34a;--red:#dc2626;--blue:#0284c7;--ink:#172033;--muted:#667085;
+      --line:#e5e7eb;--surface:#fff;--bg:#edf8ff;--shadow:0 16px 42px rgba(15,23,42,.14);
+      --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Heebo",Arial,sans-serif;color:var(--ink);background:#dff3ff}
+    button,input,textarea,select,a{font:inherit}
+    button,a{touch-action:manipulation}
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+      outline:3px solid rgba(2,132,199,.35);outline-offset:2px
+    }
+    .hidden{display:none!important}
+    .app{max-width:640px;min-height:100vh;margin:auto;background:linear-gradient(#e7f8ff,#fff);box-shadow:0 0 70px rgba(15,23,42,.16);padding-bottom:calc(88px + var(--safe-bottom))}
+    .hero{position:relative;min-height:255px;overflow:hidden;background:
+      radial-gradient(circle at 15% 30%,rgba(255,255,255,.55),transparent 24%),
+      linear-gradient(155deg,#0ea5e9 0%,#38bdf8 40%,#a78bfa 100%)}
+    .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.15)}
+    .hero:before{width:230px;height:230px;left:-80px;bottom:-110px}
+    .hero:after{width:160px;height:160px;right:-55px;top:40px}
+    .hero-inner{position:relative;z-index:2;padding:calc(18px + var(--safe-top)) 17px 34px;color:#fff;text-align:center}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .circle-btn{border:0;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 8px 22px rgba(15,23,42,.18);font-size:21px;cursor:pointer}
+    .trip-chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:7px 13px;border-radius:999px;font-size:13px;font-weight:800;backdrop-filter:blur(10px)}
+    .hero h1{font-size:clamp(31px,8.7vw,49px);line-height:1.05;margin:32px 0 8px;font-weight:900;text-shadow:0 3px 13px rgba(15,23,42,.22)}
+    .hero p{margin:0;font-size:17px;font-weight:600}
+    main{padding:0 14px}
+    .status-card{position:relative;margin:-25px 0 18px;background:#fff;border-radius:23px;padding:16px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:3}
+    .status-main{min-width:0}.status-main strong{display:block;font-size:16px}.status-main p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.13);margin-left:7px}
+    .btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+    .btn.primary{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;box-shadow:0 9px 20px rgba(109,40,217,.24)}
+    .btn.secondary{background:#f1e9ff;color:var(--purple)}
+    .btn.danger{background:#fee2e2;color:#991b1b}
+    .btn.ghost{background:#f8fafc;color:#344054;border:1px solid #e5e7eb}
+    .btn.small{padding:9px 12px;font-size:13px;white-space:nowrap}
+    .btn.full{width:100%;font-size:16px}
+    .section-title{display:flex;justify-content:space-between;align-items:end;margin:24px 4px 10px}
+    .eyebrow{font-size:12px;font-weight:900;color:var(--purple);letter-spacing:.035em}
+    .section-title h2{margin:0;font-size:26px}.section-title small{color:var(--muted);font-weight:700}
+    .journey{position:relative;padding:5px 0 18px}
+    .journey:before{content:"";position:absolute;top:35px;bottom:35px;right:50%;transform:translateX(50%);width:10px;border-radius:20px;background:repeating-linear-gradient(180deg,#fff 0 15px,#c4b5fd 15px 30px);box-shadow:0 0 0 4px rgba(255,255,255,.78)}
+    .day-row{position:relative;display:grid;grid-template-columns:1fr 88px 1fr;align-items:center;min-height:121px}
+    .day-node{grid-column:2;width:75px;height:75px;margin:auto;border:5px solid #fff;border-radius:50%;z-index:2;color:#fff;box-shadow:0 9px 22px rgba(15,23,42,.22);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+    .day-node strong{font-size:22px}.day-node span{font-size:11px;margin-top:3px;font-weight:800}
+    .day-node.future{background:linear-gradient(145deg,#a5aab4,#536070)}
+    .day-node.past{background:linear-gradient(145deg,#38bdf8,#0369a1)}
+    .day-node.today{background:linear-gradient(145deg,#facc15,#f97316);transform:scale(1.11);box-shadow:0 0 0 7px rgba(14,165,233,.19),0 11px 25px rgba(249,115,22,.28)}
+    .day-node.done{background:linear-gradient(145deg,#34d399,#15803d)}
+    .day-card{background:#fff;border-radius:18px;padding:11px 12px;box-shadow:var(--shadow);z-index:2;min-width:0}
+    .day-card.left{grid-column:1}.day-card.right{grid-column:3}.day-card.empty{visibility:hidden}
+    .day-card strong{display:block;font-size:13px;line-height:1.25}.day-card small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .day-card a{display:inline-block;color:#0369a1;font-size:12px;font-weight:900;text-decoration:none;margin-top:5px}
+    .today-pill{display:inline-block;background:#fb7185;color:#fff;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:900;margin-bottom:4px}
+    .panel{background:#fff;border-radius:24px;padding:18px;margin:17px 0;box-shadow:var(--shadow)}
+    .passport-top{display:flex;align-items:center;gap:12px}.passport-icon{font-size:37px}.panel h3{margin:0}.panel p{margin:4px 0 0;color:var(--muted)}
+    .stamps{display:flex;gap:8px;overflow:auto;padding:13px 1px 2px}
+    .stamp{min-width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#f1f5f9;color:#94a3b8;font-weight:900;border:2px dashed #cbd5e1}
+    .stamp.done{background:#dcfce7;color:#166534;border:2px solid #4ade80;transform:rotate(-6deg)}
+    .flight{display:flex;gap:11px;padding:13px 0;border-top:1px solid var(--line)}
+    .flight:first-child{border-top:0}.flight-icon{width:45px;height:45px;border-radius:14px;background:#e0f2fe;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+    .flight strong{display:block}.flight p{font-size:13px}
+    .bottom-nav{position:fixed;z-index:20;bottom:0;left:50%;transform:translateX(-50%);width:min(640px,100%);background:rgba(255,255,255,.96);backdrop-filter:blur(14px);display:flex;justify-content:space-around;padding:9px 6px calc(9px + var(--safe-bottom));box-shadow:0 -8px 25px rgba(15,23,42,.09)}
+    .nav-btn{border:0;background:none;color:#667085;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:20px;cursor:pointer}.nav-btn span{font-size:11px}.nav-btn.active{color:var(--purple)}
+    dialog{border:0;padding:0;background:transparent;width:min(560px,calc(100% - 22px));max-width:560px}
+    dialog::backdrop{background:rgba(15,23,42,.68);backdrop-filter:blur(4px)}
+    .modal{background:#fff;border-radius:26px;padding:22px;position:relative;max-height:89vh;overflow:auto}
+    .modal-close{position:absolute;left:13px;top:13px;width:39px;height:39px;border:0;border-radius:50%;background:#f3f4f6;cursor:pointer}
+    .day-badge{width:66px;height:66px;margin:auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#facc15,#f97316);color:#fff;font-weight:900}
+    .modal h2{text-align:center;margin:11px 0 5px}.modal-lead{text-align:center;color:var(--muted);margin:0 0 16px}
+    .hotel-box{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:17px;padding:12px;margin:14px 0}
+    .hotel-box span{display:block;color:var(--muted);font-size:11px}.hotel-box strong{display:block;font-size:13px}
+    .upload-zone{display:flex;flex-direction:column;align-items:center;text-align:center;border:2px dashed #c4b5fd;background:#faf5ff;border-radius:19px;padding:20px;cursor:pointer}
+    .upload-zone input{display:none}.upload-zone b{font-size:16px}.upload-zone small{color:var(--muted)}.camera{font-size:34px}
+    .preview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:11px}
+    .field{display:block;margin:15px 0}.field span{display:block;font-weight:800;margin-bottom:5px}.field textarea,.field input,.field select{width:100%;border:1px solid #d0d5dd;border-radius:13px;padding:11px;background:#fff}
+    .notice{border-radius:13px;padding:11px 12px;font-size:13px;margin:11px 0}.notice.info{background:#eff6ff;color:#1e40af}.notice.ok{background:#dcfce7;color:#166534}.notice.error{background:#fee2e2;color:#991b1b}.notice.warn{background:#fff7ed;color:#9a3412}
+    .progress{height:9px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:9px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));transition:width .25s}
+    .drawer-shade{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:28}.drawer{position:fixed;z-index:29;right:0;top:0;width:min(330px,86%);height:100%;background:#fff;padding:24px;box-shadow:-18px 0 45px rgba(15,23,42,.22)}
+    .drawer .close-drawer{position:absolute;left:15px;top:15px}.drawer h3{margin:48px 0 15px}.drawer button,.drawer a{width:100%;margin:6px 0;text-align:right;justify-content:flex-start}
+    .admin-wrap{min-height:100vh;background:#f3f7fb;padding:calc(18px + var(--safe-top)) 14px 40px}.admin-inner{max-width:1100px;margin:auto}
+    .admin-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.admin-head h1{margin:0}
+    .login-card{max-width:430px;margin:9vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:var(--shadow)}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:17px 0}.stat{background:#fff;border-radius:19px;padding:16px;box-shadow:var(--shadow)}.stat span{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:31px}
+    .admin-panel{background:#fff;border-radius:22px;padding:17px;box-shadow:var(--shadow);margin:15px 0;overflow:auto}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:end}.toolbar .field{margin:0;min-width:170px}
+    table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:right;white-space:nowrap}th{font-size:12px;color:#667085}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}.photo-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb}.photo-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-meta{padding:9px;font-size:12px}.photo-meta strong{display:block}
+    .spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+    .confetti{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}.confetti i{position:absolute;top:-20px;width:10px;height:18px;background:hsl(var(--h),90%,58%);animation:fall 1.9s ease-in forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.1}}
+    @media(max-width:720px){.stats{grid-template-columns:1fr 1fr}.admin-head{align-items:flex-start}.admin-wrap{padding-left:10px;padding-right:10px}}
+    @media(max-width:420px){
+      main{padding:0 11px}.hero h1{font-size:32px}.day-row{grid-template-columns:1fr 76px 1fr;min-height:113px}.day-node{width:65px;height:65px}
+      .day-card{padding:9px}.day-card strong{font-size:11px}.status-card{align-items:flex-start}.btn.small{padding:8px 10px}.preview{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+  <div id="familyApp" class="app">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="topbar">
+          <button id="menuBtn" class="circle-btn" aria-label="פתיחת תפריט">☰</button>
+          <div class="trip-chip">🇹🇭 תאילנד 2026</div>
+          <button id="familyBtn" class="circle-btn" aria-label="פרטי משפחה">👨‍👩‍👧‍👦</button>
+        </div>
+        <h1 id="welcome">ברוכים הבאים!</h1>
+        <p>המסע המשפחתי שלנו מתחיל כאן</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="status-card">
+        <div class="status-main">
+          <strong><span class="dot"></span><span id="todayTitle">בודק את יום הטיול...</span></strong>
+          <p id="todaySubtitle"></p>
+        </div>
+        <button id="openTodayBtn" class="btn primary small">פתחו את היום</button>
+      </section>
+
+      <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+
+      <section class="section-title">
+        <div><div class="eyebrow">השביל שלנו</div><h2>ימי הטיול</h2></div>
+        <small>26.07–19.08</small>
+      </section>
+      <section id="journey" class="journey" aria-label="שביל ימי הטיול"></section>
+
+      <section class="panel">
+        <div class="passport-top"><div class="passport-icon">🛂</div><div><h3>הדרכון המשפחתי</h3><p id="passportText">החותמות יופיעו כאן לאחר השלמת משימות</p></div></div>
+        <div id="stamps" class="stamps"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title" style="margin-top:0"><div><div class="eyebrow">מידע שימושי</div><h2>הטיסות שלנו</h2></div></div>
+        <div id="flights"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" id="navJourney">🏠<span>המסע שלנו</span></button>
+      <button class="nav-btn" id="navAlbum">🖼️<span>התמונות שלי</span></button>
+      <button class="nav-btn" id="navHelp">❓<span>איך זה עובד?</span></button>
+    </nav>
+  </div>
+
+  <div id="drawerShade" class="drawer-shade hidden"></div>
+  <aside id="drawer" class="drawer hidden">
+    <button id="drawerClose" class="circle-btn close-drawer">✕</button>
+    <h3>תפריט משפחתי</h3>
+    <button id="drawerJourney" class="btn ghost">🗺️ השביל שלנו</button>
+    <button id="drawerFlights" class="btn ghost">✈️ הטיסות שלנו</button>
+    <button id="shareBtn" class="btn ghost">📤 שיתוף הקישור</button>
+    <a href="?admin=1" class="btn ghost">🔐 כניסת מנהל</a>
+  </aside>
+
+  <dialog id="dayDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="dayDialog">✕</button>
+      <div id="dayBadge" class="day-badge">יום 1</div>
+      <div id="dayLocation" class="eyebrow" style="text-align:center;margin-top:12px"></div>
+      <h2 id="taskTitle">המשימה שלכם</h2>
+      <p id="taskDescription" class="modal-lead"></p>
+
+      <div id="hotelBox" class="hotel-box">
+        <div><span>🏨 המלון שלנו</span><strong id="hotelName"></strong></div>
+        <a id="mapsLink" class="btn secondary small" target="_blank" rel="noopener noreferrer">📍 ניווט</a>
+      </div>
+
+      <label class="upload-zone">
+        <input id="photoInput" type="file" accept="image/*" capture="environment" multiple>
+        <span class="camera">📷</span>
+        <b>צלמו עכשיו או בחרו מהגלריה</b>
+        <small>עד 8 תמונות בכל משימה</small>
+      </label>
+      <div id="preview" class="preview"></div>
+
+      <label class="field"><span>כמה מילים על החוויה</span><textarea id="caption" rows="3" placeholder="מה היה מיוחד היום?"></textarea></label>
+      <div id="uploadProgressWrap" class="hidden"><div class="progress"><div id="uploadProgress"></div></div></div>
+      <div id="taskNotice" class="notice info hidden"></div>
+
+      <button id="submitTaskBtn" class="btn primary full">סיימנו את המשימה! ✅</button>
+      <button id="simulationBtn" class="btn secondary full" style="margin-top:9px">🧪 העלאת תמונת בדיקה אוטומטית</button>
+    </div>
+  </dialog>
+
+  <dialog id="helpDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="helpDialog">✕</button>
+      <h2>איך זה עובד?</h2>
+      <p>בכל יום סורקים את תג ה־NFC, פותחים את היום המתאים, מבצעים את המשימה ומעלים תמונות.</p>
+      <p>לחיצה על בועת המלון פותחת ניווט. יום שהושלם מקבל חותמת בדרכון המשפחתי.</p>
+      <button class="btn primary full" data-close="helpDialog">הבנתי</button>
+    </div>
+  </dialog>
+
+  <dialog id="albumDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="albumDialog">✕</button>
+      <h2>התמונות שהעליתם מהמכשיר הזה</h2>
+      <div id="familyGallery" class="gallery"></div>
+      <div id="albumNotice" class="notice info">טוען…</div>
+    </div>
+  </dialog>
+
+  <section id="adminApp" class="admin-wrap hidden">
+    <div id="adminLogin" class="login-card">
+      <div class="eyebrow">תאילנד 2026</div>
+      <h1>כניסת מנהל</h1>
+      <p style="color:var(--muted)">הכניסה מתבצעת באמצעות משתמש Email/Password שהוגדר ב־Firebase Authentication.</p>
+      <label class="field"><span>אימייל</span><input id="adminEmail" type="email" value="omris18@gmail.com" autocomplete="username"></label>
+      <label class="field"><span>סיסמה</span><input id="adminPassword" type="password" autocomplete="current-password"></label>
+      <div id="loginNotice" class="notice error hidden"></div>
+      <button id="loginBtn" class="btn primary full">כניסה</button>
+      <a href="./" class="btn ghost full" style="margin-top:9px">חזרה לאתר המשפחות</a>
+    </div>
+
+    <div id="adminDashboard" class="admin-inner hidden">
+      <header class="admin-head">
+        <div><div class="eyebrow">תאילנד 2026</div><h1>ממשק מנהל</h1><p id="adminUserLabel" style="margin:4px 0;color:var(--muted)"></p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./" class="btn ghost">אתר משפחות</a><button id="logoutBtn" class="btn danger">התנתקות</button></div>
+      </header>
+
+      <div class="toolbar admin-panel">
+        <label class="field"><span>תאריך להצגה</span><select id="adminDate"></select></label>
+        <button id="refreshAdmin" class="btn primary">רענון נתונים</button>
+        <button id="downloadAllZip" class="btn secondary">⬇️ ZIP לכל התמונות ביום</button>
+      </div>
+
+      <section class="stats">
+        <div class="stat"><span>משפחות</span><strong id="statFamilies">5</strong></div>
+        <div class="stat"><span>סרקו</span><strong id="statScans">0</strong></div>
+        <div class="stat"><span>השלימו</span><strong id="statDone">0</strong></div>
+        <div class="stat"><span>תמונות</span><strong id="statPhotos">0</strong></div>
+      </section>
+
+      <section class="admin-panel">
+        <h2>סטטוס משפחות</h2>
+        <table>
+          <thead><tr><th>משפחה</th><th>סריקה</th><th>משימה</th><th>תמונות</th><th>עדכון אחרון</th><th>הורדה</th></tr></thead>
+          <tbody id="adminRows"></tbody>
+        </table>
+      </section>
+
+      <section class="admin-panel">
+        <h2>גלריית היום</h2>
+        <div id="adminGallery" class="gallery"></div>
+        <div id="adminGalleryNotice" class="notice info">בחרו תאריך ולחצו רענון.</div>
+      </section>
+    </div>
+  </section>
+
+  <div id="confetti" class="confetti hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+      getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged,
+      setPersistence, browserLocalPersistence, signOut
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, setDoc, doc, getDocs, getDoc, query, where,
+      orderBy, serverTimestamp, Timestamp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+    import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+
+    const CONFIG = {
+      firebase: {
+        apiKey: "AIzaSyAgDNINMadRnwwl6IwL9JGrrSer0yWNk_4",
+        authDomain: "thailand-trip-5e400.firebaseapp.com",
+        projectId: "thailand-trip-5e400",
+        storageBucket: "thailand-trip-5e400.firebasestorage.app",
+        messagingSenderId: "1058440245906",
+        appId: "1:1058440245906:web:2fab0377761e1cc820ac4b",
+        measurementId: "G-8SRQHMRLZ1"
+      },
+      adminEmail: "omris18@gmail.com",
+      trip: { startDate:"2026-07-26", endDate:"2026-08-19", timezone:"Asia/Bangkok" },
+      testMode: { enabled:true, forcedDate:"2026-07-26", showSimulationButton:true },
+      families: [
+        {id:"bohadana",name:"בוהדנה"},
+        {id:"ovadia",name:"עובדיה"},
+        {id:"moshe",name:"משה"},
+        {id:"sadeh",name:"שדה"},
+        {id:"buzaglo",name:"בוזגלו"}
+      ],
+      hotels: [
+        {shortName:"Four Points Phuket",city:"פוקט",startDate:"2026-07-27",endDate:"2026-08-02",mapsQuery:"Four Points by Sheraton Phuket Patong Beach Resort"},
+        {shortName:"La Vela Khao Lak",city:"קאו לאק",startDate:"2026-08-02",endDate:"2026-08-04",mapsQuery:"La Vela Khao Lak"},
+        {shortName:"Dusit Thani Krabi",city:"קראבי",startDate:"2026-08-04",endDate:"2026-08-06",mapsQuery:"Dusit Thani Krabi Beach Resort"},
+        {shortName:"Lemongrass Pool Villa",city:"קו סמוי",startDate:"2026-08-06",endDate:"2026-08-10",mapsQuery:"Lemongrass Pool Villa Koh Samui"},
+        {shortName:"Banana Fan Koh Samui",city:"קו סמוי",startDate:"2026-08-10",endDate:"2026-08-12",mapsQuery:"Banana Fan Sea Resort Koh Samui"},
+        {shortName:"Centara Grand Mirage Pattaya",city:"פאטייה",startDate:"2026-08-12",endDate:"2026-08-16",mapsQuery:"Centara Grand Mirage Beach Resort Pattaya"},
+        {shortName:"Eastin Grand Hotel Bangkok",city:"בנגקוק",startDate:"2026-08-16",endDate:"2026-08-19",mapsQuery:"Eastin Grand Hotel Sathorn Bangkok"}
+      ],
+      flights: [
+        {title:"יציאה מישראל",date:"2026-07-26",time:"20:45",from:"נתב״ג",to:"דובאי ומשם תאילנד",icon:"✈️"},
+        {title:"טיסת פנים",date:"2026-08-06",time:"18:25",from:"קראבי",to:"קו סמוי",icon:"🛫"},
+        {title:"טיסת פנים",date:"2026-08-12",time:"11:10",from:"קו סמוי",to:"פאטייה",icon:"🛫"},
+        {title:"טיסה חזרה לישראל",date:"2026-08-18",time:"22:00",from:"בנגקוק",to:"ישראל, עם עצירה בדובאי",icon:"🛬"},
+        {title:"נחיתה בישראל",date:"2026-08-19",time:"לאחר עצירה בדובאי",from:"דובאי",to:"נתב״ג",icon:"🇮🇱"}
+      ],
+      tasks: {
+        "2026-07-26": {default:{title:"משימת הפתיחה",description:"הצטלמו יחד לפני היציאה למסע. זוהי משימת בדיקה עד שנכניס את רשימת המשימות הסופית."}}
+      },
+      defaultTask:{title:"המשימה תיפתח בקרוב",description:"המשימה המשפחתית של היום עדיין לא הוזנה. אפשר לשמור תמונות מהיום ולחזור לכאן בהמשך."},
+      upload:{maxFiles:8,maxWidth:1600,quality:.82,maxBytes:2500000}
+    };
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+    const parseDate = s => new Date(`${s}T12:00:00`);
+    const addDays = (s,n) => {const d=parseDate(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+    const daysTotal = Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+    const fmtDate = s => parseDate(s).toLocaleDateString("he-IL",{day:"2-digit",month:"2-digit",year:"numeric"});
+    const fmtTime = value => {
+      if(!value) return "—";
+      const d = value.toDate ? value.toDate() : new Date(value);
+      return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+    };
+    const familyId = new URLSearchParams(location.search).get("f") || new URLSearchParams(location.search).get("family") || "sadeh";
+    const family = CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
+    const isAdminRoute = new URLSearchParams(location.search).has("admin");
+    const localCompletedKey = `thailand2026:${family.id}:completed`;
+    const localUploadsKey = `thailand2026:${family.id}:uploads`;
+    let completed = new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
+    let activeDate = null, activeDayNum = 1, selectedFiles = [], currentUser = null;
+    let app,auth,db,storage;
+
+    function currentTripDate(){
+      if(CONFIG.testMode.enabled) return CONFIG.testMode.forcedDate;
+      const parts = new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.trip.timezone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+      const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+      return `${p.year}-${p.month}-${p.day}`;
+    }
+    const today = currentTripDate();
+    const hotelFor = date => CONFIG.hotels.find(h=>date>=h.startDate && date<h.endDate);
+    const flightFor = date => CONFIG.flights.find(f=>f.date===date);
+    const mapsUrl = h => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.mapsQuery)}`;
+    const taskFor = date => {
+      const t=CONFIG.tasks[date];
+      return t ? (t[family.id]||t.default||CONFIG.defaultTask) : CONFIG.defaultTask;
+    };
+    const stateFor = date => completed.has(date)?"done":date<today?"past":date===today?"today":"future";
+
+    function setNotice(el,message,type="info"){
+      el.textContent=message;el.className=`notice ${type}`;el.classList.remove("hidden");
+    }
+    function hideNotice(el){el.classList.add("hidden")}
+    function firebaseErrorText(err){
+      const code=err?.code||"";
+      const map={
+        "auth/operation-not-allowed":"יש להפעיל Anonymous וגם Email/Password ב־Firebase Authentication.",
+        "auth/invalid-credential":"האימייל או הסיסמה אינם נכונים.",
+        "auth/unauthorized-domain":"יש להוסיף את omris18.github.io ל־Authentication → Settings → Authorized domains.",
+        "permission-denied":"כללי Firestore אינם מאפשרים את הפעולה. יש לפרסם את קובץ firestore.rules המצורף.",
+        "storage/unauthorized":"כללי Storage אינם מאפשרים את ההעלאה. יש לפרסם את קובץ storage.rules המצורף.",
+        "storage/bucket-not-found":"Firebase Storage עדיין לא הופעל בפרויקט.",
+        "storage/quota-exceeded":"מכסת האחסון הסתיימה.",
+        "storage/retry-limit-exceeded":"החיבור חלש מדי. נסו שוב בעוד רגע.",
+        "storage/unknown":"אירעה שגיאת Storage. בדקו שהאחסון פעיל ושה־Rules פורסמו."
+      };
+      return map[code] || err?.message || "אירעה שגיאה לא צפויה.";
+    }
+
+    async function initFirebase(){
+      try{
+        app=initializeApp(CONFIG.firebase);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app);
+        await setPersistence(auth,browserLocalPersistence);
+        if(!isAdminRoute){
+          if(!auth.currentUser) await signInAnonymously(auth);
+          currentUser=auth.currentUser;
+          setNotice($("connectionBanner"),`מחובר לענן כמשפחת ${family.name} ✅`,"ok");
+          await recordScan();
+          await loadOwnCompletions();
+        }
+        return true;
+      }catch(err){
+        console.error(err);
+        if(!isAdminRoute) setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+        return false;
+      }
+    }
+
+    async function recordScan(){
+      if(!currentUser) return;
+      try{
+        await addDoc(collection(db,"scans"),{
+          familyId:family.id,tripDate:today,uid:currentUser.uid,
+          userAgent:navigator.userAgent.slice(0,300),createdAt:serverTimestamp()
+        });
+      }catch(err){console.warn("scan not recorded",err)}
+    }
+
+    async function loadOwnCompletions(){
+      if(!currentUser) return;
+      try{
+        const q=query(collection(db,"completions"),where("uid","==",currentUser.uid));
+        const snap=await getDocs(q);
+        snap.forEach(d=>completed.add(d.data().tripDate));
+        localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+        renderJourney();renderPassport();
+      }catch(err){console.warn("completion sync skipped",err)}
+    }
+
+    function renderFamily(){
+      $("welcome").textContent=`ברוכים הבאים, משפחת ${family.name}!`;
+      document.title=`משפחת ${family.name} | תאילנד 2026`;
+      $("familyBtn").onclick=()=>alert(`משפחת ${family.name}`);
+      renderToday();renderJourney();renderPassport();renderFlights();
+      $("simulationBtn").classList.toggle("hidden",!CONFIG.testMode.showSimulationButton);
+    }
+    function renderToday(){
+      if(today<CONFIG.trip.startDate){
+        $("todayTitle").textContent="הטיול עוד לא התחיל";$("todaySubtitle").textContent=`מתחילים ב־${fmtDate(CONFIG.trip.startDate)}`;$("openTodayBtn").disabled=true;return;
+      }
+      if(today>CONFIG.trip.endDate){
+        $("todayTitle").textContent="הטיול הסתיים";$("todaySubtitle").textContent="כל הזיכרונות נשמרו במערכת";$("openTodayBtn").disabled=true;return;
+      }
+      const idx=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+      const h=hotelFor(today),f=flightFor(today);
+      $("todayTitle").textContent=`היום הוא יום ${idx} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
+      $("todaySubtitle").textContent=h?`${h.city} · ${h.shortName}`:f?`${f.title} · ${f.time}`:"יום מעבר";
+      $("openTodayBtn").onclick=()=>openDay(today,idx);
+    }
+    function renderJourney(){
+      const box=$("journey");box.innerHTML="";
+      for(let i=0;i<daysTotal;i++){
+        const date=addDays(CONFIG.trip.startDate,i),h=hotelFor(date),f=flightFor(date),state=stateFor(date);
+        const row=document.createElement("div");row.className="day-row";row.dataset.date=date;
+        const card=document.createElement("div");
+        card.className=`day-card ${i%2===0?"left":"right"} ${!h&&!f?"empty":""}`;
+        if(h) card.innerHTML=`${date===today?'<span class="today-pill">היום</span>':""}<strong>🏨 ${esc(h.shortName)}</strong><small>${esc(h.city)}</small><a href="${mapsUrl(h)}" target="_blank" rel="noopener noreferrer">📍 ניווט למלון</a>`;
+        else if(f) card.innerHTML=`<strong>${f.icon} ${esc(f.title)}</strong><small>${esc(f.from)} ← ${esc(f.to)}</small><small>${esc(f.time)}</small>`;
+        const node=document.createElement("button");node.type="button";node.className=`day-node ${state}`;
+        node.innerHTML=`${state==="future"?"🔒":state==="done"?"✓":""}<strong>${i+1}</strong><span>יום</span>`;
+        node.setAttribute("aria-label",`פתיחת יום ${i+1}, ${fmtDate(date)}`);
+        node.onclick=()=>openDay(date,i+1);
+        row.append(card,node);box.appendChild(row);
+      }
+    }
+    function renderPassport(){
+      const box=$("stamps");box.innerHTML="";
+      for(let i=0;i<daysTotal;i++){const date=addDays(CONFIG.trip.startDate,i),s=document.createElement("span");s.className=`stamp ${completed.has(date)?"done":""}`;s.textContent=completed.has(date)?"✓":i+1;s.title=`יום ${i+1}`;box.appendChild(s)}
+      $("passportText").textContent=completed.size?`אספתם ${completed.size} מתוך ${daysTotal} חותמות`:"החותמות יופיעו כאן לאחר השלמת משימות";
+    }
+    function renderFlights(){
+      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}</p></div></article>`).join("");
+    }
+    function openDay(date,num){
+      activeDate=date;activeDayNum=num;selectedFiles=[];$("photoInput").value="";$("preview").innerHTML="";$("caption").value="";hideNotice($("taskNotice"));$("uploadProgressWrap").classList.add("hidden");$("uploadProgress").style.width="0";
+      const t=taskFor(date),h=hotelFor(date),f=flightFor(date);
+      $("dayBadge").textContent=`יום ${num}`;$("dayLocation").textContent=`${fmtDate(date)}${h?` · ${h.city}`:f?` · ${f.title}`:""}`;
+      $("taskTitle").textContent=t.title;$("taskDescription").textContent=t.description;
+      if(h){$("hotelBox").classList.remove("hidden");$("hotelName").textContent=h.shortName;$("mapsLink").href=mapsUrl(h)}else $("hotelBox").classList.add("hidden");
+      if(completed.has(date)) setNotice($("taskNotice"),"המשימה כבר הושלמה במכשיר הזה. אפשר להעלות תמונות נוספות.","ok");
+      $("dayDialog").showModal();
+    }
+
+    async function compressImage(file){
+      const bitmap=await createImageBitmap(file);
+      const scale=Math.min(1,CONFIG.upload.maxWidth/Math.max(bitmap.width,bitmap.height));
+      const canvas=document.createElement("canvas");canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+      const ctx=canvas.getContext("2d",{alpha:false});ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+      let quality=CONFIG.upload.quality,blob;
+      do{
+        blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("כשל בדחיסת התמונה")),"image/jpeg",quality));
+        quality-=.08;
+      }while(blob.size>CONFIG.upload.maxBytes&&quality>.42);
+      if(blob.size>CONFIG.upload.maxBytes) throw new Error("התמונה גדולה מדי גם לאחר הקטנה.");
+      return blob;
+    }
+    function showSelectedFiles(files){
+      selectedFiles=[...files].slice(0,CONFIG.upload.maxFiles);const grid=$("preview");grid.innerHTML="";
+      selectedFiles.forEach(file=>{const img=document.createElement("img");const u=URL.createObjectURL(file);img.src=u;img.onload=()=>URL.revokeObjectURL(u);grid.appendChild(img)});
+      if(files.length>CONFIG.upload.maxFiles) setNotice($("taskNotice"),`נבחרו רק ${CONFIG.upload.maxFiles} התמונות הראשונות.`,"warn");
+    }
+    $("photoInput").addEventListener("change",e=>showSelectedFiles(e.target.files));
+
+    async function uploadFiles(files,caption,isSimulation=false){
+      if(!currentUser) throw new Error("אין חיבור משתמש ל־Firebase.");
+      if(!files.length) throw new Error("יש לבחור לפחות תמונה אחת.");
+      const uploadId=crypto.randomUUID(),photoDocs=[];
+      $("uploadProgressWrap").classList.remove("hidden");
+      for(let i=0;i<files.length;i++){
+        const file=files[i];
+        const blob=isSimulation?file:await compressImage(file);
+        const path=`trip-photos/${family.id}/${activeDate}/${uploadId}-${String(i+1).padStart(2,"0")}.jpg`;
+        const storageRef=ref(storage,path);
+        await new Promise((resolve,reject)=>{
+          const task=uploadBytesResumable(storageRef,blob,{contentType:"image/jpeg",customMetadata:{familyId:family.id,tripDate:activeDate,uid:currentUser.uid}});
+          task.on("state_changed",snap=>{
+            const base=(i/files.length)*100,part=(snap.bytesTransferred/snap.totalBytes)*(100/files.length);
+            $("uploadProgress").style.width=`${Math.round(base+part)}%`;
+          },reject,resolve);
+        });
+        const url=await getDownloadURL(storageRef);
+        const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",isSimulation,createdAt:serverTimestamp()};
+        const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
+      }
+      await setDoc(doc(db,"completions",`${currentUser.uid}_${activeDate}`),{
+        familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,
+        caption:caption||"",photoCount:files.length,isSimulation,completedAt:serverTimestamp()
+      },{merge:true});
+      completed.add(activeDate);localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+      const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
+      local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
+      localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
+      renderJourney();renderPassport();confetti();
+      return photoDocs;
+    }
+    $("submitTaskBtn").onclick=async()=>{
+      const btn=$("submitTaskBtn"),original=btn.innerHTML;
+      try{
+        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מעלה…';hideNotice($("taskNotice"));
+        await uploadFiles(selectedFiles,$("caption").value.trim(),false);
+        setNotice($("taskNotice"),"התמונות נשמרו ב־Firebase והמשימה הושלמה ✅","ok");
+        setTimeout(()=>$("dayDialog").close(),1200);
+      }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
+      finally{btn.disabled=false;btn.innerHTML=original}
+    };
+    function createSimulationBlob(){
+      const c=document.createElement("canvas");c.width=1200;c.height=900;const x=c.getContext("2d");
+      const g=x.createLinearGradient(0,0,1200,900);g.addColorStop(0,"#0ea5e9");g.addColorStop(1,"#7c3aed");x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
+      x.fillStyle="rgba(255,255,255,.16)";for(let i=0;i<14;i++){x.beginPath();x.arc(Math.random()*1200,Math.random()*900,25+Math.random()*90,0,Math.PI*2);x.fill()}
+      x.textAlign="center";x.fillStyle="#fff";x.font="900 74px Arial";x.fillText("THAILAND 2026",600,360);x.font="700 54px Arial";x.fillText(`Family ${family.name}`,600,455);x.font="500 35px Arial";x.fillText(`Test upload · ${activeDate}`,600,535);
+      return new Promise((resolve,reject)=>c.toBlob(b=>b?resolve(b):reject(new Error("לא ניתן ליצור תמונת בדיקה")),"image/jpeg",.84));
+    }
+    $("simulationBtn").onclick=async()=>{
+      const btn=$("simulationBtn"),original=btn.innerHTML;
+      try{
+        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> יוצר ומעלה תמונה…';
+        const blob=await createSimulationBlob();await uploadFiles([blob],"תמונת בדיקה אוטומטית",true);
+        setNotice($("taskNotice"),"תמונת הבדיקה נשמרה ב־Firebase. כעת פתחו את דף המנהל ובחרו 26.07.2026 ✅","ok");
+      }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
+      finally{btn.disabled=false;btn.innerHTML=original}
+    };
+
+    function confetti(){
+      const box=$("confetti");box.innerHTML="";box.classList.remove("hidden");
+      for(let i=0;i<55;i++){const p=document.createElement("i");p.style.left=`${Math.random()*100}%`;p.style.setProperty("--h",Math.random()*360);p.style.animationDelay=`${Math.random()*.5}s`;box.appendChild(p)}
+      setTimeout(()=>box.classList.add("hidden"),2600);
+    }
+
+    async function loadOwnAlbum(){
+      const gallery=$("familyGallery"),notice=$("albumNotice");gallery.innerHTML="";
+      try{
+        if(!currentUser) throw new Error("אין חיבור.");
+        const q=query(collection(db,"uploads"),where("uid","==",currentUser.uid),orderBy("createdAt","desc"));
+        const snap=await getDocs(q);
+        if(snap.empty){setNotice(notice,"עדיין לא העליתם תמונות מהמכשיר הזה.","info");return}
+        hideNotice(notice);
+        snap.forEach(d=>{const p=d.data();const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<img src="${esc(p.downloadUrl)}" alt="תמונה מיום ${esc(p.dayNumber)}" loading="lazy"><div class="photo-meta"><strong>יום ${esc(p.dayNumber)} · ${fmtDate(p.tripDate)}</strong>${esc(p.caption||"")}</div>`;gallery.appendChild(card)});
+      }catch(err){console.error(err);setNotice(notice,firebaseErrorText(err),"error")}
+    }
+
+    function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
+    function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
+    $("menuBtn").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("drawerShade").onclick=closeDrawer;
+    $("drawerJourney").onclick=()=>{closeDrawer();$("journey").scrollIntoView({behavior:"smooth"})};
+    $("drawerFlights").onclick=()=>{closeDrawer();$("flights").scrollIntoView({behavior:"smooth"})};
+    $("shareBtn").onclick=async()=>{try{if(navigator.share)await navigator.share({title:document.title,text:"המסע המשפחתי שלנו בתאילנד",url:location.href});else{await navigator.clipboard.writeText(location.href);alert("הקישור הועתק")}}catch{}};
+    $("navJourney").onclick=()=>$("journey").scrollIntoView({behavior:"smooth"});
+    $("navHelp").onclick=()=>$("helpDialog").showModal();
+    $("navAlbum").onclick=async()=>{$("albumDialog").showModal();await loadOwnAlbum()};
+    document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).close());
+
+    function fillAdminDates(){
+      $("adminDate").innerHTML="";
+      for(let i=0;i<daysTotal;i++){const d=addDays(CONFIG.trip.startDate,i),o=document.createElement("option");o.value=d;o.textContent=`יום ${i+1} · ${fmtDate(d)}`;if(d===today)o.selected=true;$("adminDate").appendChild(o)}
+    }
+    async function adminLogin(){
+      hideNotice($("loginNotice"));
+      try{
+        await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);
+      }catch(err){setNotice($("loginNotice"),firebaseErrorText(err),"error")}
+    }
+    async function loadAdmin(){
+      const date=$("adminDate").value;
+      $("adminRows").innerHTML=`<tr><td colspan="6">טוען נתונים…</td></tr>`;$("adminGallery").innerHTML="";setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
+      try{
+        const [scansSnap,doneSnap,uploadsSnap]=await Promise.all([
+          getDocs(query(collection(db,"scans"),where("tripDate","==",date))),
+          getDocs(query(collection(db,"completions"),where("tripDate","==",date))),
+          getDocs(query(collection(db,"uploads"),where("tripDate","==",date),orderBy("createdAt","desc")))
+        ]);
+        const scans=new Map(),done=new Map(),photos=new Map(),allPhotos=[];
+        scansSnap.forEach(d=>{const x=d.data(),old=scans.get(x.familyId);if(!old||fmtTime(x.createdAt)>fmtTime(old.createdAt))scans.set(x.familyId,x)});
+        doneSnap.forEach(d=>done.set(d.data().familyId,d.data()));
+        uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allPhotos.push(x);if(!photos.has(x.familyId))photos.set(x.familyId,[]);photos.get(x.familyId).push(x)});
+        $("statScans").textContent=scans.size;$("statDone").textContent=done.size;$("statPhotos").textContent=allPhotos.length;
+        $("adminRows").innerHTML=CONFIG.families.map(f=>{
+          const s=scans.get(f.id),c=done.get(f.id),p=photos.get(f.id)||[];
+          return `<tr><td><strong>משפחת ${esc(f.name)}</strong></td><td>${s?'<span class="badge ok">✓ נסרק</span>':'<span class="badge no">לא נסרק</span>'}</td><td>${c?'<span class="badge ok">✓ הושלם</span>':'<span class="badge wait">ממתין</span>'}</td><td>${p.length}</td><td>${fmtTime(c?.completedAt||s?.createdAt)}</td><td><button class="btn secondary small family-zip" data-family="${f.id}" ${p.length?"":"disabled"}>ZIP</button></td></tr>`;
+        }).join("");
+        document.querySelectorAll(".family-zip").forEach(b=>b.onclick=()=>downloadZip(date,b.dataset.family,allPhotos.filter(p=>p.familyId===b.dataset.family)));
+        $("adminGallery").innerHTML="";
+        if(!allPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
+        else{
+          hideNotice($("adminGalleryNotice"));
+          allPhotos.forEach(p=>{const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber)}</strong>${esc(p.caption||"")}</div>`;$("adminGallery").appendChild(card)});
+        }
+        $("downloadAllZip").onclick=()=>downloadZip(date,"all",allPhotos);
+      }catch(err){console.error(err);$("adminRows").innerHTML=`<tr><td colspan="6">${esc(firebaseErrorText(err))}</td></tr>`;setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error")}
+    }
+    async function downloadZip(date,label,photos){
+      if(!photos.length)return alert("אין תמונות להורדה.");
+      const btns=[...document.querySelectorAll("button")];btns.forEach(b=>b.disabled=true);
+      try{
+        const zip=new JSZip(),info=[];
+        for(let i=0;i<photos.length;i++){
+          const p=photos[i],blob=await getBlob(ref(storage,p.storagePath));
+          const folder=zip.folder(`משפחת-${p.familyName}/${p.tripDate}`);
+          folder.file(`${String(i+1).padStart(3,"0")}.jpg`,blob);
+          info.push(`${p.familyName} | ${p.tripDate} | ${p.caption||""}`);
+        }
+        zip.file("פרטי-העלאות.txt",info.join("\n"));
+        const result=await zip.generateAsync({type:"blob",compression:"DEFLATE",compressionOptions:{level:6}});
+        const a=document.createElement("a");a.href=URL.createObjectURL(result);a.download=`Thailand-2026-${label}-${date}.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      }catch(err){alert(firebaseErrorText(err))}
+      finally{btns.forEach(b=>b.disabled=false)}
+    }
+
+    async function boot(){
+      if(isAdminRoute){
+        $("familyApp").classList.add("hidden");$("adminApp").classList.remove("hidden");fillAdminDates();
+        await initFirebase();
+        onAuthStateChanged(auth,user=>{
+          if(user?.email?.toLowerCase()===CONFIG.adminEmail.toLowerCase()){
+            currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;loadAdmin();
+          }else{
+            $("adminDashboard").classList.add("hidden");$("adminLogin").classList.remove("hidden");
+            if(user&&user.email)setNotice($("loginNotice"),"המשתמש מחובר אך אינו מוגדר כמנהל.","error");
+          }
+        });
+        $("loginBtn").onclick=adminLogin;$("adminPassword").addEventListener("keydown",e=>{if(e.key==="Enter")adminLogin()});
+        $("logoutBtn").onclick=()=>signOut(auth);$("refreshAdmin").onclick=loadAdmin;$("adminDate").onchange=loadAdmin;
+      }else{
+        renderFamily();await initFirebase();
+        if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$(`[data-date="${today}"]`)?.scrollIntoView({behavior:"smooth",block:"center"}),450);
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>

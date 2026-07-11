@@ -174,6 +174,49 @@
     @keyframes stampHit{0%{transform:scale(1.7) rotate(-18deg);opacity:0}70%{transform:scale(.95) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
     @media(max-width:430px){.passport-grid{grid-template-columns:1fr 1fr;gap:9px}.passport-stamp-card{min-height:130px;padding:10px}.stamp-mark{width:82px;height:82px}}
 
+
+    /* --- Interactive journey map --- */
+    .journey-map{
+      position:relative;min-height:910px;margin:8px 0 22px;border-radius:28px;overflow:hidden;
+      background:
+        radial-gradient(circle at 25% 16%,rgba(255,255,255,.85),transparent 15%),
+        linear-gradient(180deg,#bfeaff 0%,#dff7ff 35%,#d9f7e8 66%,#fff4d6 100%);
+      box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.8)
+    }
+    .journey-map:before{content:"";position:absolute;inset:0;background:
+      radial-gradient(ellipse at 20% 72%,rgba(34,197,94,.25) 0 12%,transparent 13%),
+      radial-gradient(ellipse at 77% 48%,rgba(34,197,94,.21) 0 13%,transparent 14%),
+      radial-gradient(ellipse at 61% 20%,rgba(34,197,94,.18) 0 10%,transparent 11%);
+      pointer-events:none}
+    .map-title{position:absolute;top:18px;right:20px;left:20px;z-index:4;display:flex;justify-content:space-between;align-items:center;
+      background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-radius:18px;padding:12px 14px;box-shadow:0 8px 25px rgba(15,23,42,.11)}
+    .map-title strong{font-size:16px}.map-title small{color:var(--muted);font-weight:700}
+    .route-svg{position:absolute;inset:76px 0 0;width:100%;height:calc(100% - 76px);z-index:1;overflow:visible}
+    .route-path{fill:none;stroke:#fff;stroke-width:18;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 5px 4px rgba(15,23,42,.13))}
+    .route-dash{fill:none;stroke:#8b5cf6;stroke-width:5;stroke-linecap:round;stroke-dasharray:10 13}
+    .route-progress{fill:none;stroke:url(#progressGradient);stroke-width:7;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.2s ease}
+    .map-stop{position:absolute;z-index:3;width:46%;max-width:240px;transform:translate(-50%,-50%)}
+    .map-stop-card{background:rgba(255,255,255,.94);border-radius:18px;padding:11px 12px;box-shadow:0 11px 28px rgba(15,23,42,.15);border:2px solid transparent;cursor:pointer}
+    .map-stop.current .map-stop-card{border-color:#f97316;box-shadow:0 0 0 7px rgba(249,115,22,.16),0 11px 28px rgba(15,23,42,.15)}
+    .map-stop.completed .map-stop-card{border-color:#22c55e}
+    .map-stop.future{opacity:.72;filter:grayscale(.3)}
+    .map-stop-head{display:flex;align-items:center;gap:8px}.map-stop-icon{font-size:25px}.map-stop-card strong{display:block;font-size:13px;line-height:1.2}
+    .map-stop-card small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .map-stop-actions{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}.map-mini-btn{border:0;border-radius:999px;padding:5px 8px;background:#eef2ff;color:#4338ca;font-size:10px;font-weight:900;text-decoration:none;cursor:pointer}
+    .map-day-badge{position:absolute;top:-12px;left:-8px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--purple);font-weight:900;box-shadow:0 5px 13px rgba(15,23,42,.17)}
+    .map-plane{position:absolute;z-index:5;font-size:42px;transform:translate(-50%,-50%) rotate(12deg);filter:drop-shadow(0 8px 7px rgba(15,23,42,.22));transition:left 1.1s ease,top 1.1s ease;animation:planeBob 2.2s ease-in-out infinite}
+    .map-plane-label{position:absolute;z-index:5;transform:translate(-50%,18px);background:#fff;color:#4c1d95;font-size:10px;font-weight:900;border-radius:999px;padding:4px 8px;box-shadow:0 6px 15px rgba(15,23,42,.13);white-space:nowrap}
+    .map-legend{position:absolute;bottom:14px;left:14px;right:14px;z-index:4;background:rgba(255,255,255,.89);border-radius:16px;padding:9px 12px;display:flex;justify-content:center;gap:14px;font-size:11px;font-weight:800}
+    .map-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:4px}.map-legend .done i{background:#22c55e}.map-legend .now i{background:#f97316}.map-legend .next i{background:#9ca3af}
+    .family-photo-strip{display:flex;align-items:center;gap:12px;background:#fff;border-radius:22px;padding:12px;margin:0 0 17px;box-shadow:var(--shadow)}
+    .family-photo-strip img{width:76px;height:76px;object-fit:cover;border-radius:18px;background:#f8fafc}
+    .family-photo-strip strong{display:block}.family-photo-strip p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    @keyframes planeBob{0%,100%{margin-top:0}50%{margin-top:-7px}}
+    @media(max-width:430px){
+      .journey-map{min-height:870px}.map-stop{width:49%}.map-stop-card{padding:9px}.map-stop-icon{font-size:21px}.map-stop-card strong{font-size:11px}
+      .map-title{right:10px;left:10px}.map-plane{font-size:36px}
+    }
+
   </style>
 </head>
 <body>
@@ -225,11 +268,29 @@
         <div id="tripProgressSub" class="trip-progress-sub">מתכוננים למסע</div>
       </section>
 
+
+      <section class="family-photo-strip">
+        <img id="familyHeroImage" alt="התמונה המשפחתית">
+        <div><strong id="familyPhotoTitle">התמונה המשפחתית שלנו</strong><p>התמונה תשמש בהמשך גם לפאזל הדיגיטלי ולדרכון.</p></div>
+      </section>
+
       <section class="section-title">
-        <div><div class="eyebrow">השביל שלנו</div><h2>ימי הטיול</h2></div>
+        <div><div class="eyebrow">מפת המסע</div><h2>המסלול שלנו</h2></div>
         <small>26.07–19.08</small>
       </section>
-      <section id="journey" class="journey" aria-label="שביל ימי הטיול"></section>
+      <section id="journeyMap" class="journey-map" aria-label="מפת המסע האינטראקטיבית">
+        <div class="map-title"><div><strong>מתקדמים בין היעדים</strong><small id="mapStatusText">טוען את המיקום הנוכחי…</small></div><span>🗺️</span></div>
+        <svg id="routeSvg" class="route-svg" viewBox="0 0 600 820" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="55%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs>
+          <path id="routeBase" class="route-path" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+          <path class="route-dash" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+          <path id="routeProgress" class="route-progress" pathLength="1" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+        </svg>
+        <div id="mapStops"></div>
+        <div id="movingPlane" class="map-plane">✈️</div>
+        <div id="movingPlaneLabel" class="map-plane-label">משפחתנו בדרך</div>
+        <div class="map-legend"><span class="done"><i></i>עברנו</span><span class="now"><i></i>אנחנו כאן</span><span class="next"><i></i>בהמשך</span></div>
+      </section>
 
       <section class="panel">
         <div class="passport-top"><div class="passport-icon">🛂</div><div><h3>הדרכון המשפחתי</h3><p id="passportText">החותמות יופיעו כאן לאחר השלמת משימות</p></div></div>
@@ -428,6 +489,23 @@
         {id:"sadeh",name:"שדה"},
         {id:"buzaglo",name:"בוזגלו"}
       ],
+      familyImages: {
+        bohadana: "buhadana.png",
+        ovadia: "ovadia.png",
+        moshe: "moshe.png",
+        sadeh: "sadeh.png",
+        buzaglo: "buzaglo.png"
+      },
+      mapStops: [
+        {id:"israel-out",name:"יציאה מישראל",date:"2026-07-26",icon:"🇮🇱",x:15,y:13,day:1,flight:true},
+        {id:"phuket",name:"פוקט",date:"2026-07-27",icon:"🏝️",x:78,y:23,day:2,hotel:"Four Points Phuket"},
+        {id:"khaolak",name:"קאו לאק",date:"2026-08-02",icon:"🌊",x:22,y:34,day:8,hotel:"La Vela Khao Lak"},
+        {id:"krabi",name:"קראבי",date:"2026-08-04",icon:"⛰️",x:76,y:47,day:10,hotel:"Dusit Thani Krabi"},
+        {id:"samui",name:"קו סמוי",date:"2026-08-06",icon:"🌴",x:25,y:59,day:12,hotel:"Lemongrass Pool Villa"},
+        {id:"pattaya",name:"פאטייה",date:"2026-08-12",icon:"🎡",x:76,y:71,day:18,hotel:"Centara Grand Mirage Pattaya"},
+        {id:"bangkok",name:"בנגקוק",date:"2026-08-16",icon:"🏙️",x:28,y:82,day:22,hotel:"Eastin Grand Hotel Bangkok"},
+        {id:"israel-in",name:"חזרה לישראל",date:"2026-08-19",icon:"🇮🇱",x:79,y:92,day:25,flight:true}
+      ],
       hotels: [
         {shortName:"Four Points Phuket",city:"פוקט",startDate:"2026-07-27",endDate:"2026-08-02",mapsQuery:"Four Points by Sheraton Phuket Patong Beach Resort"},
         {shortName:"La Vela Khao Lak",city:"קאו לאק",startDate:"2026-08-02",endDate:"2026-08-04",mapsQuery:"La Vela Khao Lak"},
@@ -516,6 +594,7 @@
       return `${p.year}-${p.month}-${p.day}`;
     }
     const today = currentTripDate();
+    const familyImage = CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
     const hotelFor = date => CONFIG.hotels.find(h=>date>=h.startDate && date<h.endDate);
     const flightFor = date => CONFIG.flights.find(f=>f.date===date);
     const mapsUrl = h => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.mapsQuery)}`;
@@ -581,15 +660,63 @@
         const snap=await getDocs(q);
         snap.forEach(d=>completed.add(d.data().tripDate));
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
-        renderJourney();renderPassport();
+        renderInteractiveMap();renderPassport();
       }catch(err){console.warn("completion sync skipped",err)}
+    }
+
+
+    function stopState(stop){
+      if(today > stop.date) return "completed";
+      if(today === stop.date) return "current";
+      return "future";
+    }
+
+    function currentStopIndex(){
+      let idx=0;
+      CONFIG.mapStops.forEach((s,i)=>{ if(today>=s.date) idx=i; });
+      return idx;
+    }
+
+    function renderInteractiveMap(){
+      const box=$("mapStops");box.innerHTML="";
+      const currentIdx=currentStopIndex();
+      CONFIG.mapStops.forEach((stop,index)=>{
+        const state=stopState(stop);
+        const wrap=document.createElement("div");
+        wrap.className=`map-stop ${state}`;
+        wrap.style.left=`${stop.x}%`;wrap.style.top=`${stop.y}%`;
+        const hotel=CONFIG.hotels.find(h=>h.shortName===stop.hotel);
+        wrap.innerHTML=`<div class="map-day-badge">${stop.day}</div>
+          <div class="map-stop-card" role="button" tabindex="0">
+            <div class="map-stop-head"><span class="map-stop-icon">${stop.icon}</span><div><strong>${esc(stop.name)}</strong><small>${fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small></div></div>
+            <div class="map-stop-actions">
+              <button class="map-mini-btn open-stop-day">פתחו את היום</button>
+              ${hotel?`<a class="map-mini-btn" href="${mapsUrl(hotel)}" target="_blank" rel="noopener noreferrer">ניווט</a>`:""}
+            </div>
+          </div>`;
+        const open=()=>openDay(stop.date,stop.day);
+        wrap.querySelector(".open-stop-day").onclick=open;
+        wrap.querySelector(".map-stop-card").addEventListener("keydown",e=>{if(e.key==="Enter")open()});
+        box.appendChild(wrap);
+      });
+
+      const stop=CONFIG.mapStops[currentIdx];
+      $("movingPlane").style.left=`${stop.x}%`;$("movingPlane").style.top=`${stop.y}%`;
+      $("movingPlaneLabel").style.left=`${stop.x}%`;$("movingPlaneLabel").style.top=`${stop.y}%`;
+      $("movingPlaneLabel").textContent=`משפחת ${family.name} כאן`;
+      $("mapStatusText").textContent=today<CONFIG.trip.startDate?"עוד מעט יוצאים לדרך":today>CONFIG.trip.endDate?"המסע הושלם":`כעת באזור ${stop.name}`;
+      const progress=Math.max(0,Math.min(1,currentIdx/(CONFIG.mapStops.length-1)));
+      $("routeProgress").style.strokeDashoffset=String(1-progress);
     }
 
     function renderFamily(){
       $("welcome").textContent=`ברוכים הבאים, משפחת ${family.name}!`;
       document.title=`משפחת ${family.name} | תאילנד 2026`;
       $("familyBtn").onclick=()=>alert(`משפחת ${family.name}`);
-      renderToday();renderJourney();renderPassport();renderPassportScreen();renderFlights();updateTripProgress();
+      $("familyHeroImage").src=familyImage;
+      $("familyHeroImage").alt=`משפחת ${family.name}`;
+      $("familyPhotoTitle").textContent=`התמונה של משפחת ${family.name}`;
+      renderToday();renderInteractiveMap();renderPassport();renderPassportScreen();renderFlights();updateTripProgress();
     }
     function renderToday(){
       if(today<CONFIG.trip.startDate){
@@ -719,7 +846,7 @@
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
-      renderJourney();renderPassport();renderPassportScreen();confetti();showSuccess();
+      renderInteractiveMap();renderPassport();renderPassportScreen();confetti();showSuccess();
       return photoDocs;
     }
     $("submitTaskBtn").onclick=async()=>{
@@ -761,10 +888,10 @@
     function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
     function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
     $("menuBtn").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("drawerShade").onclick=closeDrawer;
-    $("drawerJourney").onclick=()=>{closeDrawer();$("journey").scrollIntoView({behavior:"smooth"})};
+    $("drawerJourney").onclick=()=>{closeDrawer();$("journeyMap").scrollIntoView({behavior:"smooth"})};
     $("drawerFlights").onclick=()=>{closeDrawer();$("flights").scrollIntoView({behavior:"smooth"})};
     $("shareBtn").onclick=async()=>{try{if(navigator.share)await navigator.share({title:document.title,text:"המסע המשפחתי שלנו בתאילנד",url:location.href});else{await navigator.clipboard.writeText(location.href);alert("הקישור הועתק")}}catch{}};
-    $("navJourney").onclick=()=>$("journey").scrollIntoView({behavior:"smooth"});
+    $("navJourney").onclick=()=>$("journeyMap").scrollIntoView({behavior:"smooth"});
     $("navPassport").onclick=()=>{renderPassportScreen();$("passportDialog").showModal()};
     $("navHelp").onclick=()=>$("helpDialog").showModal();
     $("navAlbum").onclick=async()=>{$("albumDialog").showModal();await loadOwnAlbum()};
@@ -843,7 +970,7 @@
         $("logoutBtn").onclick=()=>signOut(auth);$("refreshAdmin").onclick=loadAdmin;$("adminDate").onchange=loadAdmin;
       }else{
         renderFamily();await initFirebase();
-        if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$(`[data-date="${today}"]`)?.scrollIntoView({behavior:"smooth",block:"center"}),450);
+        if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);
       }
     }
     boot();

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "travelersCount": 18,
   "trip": {
     "title": "Thailand 2026",
@@ -15,23 +15,28 @@
   "families": [
     {
       "id": "bohadana",
-      "name": "בוהדנה"
+      "name": "בוהדנה",
+      "memberCount": 2
     },
     {
       "id": "ovadia",
-      "name": "עובדיה"
+      "name": "עובדיה",
+      "memberCount": 4
     },
     {
       "id": "moshe",
-      "name": "משה"
+      "name": "משה",
+      "memberCount": 4
     },
     {
       "id": "sadeh",
-      "name": "שדה"
+      "name": "שדה",
+      "memberCount": 5
     },
     {
       "id": "buzaglo",
-      "name": "בוזגלו"
+      "name": "בוזגלו",
+      "memberCount": 3
     }
   ],
   "familyImages": {
@@ -302,5 +307,115 @@
     "maxWidth": 1600,
     "quality": 0.82,
     "maxBytes": 2500000
-  }
+  },
+  "seedTasks": [
+    {
+      "id": "airport",
+      "sortOrder": 0,
+      "date": "2026-07-26",
+      "destination": "נתב״ג",
+      "title": "✈️ תמונת הפתיחה של המסע",
+      "description": "לפני ההמראה, מצאו מקום מיוחד בנמל התעופה והעלו תמונה אחת שבה מופיעים כל 18 המשתתפים בדיוק. כל משפחה צריכה לצלם ממקום אחר בנמל התעופה.",
+      "minPhotos": 1,
+      "photoRule": "fixed",
+      "puzzlePiece": null,
+      "active": true
+    },
+    {
+      "id": "task-1",
+      "sortOrder": 1,
+      "date": "2026-07-28",
+      "destination": "פוקט",
+      "title": "🏝️ ברוכים הבאים לתאילנד",
+      "description": "מצאו דוכן אוכל או חנות מקומית שלא הייתם נכנסים אליה בדרך כלל. בחרו משהו אחד חדש שכל בני המשפחה יסכימו לטעום, וצלמו את רגע הטעימה.",
+      "minPhotos": 2,
+      "photoRule": "fixed",
+      "puzzlePiece": 1,
+      "active": true
+    },
+    {
+      "id": "task-2",
+      "sortOrder": 2,
+      "date": "2026-08-03",
+      "destination": "קאו לאק",
+      "title": "🌊 רגע של שקט מול הים",
+      "description": "מצאו מקום שקט מול הים. שבו שם לפחות חמש דקות בלי טלפונים, ואחר כך צלמו תמונה משפחתית אחת.",
+      "minPhotos": 1,
+      "photoRule": "fixed",
+      "puzzlePiece": 2,
+      "active": true
+    },
+    {
+      "id": "task-3",
+      "sortOrder": 3,
+      "date": "2026-08-05",
+      "destination": "קראבי",
+      "title": "⛰️ הנוף היפה של קראבי",
+      "description": "מצאו את הנוף הכי יפה שראיתם היום. כל אחד מבני המשפחה יבחר זווית אחרת ויצלם תמונה משלו.",
+      "minPhotos": 1,
+      "photoRule": "perFamilyMember",
+      "puzzlePiece": 3,
+      "active": true
+    },
+    {
+      "id": "task-4",
+      "sortOrder": 4,
+      "date": "2026-08-07",
+      "destination": "קו סמוי",
+      "title": "✈️ מתחילים פרק חדש",
+      "description": "צלמו תמונה אחת מהדרך או מהטיסה לקו סמוי, ותמונה נוספת אחרי ההגעה למקום הלינה.",
+      "minPhotos": 2,
+      "photoRule": "fixed",
+      "puzzlePiece": 4,
+      "active": true
+    },
+    {
+      "id": "task-5",
+      "sortOrder": 5,
+      "date": "2026-08-11",
+      "destination": "קו סמוי",
+      "title": "🌴 הדקל המשפחתי",
+      "description": "מצאו את עץ הדקל הכי יפה שראיתם. כל בני המשפחה חייבים להופיע בתמונה.",
+      "minPhotos": 1,
+      "photoRule": "fixed",
+      "puzzlePiece": 5,
+      "active": true
+    },
+    {
+      "id": "task-6",
+      "sortOrder": 6,
+      "date": "2026-08-13",
+      "destination": "פאטייה",
+      "title": "🎡 רגע של וואו",
+      "description": "מצאו מקום שגרם לכם להגיד „וואו”. צלמו אותו וספרו במשפט אחד למה בחרתם דווקא בו.",
+      "minPhotos": 2,
+      "photoRule": "fixed",
+      "puzzlePiece": 6,
+      "active": true
+    },
+    {
+      "id": "task-7",
+      "sortOrder": 7,
+      "date": "2026-08-17",
+      "destination": "בנגקוק",
+      "title": "🏙️ שלושה צבעים בבנגקוק",
+      "description": "מצאו מקום שיש בו לפחות שלושה צבעים בולטים וצלמו אותו. אפשר לבחור רחוב, שוק, מבנה או פינה מיוחדת בעיר.",
+      "minPhotos": 2,
+      "photoRule": "fixed",
+      "puzzlePiece": 7,
+      "active": true
+    },
+    {
+      "id": "task-8",
+      "sortOrder": 8,
+      "date": "2026-08-18",
+      "destination": "בנגקוק",
+      "title": "❤️ תמונת הסיום",
+      "description": "בחרו את התמונה האהובה עליכם מכל הטיול, כזו שעדיין לא העליתם. העלו אותה עם משפט שמסכם את החוויה שלכם.",
+      "minPhotos": 1,
+      "photoRule": "fixed",
+      "puzzlePiece": 8,
+      "active": true
+    }
+  ]
 }

@@ -308,6 +308,20 @@
     .book-final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.book-final h1{font-family:Georgia,serif;font-size:56px;color:#123a66;margin:0}
     .book-final p{font-size:24px;line-height:1.7;max-width:620px;color:#475467}.book-final .heart{font-size:70px}
 
+
+    /* --- Live task management 6.5 --- */
+    .global-announcement{margin:0 0 15px;background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #f59e0b;border-radius:18px;padding:13px 15px;box-shadow:var(--shadow);font-weight:800;color:#92400e}
+    .task-requirement{margin:10px 0;background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;border-radius:13px;padding:10px 12px;font-size:13px;font-weight:800}
+    .task-admin-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .task-list{display:grid;gap:9px}
+    .task-admin-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e5e7eb;border-radius:15px;padding:11px;background:#fafafa}
+    .task-admin-row strong{display:block}.task-admin-row small{color:var(--muted)}
+    .task-editor{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px}
+    .task-editor h3{margin-top:0}
+    .task-editor .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .admin-announcement{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    @media(max-width:800px){.task-admin-grid{grid-template-columns:1fr}.admin-announcement{grid-template-columns:1fr}.task-editor .two-cols{grid-template-columns:1fr}}
+
   </style>
 </head>
 <body>
@@ -352,6 +366,7 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+      <div id="globalAnnouncement" class="global-announcement hidden"></div>
 
       <section class="trip-progress-card">
         <div class="trip-progress-head"><strong>התקדמות בטיול</strong><span id="tripProgressPercent">0%</span></div>
@@ -443,6 +458,7 @@
       <div id="dayLocation" class="eyebrow" style="text-align:center;margin-top:12px"></div>
       <h2 id="taskTitle">המשימה שלכם</h2>
       <p id="taskDescription" class="modal-lead"></p>
+      <div id="taskRequirement" class="task-requirement"></div>
 
       <div id="hotelBox" class="hotel-box">
         <div><span>🏨 המלון שלנו</span><strong id="hotelName"></strong></div>
@@ -560,6 +576,55 @@
         <div class="stat"><span>תמונות</span><strong id="statPhotos">0</strong></div>
       </section>
 
+
+      <section class="admin-panel">
+        <h2>📢 הודעה לכל המשפחות</h2>
+        <div class="admin-announcement">
+          <label class="field" style="margin:0"><span>הודעה שתופיע בראש האתר</span><textarea id="announcementText" rows="3" placeholder="לדוגמה: בגלל הגשם, המשימה עודכנה..."></textarea></label>
+          <div style="display:grid;gap:8px">
+            <label style="display:flex;gap:7px;align-items:center;font-weight:800"><input id="announcementActive" type="checkbox"> פעיל</label>
+            <button id="saveAnnouncement" class="btn primary">שמור הודעה</button>
+          </div>
+        </div>
+        <div id="announcementNotice" class="notice info hidden"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:2px">🎯 ניהול משימות</h2><p style="margin:0;color:var(--muted)">כל שינוי נשמר ב־Firebase ומופיע למשפחות בסריקה הבאה.</p></div>
+          <button id="seedTasksBtn" class="btn secondary">טעינת המשימות המאושרות</button>
+        </div>
+        <div class="task-admin-grid" style="margin-top:15px">
+          <div id="adminTaskList" class="task-list"></div>
+          <div class="task-editor">
+            <h3>עריכת משימה</h3>
+            <input id="taskEditId" type="hidden">
+            <div class="two-cols">
+              <label class="field"><span>תאריך</span><input id="taskEditDate" type="date"></label>
+              <label class="field"><span>יעד</span><input id="taskEditDestination" type="text"></label>
+            </div>
+            <label class="field"><span>כותרת</span><input id="taskEditTitle" type="text"></label>
+            <label class="field"><span>מלל המשימה</span><textarea id="taskEditDescription" rows="6"></textarea></label>
+            <div class="two-cols">
+              <label class="field"><span>מינימום תמונות</span><input id="taskEditMinPhotos" type="number" min="1" max="18"></label>
+              <label class="field"><span>כלל תמונות</span>
+                <select id="taskEditPhotoRule">
+                  <option value="fixed">מספר קבוע</option>
+                  <option value="perFamilyMember">כמספר בני המשפחה</option>
+                </select>
+              </label>
+            </div>
+            <div class="two-cols">
+              <label class="field"><span>חלק פאזל</span><input id="taskEditPuzzlePiece" type="number" min="1" max="8" placeholder="ריק = ללא חלק"></label>
+              <label class="field"><span>סדר תצוגה</span><input id="taskEditSortOrder" type="number" min="0" max="20"></label>
+            </div>
+            <label style="display:flex;gap:8px;align-items:center;font-weight:800;margin:12px 0"><input id="taskEditActive" type="checkbox"> משימה פעילה</label>
+            <button id="saveTaskBtn" class="btn primary full">💾 שמירת משימה</button>
+            <div id="taskEditNotice" class="notice info hidden"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="admin-panel">
         <h2>סטטוס משפחות</h2>
         <table>
@@ -606,7 +671,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.4.0";
+    const APP_VERSION = "6.5.0";
 
     let CONFIG = {
       firebase: {
@@ -640,6 +705,9 @@
 
     let daysTotal=0;
     let family=null;
+    let remoteTasks=[];
+    let activeTask=null;
+    let completedPuzzlePieces=new Set();
     let localCompletedKey="";
     let localUploadsKey="";
     let completed=new Set();
@@ -712,6 +780,7 @@
       completed=new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
       today=currentTripDate();
       familyImage=CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
+      remoteTasks=[...(CONFIG.seedTasks||[])].filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
     }
 
     function tripStats(){
@@ -775,9 +844,14 @@
     const flightFor = date => CONFIG.flights.find(f=>f.date===date);
     const mapsUrl = h => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.mapsQuery)}`;
     const taskFor = date => {
-      const t=CONFIG.tasks[date];
-      return t ? (t[family.id]||t.default||CONFIG.defaultTask) : CONFIG.defaultTask;
+      const task=remoteTasks.find(t=>t.date===date && t.active!==false);
+      return task || {...CONFIG.defaultTask,id:null,puzzlePiece:null,minPhotos:1,photoRule:"fixed",active:false};
     };
+
+    function requiredPhotoCount(task){
+      if(task?.photoRule==="perFamilyMember") return Number(family.memberCount||1);
+      return Math.max(1,Number(task?.minPhotos||1));
+    }
     const stateFor = date => completed.has(date)?"done":date<today?"past":date===today?"today":"future";
 
     function setNotice(el,message,type="info"){
@@ -822,6 +896,7 @@
           await establishFamilySession();
           setNotice($("connectionBanner"),`מחובר ומסונכרן כמשפחת ${family.name} ✅ · גרסה ${APP_VERSION}`,"ok");
           await recordScan();
+          await loadRemoteTasksAndAnnouncement();
           await loadFamilyCompletions();
         }
         return true;
@@ -829,6 +904,35 @@
         console.error(err);
         if(!isAdminRoute) setNotice($("connectionBanner"),firebaseErrorText(err),"error");
         return false;
+      }
+    }
+
+    async function loadRemoteTasksAndAnnouncement(){
+      try{
+        const [tasksSnap,announcementSnap]=await Promise.all([
+          getDocs(collection(db,"tasks")),
+          getDoc(doc(db,"settings","announcement"))
+        ]);
+
+        if(!tasksSnap.empty){
+          remoteTasks=[];
+          tasksSnap.forEach(d=>remoteTasks.push({id:d.id,...d.data()}));
+          remoteTasks=remoteTasks.filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+        }
+
+        const announcement=announcementSnap.exists()?announcementSnap.data():null;
+        const box=$("globalAnnouncement");
+        if(box){
+          if(announcement?.active && announcement?.text?.trim()){
+            box.textContent=announcement.text.trim();
+            box.classList.remove("hidden");
+          }else{
+            box.classList.add("hidden");
+          }
+        }
+        renderToday();
+      }catch(err){
+        console.warn("Remote tasks/announcement load failed; using local seed tasks.",err);
       }
     }
 
@@ -848,7 +952,14 @@
         const q=query(collection(db,"completions"),where("familyId","==",family.id));
         const snap=await getDocs(q);
         completed=new Set();
-        snap.forEach(d=>completed.add(d.data().tripDate));
+        completedPuzzlePieces=new Set();
+        snap.forEach(d=>{
+          const data=d.data();
+          completed.add(data.tripDate);
+          if(Number.isInteger(data.puzzlePiece) && data.puzzlePiece>=1 && data.puzzlePiece<=8){
+            completedPuzzlePieces.add(data.puzzlePiece);
+          }
+        });
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
         renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
       }catch(err){
@@ -856,7 +967,6 @@
         setNotice($("connectionBanner"),firebaseErrorText(err),"error");
       }
     }
-
 
     function stopState(stop){
       if(today > stop.date) return "completed";
@@ -966,8 +1076,7 @@
       }
     }
     function unlockedPuzzlePieces(){
-      const count=Math.min(completed.size,CONFIG.puzzle.totalPieces);
-      return new Set(CONFIG.puzzle.rewardOrder.slice(0,count));
+      return new Set([...completedPuzzlePieces].filter(n=>n>=1 && n<=CONFIG.puzzle.totalPieces));
     }
 
     function renderPassport(){
@@ -1048,8 +1157,13 @@
       $("galleryInput").value="";
       $("preview").innerHTML="";$("caption").value="";hideNotice($("taskNotice"));$("uploadProgressWrap").classList.add("hidden");$("uploadProgress").style.width="0";
       const t=taskFor(date),h=hotelFor(date),f=flightFor(date);
+      activeTask=t;
       $("dayBadge").textContent=`יום ${num}`;$("dayLocation").textContent=`${fmtDate(date)}${h?` · ${h.city}`:f?` · ${f.title}`:""}`;
       $("taskTitle").textContent=t.title;$("taskDescription").textContent=t.description;
+      const required=requiredPhotoCount(t);
+      $("taskRequirement").textContent=t.photoRule==="perFamilyMember"
+        ? `📸 משפחת ${family.name}: נדרשות ${required} תמונות — אחת לכל בן משפחה.`
+        : `📸 יש להעלות לפחות ${required} ${required===1?"תמונה":"תמונות"}.${t.puzzlePiece?` השלמה תפתח את חלק פאזל מספר ${t.puzzlePiece}.`:" משימה זו אינה פותחת חלק פאזל."}`;
       if(h){$("hotelBox").classList.remove("hidden");$("hotelName").textContent=h.shortName;$("mapsLink").href=mapsUrl(h)}else $("hotelBox").classList.add("hidden");
       if(completed.has(date)) setNotice($("taskNotice"),"המשימה כבר הושלמה במכשיר הזה. אפשר להעלות תמונות נוספות.","ok");
       $("dayDialog").showModal();
@@ -1100,7 +1214,8 @@
 
     async function uploadFiles(files,caption,isSimulation=false){
       if(!currentUser) throw new Error("אין חיבור משתמש ל־Firebase.");
-      if(!files.length) throw new Error("יש לבחור לפחות תמונה אחת.");
+      const required=requiredPhotoCount(activeTask);
+      if(files.length<required) throw new Error(`המשימה דורשת לפחות ${required} ${required===1?"תמונה":"תמונות"}.`);
       const uploadId=crypto.randomUUID(),photoDocs=[];
       $("uploadProgressWrap").classList.remove("hidden");
       for(let i=0;i<files.length;i++){
@@ -1116,15 +1231,18 @@
           },reject,resolve);
         });
         const url=await getDownloadURL(storageRef);
-        const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",isSimulation,createdAt:serverTimestamp()};
+        const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,isSimulation,createdAt:serverTimestamp()};
         const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
       }
       await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
         familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
         completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
+        taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,
         isSimulation,completedAt:serverTimestamp()
       },{merge:true});
-      completed.add(activeDate);localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+      completed.add(activeDate);
+      if(Number.isInteger(activeTask?.puzzlePiece)) completedPuzzlePieces.add(activeTask.puzzlePiece);
+      localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
@@ -1144,7 +1262,9 @@
 
 
     function showSuccess(){
-      $("successText").textContent=`יום ${activeDayNum} הושלם. הדרכון המשפחתי עודכן ונוספה חותמת חדשה.`;
+      $("successText").textContent=activeTask?.puzzlePiece
+        ? `המשימה הושלמה! חלק פאזל מספר ${activeTask.puzzlePiece} נפתח בדרכון המשפחתי.`
+        : "משימת נתב״ג הושלמה בהצלחה. המסע שלכם התחיל!";
       $("successOverlay").classList.add("show");
     }
     $("closeSuccess").onclick=()=>$("successOverlay").classList.remove("show");
@@ -1193,8 +1313,8 @@
 
     function downloadDailyReminder(){
       const time=$("reminderTime").value||"20:00";
-      const dtStart=formatIcsDate("2026-07-26",time);
-      const until="20260818T235900";
+      const dtStart=formatIcsDate(CONFIG.trip.startDate,time);
+      const reminderCount=Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
       const uid=`thailand-photo-${family.id}@thailand-trip-5e400`;
       const ics=[
         "BEGIN:VCALENDAR",
@@ -1205,7 +1325,7 @@
         "BEGIN:VEVENT",
         `UID:${uid}`,
         `DTSTART;TZID=Asia/Bangkok:${dtStart}`,
-        "RRULE:FREQ=DAILY;UNTIL="+until,
+        `RRULE:FREQ=DAILY;COUNT=${reminderCount}`,
         "SUMMARY:📸 לצלם תמונה יומית מהטיול",
         `DESCRIPTION:משפחת ${family.name} – זכרו לצלם לפחות תמונה אחת היום למזכרת מתאילנד 2026.`,
         "BEGIN:VALARM",
@@ -1450,6 +1570,95 @@
         await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);
       }catch(err){setNotice($("loginNotice"),firebaseErrorText(err),"error")}
     }
+    async function loadAdminTasks(){
+      const snap=await getDocs(collection(db,"tasks"));
+      const tasks=[];
+      snap.forEach(d=>tasks.push({id:d.id,...d.data()}));
+      tasks.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+      remoteTasks=tasks.length?tasks:[...(CONFIG.seedTasks||[])];
+      renderAdminTaskList();
+    }
+
+    function renderAdminTaskList(){
+      const box=$("adminTaskList");
+      if(!box) return;
+      box.innerHTML="";
+      remoteTasks.forEach(task=>{
+        const row=document.createElement("div");
+        row.className="task-admin-row";
+        row.innerHTML=`<div><strong>${task.sortOrder===0?"נתב״ג":`משימה ${task.sortOrder}`} · ${esc(task.title)}</strong><small>${fmtDate(task.date)} · ${esc(task.destination||"")} · ${task.puzzlePiece?`חלק ${task.puzzlePiece}`:"ללא פאזל"} · ${task.active===false?"כבויה":"פעילה"}</small></div><button class="btn ghost small">עריכה</button>`;
+        row.querySelector("button").onclick=()=>fillTaskEditor(task);
+        box.appendChild(row);
+      });
+    }
+
+    function fillTaskEditor(task){
+      $("taskEditId").value=task.id||"";
+      $("taskEditDate").value=task.date||"";
+      $("taskEditDestination").value=task.destination||"";
+      $("taskEditTitle").value=task.title||"";
+      $("taskEditDescription").value=task.description||"";
+      $("taskEditMinPhotos").value=task.minPhotos||1;
+      $("taskEditPhotoRule").value=task.photoRule||"fixed";
+      $("taskEditPuzzlePiece").value=task.puzzlePiece??"";
+      $("taskEditSortOrder").value=task.sortOrder??0;
+      $("taskEditActive").checked=task.active!==false;
+      hideNotice($("taskEditNotice"));
+    }
+
+    async function saveEditedTask(){
+      const id=$("taskEditId").value.trim();
+      if(!id) return setNotice($("taskEditNotice"),"בחרו משימה מהרשימה.","error");
+      const puzzleRaw=$("taskEditPuzzlePiece").value.trim();
+      const task={
+        date:$("taskEditDate").value,
+        destination:$("taskEditDestination").value.trim(),
+        title:$("taskEditTitle").value.trim(),
+        description:$("taskEditDescription").value.trim(),
+        minPhotos:Math.max(1,Number($("taskEditMinPhotos").value||1)),
+        photoRule:$("taskEditPhotoRule").value,
+        puzzlePiece:puzzleRaw===""?null:Number(puzzleRaw),
+        sortOrder:Number($("taskEditSortOrder").value||0),
+        active:$("taskEditActive").checked,
+        updatedAt:serverTimestamp()
+      };
+      await setDoc(doc(db,"tasks",id),task,{merge:true});
+      setNotice($("taskEditNotice"),"המשימה נשמרה ותופיע למשפחות בסריקה הבאה ✅","ok");
+      await loadAdminTasks();
+    }
+
+    async function seedApprovedTasks(){
+      const btn=$("seedTasksBtn");
+      const original=btn.textContent;
+      btn.disabled=true;btn.textContent="טוען…";
+      try{
+        for(const task of CONFIG.seedTasks||[]){
+          const {id,...data}=task;
+          await setDoc(doc(db,"tasks",id),{...data,updatedAt:serverTimestamp()},{merge:true});
+        }
+        await loadAdminTasks();
+        alert("כל המשימות המאושרות נטענו ל-Firebase.");
+      }finally{
+        btn.disabled=false;btn.textContent=original;
+      }
+    }
+
+    async function loadAnnouncementEditor(){
+      const snap=await getDoc(doc(db,"settings","announcement"));
+      const data=snap.exists()?snap.data():{};
+      $("announcementText").value=data.text||"";
+      $("announcementActive").checked=Boolean(data.active);
+    }
+
+    async function saveAnnouncement(){
+      await setDoc(doc(db,"settings","announcement"),{
+        text:$("announcementText").value.trim(),
+        active:$("announcementActive").checked,
+        updatedAt:serverTimestamp()
+      },{merge:true});
+      setNotice($("announcementNotice"),"ההודעה נשמרה ותופיע לכל המשפחות בסריקה הבאה ✅","ok");
+    }
+
     async function loadAdmin(){
       const date=$("adminDate").value;
       $("adminRows").innerHTML=`<tr><td colspan="6">טוען נתונים…</td></tr>`;$("adminGallery").innerHTML="";setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
@@ -1612,7 +1821,8 @@
         await initFirebase();
         onAuthStateChanged(auth,user=>{
           if(user?.email?.toLowerCase()===CONFIG.adminEmail.toLowerCase()){
-            currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;loadAdmin();
+            currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;
+            loadAdmin();loadAdminTasks();loadAnnouncementEditor();
           }else{
             $("adminDashboard").classList.add("hidden");$("adminLogin").classList.remove("hidden");
             if(user&&user.email)setNotice($("loginNotice"),"המשתמש מחובר אך אינו מוגדר כמנהל.","error");
@@ -1623,6 +1833,9 @@
         $("refreshAdmin").onclick=loadAdmin;
         $("adminDate").onchange=loadAdmin;
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
+        $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
+        $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));
+        $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));
       }else{
         renderFamily();await initFirebase();
         updatePdfAvailability();

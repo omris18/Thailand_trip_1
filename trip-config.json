@@ -419,5 +419,10 @@
       "puzzlePiece": 8,
       "active": true
     }
-  ]
+  ],
+  "release": {
+    "version": "7.1.0-GOLD",
+    "build": "20260712.01",
+    "channel": "gold"
+  }
 }

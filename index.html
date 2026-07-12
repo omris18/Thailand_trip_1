@@ -625,6 +625,27 @@
         </div>
       </section>
 
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div>
+            <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
+            <p style="margin:0;color:var(--muted)">Version 7.1.0-GOLD · Build 20260712.01</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
+            <button id="downloadDiagnostics" class="btn secondary">הורדת Diagnostics</button>
+          </div>
+        </div>
+        <div id="healthGrid" class="stats" style="margin-top:14px">
+          <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
+          <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
+          <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
+          <div class="stat"><strong id="healthVersion">7.1.0-GOLD</strong><span>גרסה</span></div>
+        </div>
+        <div id="healthNotice" class="notice info hidden"></div>
+      </section>
+
       <section class="admin-panel">
         <h2>סטטוס משפחות</h2>
         <table>
@@ -671,7 +692,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.0.0";
+    const APP_VERSION = "7.1.0-GOLD";
+    const BUILD_ID = "20260712.01";
 
     let CONFIG = {
       firebase: {
@@ -716,6 +738,7 @@
     let familyImage="";
 
     let app,auth,db,storage;
+    const diagnosticLog=[];
 
     async function checkForAppUpdate(){
       try{
@@ -792,6 +815,39 @@
         tasks:Object.keys(CONFIG.taskPlan||{}).length,
         days:daysTotal
       };
+    }
+
+
+    function logDiagnostic(level,message,details=""){
+      const item={
+        time:new Date().toISOString(),
+        level,
+        message,
+        details:typeof details==="string"?details:JSON.stringify(details)
+      };
+      diagnosticLog.push(item);
+      if(diagnosticLog.length>150) diagnosticLog.shift();
+    }
+
+    window.addEventListener("error",e=>{
+      logDiagnostic("error",e.message||"Unhandled error",`${e.filename||""}:${e.lineno||""}`);
+    });
+
+    window.addEventListener("unhandledrejection",e=>{
+      logDiagnostic("error","Unhandled promise rejection",e.reason?.message||String(e.reason||""));
+    });
+
+    function downloadDiagnostics(){
+      const payload=[
+        `Thailand Trip ${APP_VERSION}`,
+        `Build ${BUILD_ID}`,
+        `Generated ${new Date().toISOString()}`,
+        `User agent: ${navigator.userAgent}`,
+        `URL: ${location.href}`,
+        "",
+        ...diagnosticLog.map(x=>`${x.time} [${x.level}] ${x.message}${x.details?` | ${x.details}`:""}`)
+      ].join("\n");
+      triggerBlobDownload(new Blob([payload],{type:"text/plain;charset=utf-8"}),`Thailand-Diagnostics-${BUILD_ID}.txt`);
     }
 
     function runVersionMigration(){
@@ -895,6 +951,7 @@
           currentUser=auth.currentUser;
           await establishFamilySession();
           setNotice($("connectionBanner"),`מחובר ומסונכרן כמשפחת ${family.name} ✅ · גרסה ${APP_VERSION}`,"ok");
+          logDiagnostic("info","Family connected",family.id);
           await recordScan();
           await loadRemoteTasksAndAnnouncement();
           await loadFamilyCompletions();
@@ -1658,6 +1715,41 @@
         await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);
       }catch(err){setNotice($("loginNotice"),firebaseErrorText(err),"error")}
     }
+
+    async function runHealthCheck(){
+      const notice=$("healthNotice");
+      try{
+        setNotice(notice,"מריץ בדיקות…","info");
+        $("healthAuth").textContent=auth?.currentUser?"🟢 תקין":"🔴 לא מחובר";
+
+        const firestoreStart=performance.now();
+        await getDocs(query(collection(db,"tasks")));
+        const firestoreMs=Math.round(performance.now()-firestoreStart);
+        $("healthFirestore").textContent=`🟢 ${firestoreMs}ms`;
+
+        let storageStatus="🟡 אין תמונה לבדיקה";
+        try{
+          const sampleSnap=await getDocs(query(collection(db,"uploads"),limit(1)));
+          if(!sampleSnap.empty){
+            const sample=sampleSnap.docs[0].data();
+            const blob=await fetchUploadBlob(sample);
+            storageStatus=blob?.size?`🟢 ${Math.round(blob.size/1024)}KB`:"🔴 קובץ ריק";
+          }
+        }catch(err){
+          storageStatus="🔴 שגיאה";
+          logDiagnostic("error","Storage health check failed",err?.message||String(err));
+        }
+        $("healthStorage").textContent=storageStatus;
+        $("healthVersion").textContent=`${APP_VERSION} / ${BUILD_ID}`;
+
+        logDiagnostic("info","Health check completed",{firestoreMs,storageStatus});
+        setNotice(notice,"בדיקת המערכת הסתיימה.","ok");
+      }catch(err){
+        logDiagnostic("error","Health check failed",err?.message||String(err));
+        setNotice(notice,`בדיקת המערכת נכשלה: ${err?.message||err}`,"error");
+      }
+    }
+
     async function loadAdminTasks(){
       const snap=await getDocs(collection(db,"tasks"));
       const tasks=[];
@@ -1922,6 +2014,8 @@
         $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
         $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));
         $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));
+        $("runHealthCheck").onclick=runHealthCheck;
+        $("downloadDiagnostics").onclick=downloadDiagnostics;
       }else{
         renderFamily();await initFirebase();
         updatePdfAvailability();

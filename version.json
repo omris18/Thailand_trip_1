@@ -1,5 +1,7 @@
 {
-  "version": "7.0.0",
+  "version": "7.1.0-GOLD",
+  "build": "20260712.01",
   "releasedAt": "2026-07-12",
-  "message": "Production release - real Thailand date, locked PDF, live tasks and automatic updates"
+  "channel": "gold",
+  "message": "Final GOLD release"
 }

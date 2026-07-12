@@ -606,7 +606,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.3.0";
+    const APP_VERSION = "6.3.1";
 
     let CONFIG = {
       firebase: {
@@ -723,8 +723,6 @@
       const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
       return `${p.year}-${p.month}-${p.day}`;
     }
-    const today = currentTripDate();
-    const familyImage = CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
     const hotelFor = date => CONFIG.hotels.find(h=>date>=h.startDate && date<h.endDate);
     const flightFor = date => CONFIG.flights.find(f=>f.date===date);
     const mapsUrl = h => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.mapsQuery)}`;

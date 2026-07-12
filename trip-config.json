@@ -245,7 +245,8 @@
     "unlockDate": "2026-08-19",
     "unlockTime": "10:00",
     "unlockTimezone": "Asia/Dubai",
-    "maxPhotosPerPage": 4
+    "maxPhotosPerPage": 4,
+    "testUnlock": true
   },
   "tasks": {},
   "defaultTask": {

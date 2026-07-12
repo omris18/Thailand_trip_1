@@ -1,5 +1,5 @@
 {
-  "version": "6.5.0",
+  "version": "6.6.0-test",
   "releasedAt": "2026-07-12",
-  "message": "Live task management, announcements, puzzle mapping and finite calendar reminders"
+  "message": "Temporary QA build: PDF unlocked, ZIP testing enabled"
 }

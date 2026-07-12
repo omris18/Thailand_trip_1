@@ -366,6 +366,7 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+      <div id="qaBuildBanner" class="notice warn">🧪 גרסת בדיקה 6.6.0 — כפתור ספר ה־PDF פתוח זמנית לצורך בדיקה.</div>
       <div id="globalAnnouncement" class="global-announcement hidden"></div>
 
       <section class="trip-progress-card">
@@ -671,7 +672,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.5.0";
+    const APP_VERSION = "6.6.0-test";
 
     let CONFIG = {
       firebase: {
@@ -1357,6 +1358,7 @@
     }
 
     function pdfIsUnlocked(){
+      if(CONFIG.pdfBook?.testUnlock===true) return true;
       const unlock=`${CONFIG.pdfBook.unlockDate}T${CONFIG.pdfBook.unlockTime}`;
       return zonedMinuteKey(CONFIG.pdfBook.unlockTimezone)>=unlock;
     }
@@ -1483,7 +1485,7 @@
         }
         btn.disabled=true;
         btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
-        status.textContent="אוסף את תמונות המשפחה…";
+        status.textContent="בדיקה: אוסף את תמונות המשפחה מ־Firebase…";
         stage.innerHTML="";
 
         const uploads=await fetchFamilyBookUploads();

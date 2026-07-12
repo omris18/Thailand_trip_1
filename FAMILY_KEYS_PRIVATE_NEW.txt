@@ -1,0 +1,29 @@
+מפתחות וקישורי NFC חדשים – גרסה 6.0.0
+אין להעלות קובץ זה ל-GitHub
+
+יש להחליף את ערכי ה-key במסמכי familyAccess הקיימים ב-Firestore.
+
+משפחת בוהדנה
+Document ID: bohadana
+key: uZBcNAFcAqfnmxAsdxY6mttCLyHauNZAzVPayUsD
+NFC URL: https://omris18.github.io/Thailand_trip_1/?f=bohadana&key=uZBcNAFcAqfnmxAsdxY6mttCLyHauNZAzVPayUsD
+
+משפחת עובדיה
+Document ID: ovadia
+key: zUrywp1eJneBmIHP0lFiSgEuSV6UgnYhSz87jlg1
+NFC URL: https://omris18.github.io/Thailand_trip_1/?f=ovadia&key=zUrywp1eJneBmIHP0lFiSgEuSV6UgnYhSz87jlg1
+
+משפחת משה
+Document ID: moshe
+key: Omw1hf37wB2LSUWbPVXTROSOaxuxTimn1slUr2AK
+NFC URL: https://omris18.github.io/Thailand_trip_1/?f=moshe&key=Omw1hf37wB2LSUWbPVXTROSOaxuxTimn1slUr2AK
+
+משפחת שדה
+Document ID: sadeh
+key: 374HVfzR9Q2j9DmC4JQDuvFUiZIjHLaM7oiR7Gto
+NFC URL: https://omris18.github.io/Thailand_trip_1/?f=sadeh&key=374HVfzR9Q2j9DmC4JQDuvFUiZIjHLaM7oiR7Gto
+
+משפחת בוזגלו
+Document ID: buzaglo
+key: djnwKmiv5QY9Fc7fx9WlLmokGDvreuWeK7K22mfG
+NFC URL: https://omris18.github.io/Thailand_trip_1/?f=buzaglo&key=djnwKmiv5QY9Fc7fx9WlLmokGDvreuWeK7K22mfG

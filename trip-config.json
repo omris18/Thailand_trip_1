@@ -8,7 +8,7 @@
     "timezone": "Asia/Bangkok"
   },
   "testMode": {
-    "enabled": true,
+    "enabled": false,
     "forcedDate": "2026-07-26",
     "showSimulationButton": false
   },
@@ -246,8 +246,8 @@
     "unlockTime": "10:00",
     "unlockTimezone": "Asia/Dubai",
     "maxPhotosPerPage": 4,
-    "testUnlock": true,
-    "testCompact": true
+    "testUnlock": false,
+    "testCompact": false
   },
   "tasks": {},
   "defaultTask": {

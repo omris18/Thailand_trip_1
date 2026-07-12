@@ -366,7 +366,6 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
-      <div id="qaBuildBanner" class="notice warn">🧪 גרסת בדיקה 6.6.2 — מנגנון PDF ו-ZIP מתוקן ומשתמש בקישורי ההורדה של Firebase.</div>
       <div id="globalAnnouncement" class="global-announcement hidden"></div>
 
       <section class="trip-progress-card">
@@ -568,7 +567,6 @@
         <button id="refreshAdmin" class="btn primary">רענון נתונים</button>
         <button id="downloadAllZip" class="btn secondary">⬇️ ZIP לכל התמונות ביום</button>
         <button id="downloadTripZip" class="btn secondary">📦 ZIP מלא לכל הטיול</button>
-        <button id="downloadTestZip" class="btn ghost">🧪 ZIP בדיקה ללא תמונות</button>
       </div>
 
       <section class="stats">
@@ -673,7 +671,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.6.2-test";
+    const APP_VERSION = "7.0.0";
 
     let CONFIG = {
       firebase: {
@@ -1549,7 +1547,7 @@
         }
         btn.disabled=true;
         btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
-        status.textContent="בדיקה מהירה: אוסף תמונות ובונה רק ימים שבהם קיימות העלאות…";
+        status.textContent="אוסף את תמונות המשפחה ובונה את ספר המסע…";
         stage.innerHTML="";
 
         const uploads=await fetchFamilyBookUploads();
@@ -1783,22 +1781,6 @@
         $("downloadAllZip").onclick=()=>downloadZip(date,"all",allPhotos);
       }catch(err){console.error(err);$("adminRows").innerHTML=`<tr><td colspan="6">${esc(firebaseErrorText(err))}</td></tr>`;setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error")}
     }
-    async function downloadDiagnosticZip(){
-      try{
-        const zip=new JSZip();
-        zip.file("בדיקה.txt",
-`Thailand Trip 2026
-בדיקת ZIP הצליחה.
-גרסת אתר: ${APP_VERSION}
-נוצר בתאריך: ${new Date().toISOString()}
-`);
-        const result=await zip.generateAsync({type:"blob",compression:"DEFLATE"});
-        triggerBlobDownload(result,"Thailand-2026-ZIP-TEST.zip");
-      }catch(err){
-        console.error(err);
-        alert(`בדיקת ZIP נכשלה: ${err?.message||err}`);
-      }
-    }
 
     async function fetchAllTripData(){
       const [uploadsSnap,completionsSnap,scansSnap]=await Promise.all([
@@ -1937,7 +1919,6 @@
         $("refreshAdmin").onclick=loadAdmin;
         $("adminDate").onchange=loadAdmin;
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
-        $("downloadTestZip").onclick=downloadDiagnosticZip;
         $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
         $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));
         $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));

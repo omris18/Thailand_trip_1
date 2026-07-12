@@ -1,5 +1,5 @@
 {
-  "version": "6.6.2-test",
+  "version": "7.0.0",
   "releasedAt": "2026-07-12",
-  "message": "Fixed PDF and ZIP image retrieval via Firestore download URLs"
+  "message": "Production release - real Thailand date, locked PDF, live tasks and automatic updates"
 }

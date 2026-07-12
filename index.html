@@ -366,7 +366,7 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
-      <div id="qaBuildBanner" class="notice warn">🧪 גרסת בדיקה 6.6.0 — כפתור ספר ה־PDF פתוח זמנית לצורך בדיקה.</div>
+      <div id="qaBuildBanner" class="notice warn">🧪 גרסת בדיקה 6.6.2 — מנגנון PDF ו-ZIP מתוקן ומשתמש בקישורי ההורדה של Firebase.</div>
       <div id="globalAnnouncement" class="global-announcement hidden"></div>
 
       <section class="trip-progress-card">
@@ -568,6 +568,7 @@
         <button id="refreshAdmin" class="btn primary">רענון נתונים</button>
         <button id="downloadAllZip" class="btn secondary">⬇️ ZIP לכל התמונות ביום</button>
         <button id="downloadTripZip" class="btn secondary">📦 ZIP מלא לכל הטיול</button>
+        <button id="downloadTestZip" class="btn ghost">🧪 ZIP בדיקה ללא תמונות</button>
       </div>
 
       <section class="stats">
@@ -672,7 +673,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.6.1-test";
+    const APP_VERSION = "6.6.2-test";
 
     let CONFIG = {
       firebase: {
@@ -1405,8 +1406,71 @@
       return items;
     }
 
+    async function fetchWithTimeout(url,options={},timeoutMs=20000){
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),timeoutMs);
+      try{
+        return await fetch(url,{...options,signal:controller.signal});
+      }finally{
+        clearTimeout(timeout);
+      }
+    }
+
+    async function fetchUploadBlob(upload){
+      let directUrl=upload?.downloadUrl||"";
+
+      if(!directUrl && upload?.storagePath){
+        directUrl=await getDownloadURL(ref(storage,upload.storagePath));
+      }
+
+      if(directUrl){
+        try{
+          const response=await fetchWithTimeout(directUrl,{
+            mode:"cors",
+            cache:"no-store",
+            credentials:"omit"
+          },20000);
+
+          if(!response.ok){
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const blob=await response.blob();
+          if(!blob.size) throw new Error("התקבל קובץ ריק.");
+          return blob;
+        }catch(err){
+          console.warn("Direct download URL failed, trying Firebase SDK fallback.",err);
+        }
+      }
+
+      if(upload?.storagePath){
+        try{
+          return await Promise.race([
+            getBlob(ref(storage,upload.storagePath)),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error("הקריאה מ-Firebase Storage חרגה מ-20 שניות.")),20000))
+          ]);
+        }catch(err){
+          throw new Error(`לא ניתן להוריד את התמונה ${upload.storagePath}: ${err?.message||err}`);
+        }
+      }
+
+      throw new Error("לרשומת התמונה אין downloadUrl או storagePath.");
+    }
+
+    function triggerBlobDownload(blob,fileName){
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=fileName;
+      a.style.display="none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }
+
     async function blobUrlForUpload(upload,urlsToRevoke){
-      const blob=await getBlob(ref(storage,upload.storagePath));
+      const blob=await fetchUploadBlob(upload);
       const url=URL.createObjectURL(blob);
       urlsToRevoke.push(url);
       return url;
@@ -1557,8 +1621,9 @@
         }
 
         status.textContent="מוריד את ספר המסע…";
-        pdf.save(`Thailand-2026-משפחת-${family.name}.pdf`);
-        status.textContent="ספר המסע נוצר בהצלחה ✅";
+        const pdfBlob=pdf.output("blob");
+        triggerBlobDownload(pdfBlob,`Thailand-2026-משפחת-${family.name}.pdf`);
+        status.textContent="ספר המסע נוצר והורד בהצלחה ✅";
       }catch(err){
         console.error(err);
         status.textContent=err?.message||"יצירת ה-PDF נכשלה.";
@@ -1718,6 +1783,23 @@
         $("downloadAllZip").onclick=()=>downloadZip(date,"all",allPhotos);
       }catch(err){console.error(err);$("adminRows").innerHTML=`<tr><td colspan="6">${esc(firebaseErrorText(err))}</td></tr>`;setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error")}
     }
+    async function downloadDiagnosticZip(){
+      try{
+        const zip=new JSZip();
+        zip.file("בדיקה.txt",
+`Thailand Trip 2026
+בדיקת ZIP הצליחה.
+גרסת אתר: ${APP_VERSION}
+נוצר בתאריך: ${new Date().toISOString()}
+`);
+        const result=await zip.generateAsync({type:"blob",compression:"DEFLATE"});
+        triggerBlobDownload(result,"Thailand-2026-ZIP-TEST.zip");
+      }catch(err){
+        console.error(err);
+        alert(`בדיקת ZIP נכשלה: ${err?.message||err}`);
+      }
+    }
+
     async function fetchAllTripData(){
       const [uploadsSnap,completionsSnap,scansSnap]=await Promise.all([
         getDocs(collection(db,"uploads")),
@@ -1769,7 +1851,7 @@
           const dayFolder=`יום-${dayNum}-${p.tripDate}`;
           const familyName=p.familyName||familyMap.get(p.familyId)||p.familyId;
           const familyFolder=`משפחת-${familyName}`;
-          const blob=await getBlob(ref(storage,p.storagePath));
+          const blob=await fetchUploadBlob(p);
           const fileName=`${String(i+1).padStart(4,"0")}.jpg`;
           zip.folder(dayFolder).folder(familyFolder).file(fileName,blob);
         }
@@ -1792,16 +1874,10 @@
         });
 
         const suffix=familyFilter==="all"?"כל-הטיול":`משפחת-${familyMap.get(familyFilter)||familyFilter}`;
-        const a=document.createElement("a");
-        a.href=URL.createObjectURL(result);
-        a.download=`Thailand-2026-${suffix}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(()=>URL.revokeObjectURL(a.href),2500);
+        triggerBlobDownload(result,`Thailand-2026-${suffix}.zip`);
       }catch(err){
         console.error(err);
-        alert(firebaseErrorText(err));
+        alert(`הורדת ZIP נכשלה: ${err?.message||firebaseErrorText(err)}`);
       }finally{
         buttons.forEach(b=>b.disabled=false);
       }
@@ -1813,15 +1889,18 @@
       try{
         const zip=new JSZip(),info=[];
         for(let i=0;i<photos.length;i++){
-          const p=photos[i],blob=await getBlob(ref(storage,p.storagePath));
+          const p=photos[i],blob=await fetchUploadBlob(p);
           const folder=zip.folder(`משפחת-${p.familyName}/${p.tripDate}`);
           folder.file(`${String(i+1).padStart(3,"0")}.jpg`,blob);
           info.push(`${p.familyName} | ${p.tripDate} | ${p.caption||""}`);
         }
         zip.file("פרטי-העלאות.txt",info.join("\n"));
         const result=await zip.generateAsync({type:"blob",compression:"DEFLATE",compressionOptions:{level:6}});
-        const a=document.createElement("a");a.href=URL.createObjectURL(result);a.download=`Thailand-2026-${label}-${date}.zip`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-      }catch(err){alert(firebaseErrorText(err))}
+        triggerBlobDownload(result,`Thailand-2026-${label}-${date}.zip`);
+      }catch(err){
+        console.error(err);
+        alert(`הורדת ZIP נכשלה: ${err?.message||firebaseErrorText(err)}`);
+      }
       finally{btns.forEach(b=>b.disabled=false)}
     }
 
@@ -1858,6 +1937,7 @@
         $("refreshAdmin").onclick=loadAdmin;
         $("adminDate").onchange=loadAdmin;
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
+        $("downloadTestZip").onclick=downloadDiagnosticZip;
         $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
         $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));
         $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));

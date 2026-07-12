@@ -1,5 +1,5 @@
 {
-  "version": "6.6.1-test",
+  "version": "6.6.2-test",
   "releasedAt": "2026-07-12",
-  "message": "Optimized compact PDF QA build for mobile"
+  "message": "Fixed PDF and ZIP image retrieval via Firestore download URLs"
 }

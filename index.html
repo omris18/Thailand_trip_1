@@ -606,7 +606,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.3.1";
+    const APP_VERSION = "6.4.0";
 
     let CONFIG = {
       firebase: {
@@ -648,6 +648,54 @@
     let familyImage="";
 
     let app,auth,db,storage;
+
+    async function checkForAppUpdate(){
+      try{
+        const response=await fetch(`version.json?t=${Date.now()}`,{cache:"no-store"});
+        if(!response.ok) return false;
+
+        const data=await response.json();
+        const latest=String(data.version||"").trim();
+        if(!latest || latest===APP_VERSION) return false;
+
+        const currentUrl=new URL(location.href);
+        const requestedVersion=currentUrl.searchParams.get("v");
+
+        if(requestedVersion!==latest){
+          currentUrl.searchParams.set("v",latest);
+          currentUrl.searchParams.set("_refresh",Date.now().toString());
+          location.replace(currentUrl.toString());
+          return true;
+        }
+
+        // Fallback for unusually persistent browser/CDN caching.
+        const retryKey=`thailand2026:updateRetry:${latest}`;
+        if(!sessionStorage.getItem(retryKey)){
+          sessionStorage.setItem(retryKey,"1");
+          currentUrl.searchParams.set("_refresh",Date.now().toString());
+          location.replace(currentUrl.toString());
+          return true;
+        }
+
+        console.warn(`Requested version ${latest}, but loaded ${APP_VERSION}.`);
+        return false;
+      }catch(err){
+        console.warn("Version check skipped:",err);
+        return false;
+      }
+    }
+
+    async function scheduleUpdateChecks(){
+      // Check again when the app returns from the background.
+      document.addEventListener("visibilitychange",async()=>{
+        if(document.visibilityState==="visible"){
+          await checkForAppUpdate();
+        }
+      });
+
+      // Also check periodically during a long-open session.
+      setInterval(()=>checkForAppUpdate(),5*60*1000);
+    }
 
     async function loadTripConfig(){
       const response=await fetch(`trip-config.json?v=${APP_VERSION}`,{cache:"no-store"});
@@ -1545,6 +1593,12 @@
 
     async function boot(){
       runVersionMigration();
+
+      const updateStarted=await checkForAppUpdate();
+      if(updateStarted) return;
+
+      scheduleUpdateChecks();
+
       try{
         await loadTripConfig();
       }catch(err){

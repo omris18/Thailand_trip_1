@@ -683,7 +683,7 @@
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, setDoc, doc, getDocs, getDoc, query, where,
-      orderBy, serverTimestamp, Timestamp
+      orderBy, limit, serverTimestamp, Timestamp
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
     import {
       getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
@@ -692,8 +692,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.1.0-GOLD";
-    const BUILD_ID = "20260712.01";
+    const APP_VERSION = "7.1.1-GOLD";
+    const BUILD_ID = "20260712.02";
 
     let CONFIG = {
       firebase: {

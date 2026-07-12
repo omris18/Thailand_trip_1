@@ -1,7 +1,7 @@
 {
-  "version": "7.1.0-GOLD",
-  "build": "20260712.01",
+  "version": "7.1.1-GOLD",
+  "build": "20260712.02",
   "releasedAt": "2026-07-12",
   "channel": "gold",
-  "message": "Final GOLD release"
+  "message": "Health-check fix: imported Firestore limit()"
 }

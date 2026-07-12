@@ -271,6 +271,43 @@
     .book-route-stop.passed .book-route-dot{background:#22c55e;box-shadow:0 0 0 2px #22c55e}.book-route-stop.current .book-route-dot{background:#f97316;box-shadow:0 0 0 3px #f97316}
     .book-route-plane{position:absolute;right:4px;font-size:31px;transform:rotate(-90deg) translateY(-2px);z-index:4;filter:drop-shadow(0 5px 5px rgba(15,23,42,.2))}
 
+
+    /* --- Coffee table book 6.2 --- */
+    .book-cover-luxury{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(150deg,#f6c48d 0%,#f9e3c6 38%,#7dd3fc 100%);color:#0f2f57}
+    .book-cover-luxury .cover-frame{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid rgba(15,47,87,.25);padding:28px}
+    .book-cover-luxury .cover-title{font-family:Georgia,serif;font-style:italic;font-size:72px;line-height:.9;margin:0}
+    .book-cover-luxury .cover-year{font-size:44px;font-weight:900;margin:8px 0 18px}
+    .book-cover-luxury .cover-photo{width:430px;height:340px;object-fit:contain;background:#fff;border:14px solid #fff;box-shadow:0 20px 50px rgba(15,47,87,.28);transform:rotate(-2deg)}
+    .book-cover-luxury .cover-family{margin-top:24px;background:rgba(255,255,255,.72);padding:10px 28px;border-radius:6px;font-size:26px;font-weight:900}
+    .book-cover-luxury .cover-stamp{position:absolute;left:42px;bottom:38px;width:120px;height:120px;border:4px double #7c2d12;border-radius:50%;display:grid;place-items:center;color:#7c2d12;font-weight:900;transform:rotate(-12deg)}
+    .book-intro,.book-day-editorial,.book-collage,.book-final{background:#fbf7ef}
+    .intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+    .flight-ticket{background:#fff;border:1px solid #d7dce3;border-radius:20px;padding:22px;box-shadow:0 10px 25px rgba(15,23,42,.08)}
+    .flight-ticket h3{margin:0 0 12px;color:#173b67}.flight-ticket .big{font-size:28px;font-weight:900;color:#0f2f57}
+    .flight-ticket .route{display:flex;justify-content:space-between;margin:16px 0;font-size:18px;font-weight:800}.flight-ticket .meta{color:#667085}
+    .full-route-page{background:#eef8fb}
+    .route-hero{height:860px;border-radius:28px;background:linear-gradient(180deg,#dff4ff,#ecfdf5);position:relative;margin-top:28px;overflow:hidden}
+    .route-hero-line{position:absolute;right:50%;top:90px;bottom:90px;width:7px;background:repeating-linear-gradient(#7c3aed 0 14px,transparent 14px 27px);border-radius:999px}
+    .route-hero-stop{position:absolute;right:50%;transform:translateX(50%);display:flex;align-items:center;gap:16px;width:420px}
+    .route-hero-stop:nth-child(odd){flex-direction:row-reverse}
+    .route-hero-dot{width:26px;height:26px;border-radius:50%;background:#fff;border:7px solid #7c3aed;box-shadow:0 6px 15px rgba(15,23,42,.15)}
+    .route-hero-label{background:#fff;border-radius:16px;padding:12px 18px;box-shadow:0 8px 20px rgba(15,23,42,.12);font-size:18px;font-weight:900}
+    .route-hero-plane{position:absolute;right:calc(50% - 29px);font-size:50px;transform:rotate(-90deg)}
+    .book-transition{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(145deg,#fde7c7,#c7ecff);color:#123a66}
+    .book-transition h1{font-family:Georgia,serif;font-style:italic;font-size:78px;margin:0 0 14px}.book-transition p{font-size:24px}
+    .editorial-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #173b67;padding-bottom:14px}
+    .editorial-head h2{font-size:42px;margin:0;color:#123a66}.editorial-head .meta{font-size:18px;color:#667085}
+    .editorial-body{display:grid;grid-template-columns:85px 1fr;gap:24px;margin-top:24px}
+    .editorial-route{position:relative;border-left:2px dashed #173b67;min-height:840px}
+    .editorial-plane{position:absolute;left:-21px;font-size:35px;transform:rotate(-90deg)}
+    .editorial-main{display:grid;gap:14px}.editorial-hero{height:500px;border-radius:24px;overflow:hidden;box-shadow:0 12px 28px rgba(15,23,42,.14)}
+    .editorial-hero img,.editorial-thumb img{width:100%;height:100%;object-fit:cover}.editorial-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .editorial-thumb{height:190px;border-radius:18px;overflow:hidden}.editorial-story{font-size:18px;line-height:1.6;color:#344054;margin-top:14px;padding:0 8px}
+    .collage-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:230px;gap:12px;margin-top:26px}.collage-grid img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+    .collage-grid img:nth-child(1){grid-column:span 2;grid-row:span 2}
+    .book-final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.book-final h1{font-family:Georgia,serif;font-size:56px;color:#123a66;margin:0}
+    .book-final p{font-size:24px;line-height:1.7;max-width:620px;color:#475467}.book-final .heart{font-size:70px}
+
   </style>
 </head>
 <body>
@@ -670,7 +707,7 @@
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const APP_VERSION = "6.1.0";
+    const APP_VERSION = "6.2.0";
     const urlParams = new URLSearchParams(location.search);
     const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
     const familyKey = urlParams.get("key") || "";
@@ -1250,51 +1287,57 @@
       return url;
     }
 
+
     function createBookCover(){
       const page=document.createElement("section");
-      page.className="book-page book-cover";
-      page.innerHTML=`<img src="${familyImage}" alt="משפחת ${esc(family.name)}">
-        <h1>THAILAND 2026</h1>
-        <h2>המסע של משפחת ${esc(family.name)}</h2>
-        <p>26.07.2026 - 19.08.2026</p>`;
+      page.className="book-page book-cover-luxury";
+      page.innerHTML=`<div class="cover-frame"><h1 class="cover-title">Thailand</h1><div class="cover-year">2026</div><img class="cover-photo" src="${familyImage}" alt="משפחת ${esc(family.name)}"><div class="cover-family">משפחת ${esc(family.name)}</div><p>26.07.2026 – 19.08.2026</p><div class="cover-stamp">THAILAND<br>2026</div></div>`;
       return page;
     }
-
-    function createBookDayPage(date,dayNum,photos,photoUrls,pageIndex,totalPages){
+    function createIntroPage(){
       const page=document.createElement("section");
-      page.className="book-page";
-      const hotel=hotelFor(date);
-      const flight=flightFor(date);
-      const title=hotel?hotel.city:flight?flight.title:"יום במסע";
-      page.innerHTML=`<header class="book-day-head">
-          <div><h2>${esc(title)}</h2><p>${fmtDate(date)}${hotel?` · ${esc(hotel.shortName)}`:""}${flight?.flightNumber?` · ${esc(flight.flightNumber)}`:""}</p></div>
-          <div class="book-day-badge">יום ${dayNum}${totalPages>1?` · ${pageIndex+1}/${totalPages}`:""}</div>
-        </header>`;
-      const layout=document.createElement("div");
-      layout.className="book-layout";
-      const photoBox=document.createElement("div");
-      photoBox.className=`book-photos ${photos.length===1?"one":photos.length===2?"two":""}`;
-      if(!photos.length){
-        photoBox.innerHTML='<div class="book-empty">📸<br>לא הועלו תמונות ביום זה</div>';
-      }else{
-        photos.forEach((p,i)=>{
-          const frame=document.createElement("div");
-          frame.className="book-photo";
-          frame.innerHTML=`<img src="${photoUrls[i]}" alt="תמונה מיום ${dayNum}">`;
-          photoBox.appendChild(frame);
-        });
+      page.className="book-page book-intro";
+      page.innerHTML=`<header class="editorial-head"><div><h2>התחלנו את המסע</h2><div class="meta">משפחת ${esc(family.name)} · תאילנד 2026</div></div><div style="font-size:48px">✈️</div></header>`;
+      const grid=document.createElement("div");grid.className="intro-grid";
+      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}</div>`;grid.appendChild(ticket)});
+      page.appendChild(grid);return page;
+    }
+    function createFullRoutePage(){
+      const page=document.createElement("section");page.className="book-page full-route-page";
+      page.innerHTML=`<header class="editorial-head"><div><h2>מסלול הטיול שלנו</h2><div class="meta">ישראל → תאילנד → דובאי → ישראל</div></div><div style="font-size:46px">🗺️</div></header>`;
+      const hero=document.createElement("div");hero.className="route-hero";hero.innerHTML='<div class="route-hero-line"></div>';
+      CONFIG.mapStops.forEach((stop,index)=>{const el=document.createElement("div");el.className="route-hero-stop";el.style.top=`${70+index*95}px`;el.innerHTML=`<span class="route-hero-dot"></span><span class="route-hero-label">${stop.icon} ${esc(stop.name)} · ${fmtDate(stop.date)}</span>`;hero.appendChild(el)});
+      const plane=document.createElement("div");plane.className="route-hero-plane";plane.style.top="420px";plane.textContent="✈️";hero.appendChild(plane);page.appendChild(hero);return page;
+    }
+    function createTransitionPage(title,subtitle){
+      const page=document.createElement("section");page.className="book-page book-transition";
+      page.innerHTML=`<div style="font-size:75px">🌴</div><h1>${esc(title)}</h1><p>${esc(subtitle||"")}</p><div style="font-size:55px;margin-top:20px">♡</div>`;return page;
+    }
+    function createBookDayPage(date,dayNum,photos,photoUrls){
+      const page=document.createElement("section");page.className="book-page book-day-editorial";
+      const hotel=hotelFor(date),flight=flightFor(date),title=hotel?hotel.city:flight?flight.title:"יום במסע";
+      page.innerHTML=`<header class="editorial-head"><div><h2>יום ${dayNum} · ${esc(title)}</h2><div class="meta">${fmtDate(date)}${hotel?` · ${esc(hotel.shortName)}`:""}${flight?.flightNumber?` · ${esc(flight.flightNumber)}`:""}</div></div><div style="font-size:42px">${hotel?"📍":flight?"✈️":"📸"}</div></header>`;
+      const body=document.createElement("div");body.className="editorial-body";
+      const route=document.createElement("div");route.className="editorial-route";
+      const active=destinationForDate(date),activeIndex=Math.max(0,CONFIG.mapStops.findIndex(s=>s.id===active.id));
+      const plane=document.createElement("div");plane.className="editorial-plane";plane.style.top=`${Math.min(780,60+activeIndex*92)}px`;plane.textContent="✈️";route.appendChild(plane);
+      const main=document.createElement("div");main.className="editorial-main";
+      if(!photos.length){const empty=document.createElement("div");empty.className="book-empty";empty.textContent="לא הועלו תמונות ביום זה";main.appendChild(empty)}
+      else{
+        const hero=document.createElement("div");hero.className="editorial-hero";hero.innerHTML=`<img src="${photoUrls[0]}" alt="תמונה מיום ${dayNum}">`;main.appendChild(hero);
+        if(photoUrls.length>1){const thumbs=document.createElement("div");thumbs.className="editorial-thumbs";photoUrls.slice(1,4).forEach(url=>{const t=document.createElement("div");t.className="editorial-thumb";t.innerHTML=`<img src="${url}" alt="">`;thumbs.appendChild(t)});main.appendChild(thumbs)}
+        const captions=[...new Set(photos.map(p=>p.caption).filter(Boolean))];const story=document.createElement("div");story.className="editorial-story";story.textContent=captions.length?captions.join(" · "):"עוד יום שנשמור בלב.";main.appendChild(story)
       }
-      layout.appendChild(photoBox);
-      layout.appendChild(createBookRoute(date));
-      page.appendChild(layout);
-      const captions=[...new Set(photos.map(p=>p.caption).filter(Boolean))];
-      if(captions.length){
-        const caption=document.createElement("div");
-        caption.className="book-caption";
-        caption.textContent=captions.join(" · ");
-        page.appendChild(caption);
-      }
-      return page;
+      body.appendChild(route);body.appendChild(main);page.appendChild(body);return page;
+    }
+    function createCollagePage(photoUrls){
+      const page=document.createElement("section");page.className="book-page book-collage";
+      page.innerHTML=`<header class="editorial-head"><div><h2>רגעים שנשארו איתנו</h2><div class="meta">קולאז׳ מהמסע המשפחתי</div></div><div style="font-size:44px">❤️</div></header>`;
+      const grid=document.createElement("div");grid.className="collage-grid";photoUrls.slice(0,10).forEach(url=>{const img=document.createElement("img");img.src=url;grid.appendChild(img)});page.appendChild(grid);return page;
+    }
+    function createFinalPage(){
+      const page=document.createElement("section");page.className="book-page book-final";
+      page.innerHTML=`<div class="heart">❤️</div><h1>המסע שלנו בתאילנד</h1><p>המסע הזה נגמר, אבל הסיפורים שלו ילוו אותנו עוד שנים.<br><br>לא משנה לאן נטוס בפעם הבאה — הכי כיף שאנחנו עושים את זה ביחד.</p><h2>משפחת ${esc(family.name)}</h2><div style="margin-top:30px;font-weight:900;color:#123a66">Thailand 2026</div>`;return page;
     }
 
     async function waitForBookImages(container){
@@ -1327,28 +1370,28 @@
           byDate.get(p.tripDate).push(p);
         });
 
-        const pages=[createBookCover()];
+        const pages=[createBookCover(),createIntroPage(),createFullRoutePage()];
+        const allPhotoUrls=[];
+        let previousDestination=null;
         for(let i=0;i<daysTotal;i++){
           const date=addDays(CONFIG.trip.startDate,i);
+          const currentDestination=destinationForDate(date);
+          if(previousDestination && currentDestination.id!==previousDestination.id){
+            pages.push(createTransitionPage(`Welcome to ${currentDestination.name}`,fmtDate(date)));
+          }
+          previousDestination=currentDestination;
           const dayUploads=byDate.get(date)||[];
           const chunks=[];
           if(!dayUploads.length)chunks.push([]);
-          else{
-            for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage){
-              chunks.push(dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage));
-            }
-          }
-
-          for(let chunkIndex=0;chunkIndex<chunks.length;chunkIndex++){
-            const chunk=chunks[chunkIndex];
+          else for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage)chunks.push(dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage));
+          for(const chunk of chunks){
             const urls=[];
-            for(const upload of chunk){
-              urls.push(await blobUrlForUpload(upload,urlsToRevoke));
-            }
-            pages.push(createBookDayPage(date,i+1,chunk,urls,chunkIndex,chunks.length));
+            for(const upload of chunk){const url=await blobUrlForUpload(upload,urlsToRevoke);urls.push(url);allPhotoUrls.push(url)}
+            pages.push(createBookDayPage(date,i+1,chunk,urls));
           }
         }
-
+        if(allPhotoUrls.length)pages.push(createCollagePage(allPhotoUrls));
+        pages.push(createFinalPage());
         pages.forEach(p=>stage.appendChild(p));
         await waitForBookImages(stage);
 

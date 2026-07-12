@@ -241,6 +241,36 @@
     .reminder-controls input{width:100%;border:1px solid #fdba74;border-radius:12px;padding:9px;background:#fff}
     .reminder-note{font-size:11px;color:#92400e;margin-top:8px}
 
+
+    /* --- Family travel book PDF --- */
+    .pdf-export-card{background:linear-gradient(135deg,#ede9fe,#fdf2f8);border:1px solid #c4b5fd;border-radius:24px;padding:18px;margin:17px 0;box-shadow:var(--shadow)}
+    .pdf-export-top{display:flex;gap:12px;align-items:center}.pdf-export-icon{font-size:38px}.pdf-export-card h3{margin:0}.pdf-export-card p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pdf-export-actions{margin-top:13px}.pdf-export-status{font-size:12px;color:#5b21b6;margin-top:9px;font-weight:700}
+    .pdf-stage{position:fixed;left:-12000px;top:0;width:794px;z-index:-1000;background:#fff}
+    .book-page{direction:rtl;width:794px;height:1123px;background:#fff;position:relative;overflow:hidden;font-family:"Heebo",Arial,sans-serif;color:#172033;padding:48px}
+    .book-page:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(224,242,254,.5),transparent 34%,rgba(237,233,254,.45));pointer-events:none}
+    .book-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(150deg,#0ea5e9,#7c3aed 55%,#ec4899);color:#fff}
+    .book-cover:before{background:radial-gradient(circle at 18% 16%,rgba(255,255,255,.3),transparent 20%),radial-gradient(circle at 84% 78%,rgba(255,255,255,.2),transparent 24%)}
+    .book-cover img{width:390px;height:390px;object-fit:contain;border-radius:38px;background:rgba(255,255,255,.94);padding:18px;box-shadow:0 25px 60px rgba(15,23,42,.3);position:relative}
+    .book-cover h1{font-size:58px;margin:26px 0 5px;position:relative}.book-cover h2{font-size:31px;margin:0;position:relative}.book-cover p{font-size:20px;position:relative}
+    .book-day-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #7c3aed;padding-bottom:15px;position:relative}
+    .book-day-head h2{font-size:34px;margin:0}.book-day-head p{margin:4px 0 0;color:#667085;font-size:17px}.book-day-badge{background:#7c3aed;color:#fff;border-radius:18px;padding:10px 16px;font-size:20px;font-weight:900}
+    .book-layout{display:grid;grid-template-columns:1fr 190px;gap:25px;margin-top:25px;position:relative}
+    .book-photos{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;align-content:start}
+    .book-photo{height:310px;border-radius:22px;overflow:hidden;background:#f1f5f9;box-shadow:0 9px 23px rgba(15,23,42,.13)}
+    .book-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .book-photos.one{grid-template-columns:1fr}.book-photos.one .book-photo{height:710px}
+    .book-photos.two{grid-template-columns:1fr}.book-photos.two .book-photo{height:345px}
+    .book-empty{height:710px;border:3px dashed #cbd5e1;border-radius:25px;display:grid;place-items:center;text-align:center;color:#64748b;font-size:25px;padding:30px;background:#f8fafc}
+    .book-caption{position:absolute;right:48px;left:263px;bottom:45px;border-top:1px solid #e5e7eb;padding-top:12px;color:#475467;font-size:16px;max-height:70px;overflow:hidden}
+    .book-route{background:#f8fafc;border:1px solid #e2e8f0;border-radius:22px;padding:16px;height:830px}
+    .book-route h3{margin:0 0 14px;text-align:center;color:#5b21b6}.book-route-line{position:relative;height:755px}
+    .book-route-line:before{content:"";position:absolute;right:24px;top:20px;bottom:20px;width:5px;background:linear-gradient(#7c3aed,#ec4899,#f97316);border-radius:999px}
+    .book-route-stop{position:relative;display:flex;align-items:center;gap:9px;height:94px;font-size:12px;font-weight:800}
+    .book-route-dot{width:19px;height:19px;border-radius:50%;background:#cbd5e1;border:4px solid #fff;box-shadow:0 0 0 2px #cbd5e1;z-index:2;flex:0 0 auto}
+    .book-route-stop.passed .book-route-dot{background:#22c55e;box-shadow:0 0 0 2px #22c55e}.book-route-stop.current .book-route-dot{background:#f97316;box-shadow:0 0 0 3px #f97316}
+    .book-route-plane{position:absolute;right:4px;font-size:31px;transform:rotate(-90deg) translateY(-2px);z-index:4;filter:drop-shadow(0 5px 5px rgba(15,23,42,.2))}
+
   </style>
 </head>
 <body>
@@ -331,6 +361,18 @@
       <section class="panel">
         <div class="passport-top"><div class="passport-icon">🛂</div><div><h3>הדרכון המשפחתי</h3><p id="passportText">החותמות יופיעו כאן לאחר השלמת משימות</p></div></div>
         <div id="stamps" class="stamps"></div>
+      </section>
+
+
+      <section id="pdfExportCard" class="pdf-export-card hidden">
+        <div class="pdf-export-top">
+          <div class="pdf-export-icon">📖</div>
+          <div><h3>ספר המסע המשפחתי</h3><p>ייצוא כל התמונות, התאריכים והמסלול של משפחתכם לקובץ PDF מסודר.</p></div>
+        </div>
+        <div class="pdf-export-actions">
+          <button id="exportFamilyPdf" class="btn primary full">📄 יצירת ספר PDF</button>
+          <div id="pdfExportStatus" class="pdf-export-status"></div>
+        </div>
       </section>
 
       <section class="panel">
@@ -507,6 +549,7 @@
     </div>
   </section>
 
+  <div id="pdfBookStage" class="pdf-stage" aria-hidden="true"></div>
   <div id="confetti" class="confetti hidden"></div>
 
   <script type="module">
@@ -523,6 +566,8 @@
       getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
     import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+    import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
+    import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
     const CONFIG = {
       firebase: {
@@ -585,12 +630,18 @@
         {shortName:"Eastin Grand Hotel Bangkok",city:"בנגקוק",startDate:"2026-08-16",endDate:"2026-08-19",mapsQuery:"Eastin Grand Hotel Sathorn Bangkok"}
       ],
       flights: [
-        {title:"יציאה מישראל",date:"2026-07-26",time:"20:45",from:"נתב״ג",to:"דובאי ומשם תאילנד",icon:"✈️"},
+        {title:"טיסה הלוך",flightNumber:"EK2471",date:"2026-07-26",time:"19:45",from:"נתב״ג",to:"דובאי ומשם תאילנד",icon:"✈️"},
         {title:"טיסת פנים",date:"2026-08-06",time:"18:25",from:"קראבי",to:"קו סמוי",icon:"🛫"},
         {title:"טיסת פנים",date:"2026-08-12",time:"11:10",from:"קו סמוי",to:"פאטייה",icon:"🛫"},
-        {title:"טיסה חזרה לישראל",date:"2026-08-18",time:"22:00",from:"בנגקוק",to:"ישראל, עם עצירה בדובאי",icon:"🛬"},
-        {title:"נחיתה בישראל",date:"2026-08-19",time:"לאחר עצירה בדובאי",from:"דובאי",to:"נתב״ג",icon:"🇮🇱"}
+        {title:"טיסה חזרה",flightNumber:"EK377",date:"2026-08-19",time:"02:50",from:"בנגקוק",to:"דובאי",icon:"🛬"},
+        {title:"עצירה בדובאי",date:"2026-08-19",time:"בוקר",from:"דובאי",to:"נתב״ג",icon:"🇦🇪"}
       ],
+      pdfBook: {
+        unlockDate:"2026-08-19",
+        unlockTime:"10:00",
+        unlockTimezone:"Asia/Dubai",
+        maxPhotosPerPage:4
+      },
       tasks: {
         "2026-07-26": {default:{title:"משימת הפתיחה",description:"הצטלמו יחד לפני היציאה למסע. זוהי משימת בדיקה עד שנכניס את רשימת המשימות הסופית."}}
       },
@@ -619,7 +670,7 @@
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const APP_VERSION = "6.0.0";
+    const APP_VERSION = "6.1.0";
     const urlParams = new URLSearchParams(location.search);
     const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
     const familyKey = urlParams.get("key") || "";
@@ -843,7 +894,7 @@
       $("familyHeroImage").src=familyImage;
       $("familyHeroImage").alt=`משפחת ${family.name}`;
       $("familyPhotoTitle").textContent=`התמונה של משפחת ${family.name}`;
-      renderToday();renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();renderFlights();updateTripProgress();
+      renderToday();renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();renderFlights();updateTripProgress();updatePdfAvailability();
     }
     function renderToday(){
       if(today<CONFIG.trip.startDate){
@@ -949,7 +1000,7 @@
       }
     }
     function renderFlights(){
-      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}</p></div></article>`).join("");
+      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}</p></div></article>`).join("");
     }
     function openDay(date,num){
       activeDate=date;activeDayNum=num;selectedFiles=[];
@@ -1136,6 +1187,201 @@
 
     $("addCalendarReminder").onclick=downloadDailyReminder;
 
+
+    function zonedMinuteKey(timeZone){
+      const parts=new Intl.DateTimeFormat("en-CA",{
+        timeZone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+      }).formatToParts(new Date());
+      const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+      return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+    }
+
+    function pdfIsUnlocked(){
+      const unlock=`${CONFIG.pdfBook.unlockDate}T${CONFIG.pdfBook.unlockTime}`;
+      return zonedMinuteKey(CONFIG.pdfBook.unlockTimezone)>=unlock;
+    }
+
+    function updatePdfAvailability(){
+      $("pdfExportCard").classList.toggle("hidden",!pdfIsUnlocked());
+    }
+
+    function destinationForDate(date){
+      let current=CONFIG.mapStops[0];
+      CONFIG.mapStops.forEach(stop=>{if(date>=stop.date)current=stop});
+      return current;
+    }
+
+    function createBookRoute(date){
+      const route=document.createElement("aside");
+      route.className="book-route";
+      route.innerHTML="<h3>מסלול המסע</h3>";
+      const line=document.createElement("div");
+      line.className="book-route-line";
+      const active=destinationForDate(date);
+      let activeIndex=0;
+      CONFIG.mapStops.forEach((stop,index)=>{
+        if(stop.id===active.id)activeIndex=index;
+        const el=document.createElement("div");
+        el.className=`book-route-stop ${date>stop.date?"passed":date===stop.date?"current":""}`;
+        el.innerHTML=`<span class="book-route-dot"></span><span>${stop.icon} ${esc(stop.name)}</span>`;
+        line.appendChild(el);
+      });
+      const plane=document.createElement("div");
+      plane.className="book-route-plane";
+      plane.textContent="✈️";
+      plane.style.top=`${activeIndex*94+23}px`;
+      line.appendChild(plane);
+      route.appendChild(line);
+      return route;
+    }
+
+    async function fetchFamilyBookUploads(){
+      const snap=await getDocs(query(collection(db,"uploads"),where("familyId","==",family.id)));
+      const items=[];
+      snap.forEach(d=>items.push({id:d.id,...d.data()}));
+      items.sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||"") || ((a.createdAt?.toMillis?.()||0)-(b.createdAt?.toMillis?.()||0)));
+      return items;
+    }
+
+    async function blobUrlForUpload(upload,urlsToRevoke){
+      const blob=await getBlob(ref(storage,upload.storagePath));
+      const url=URL.createObjectURL(blob);
+      urlsToRevoke.push(url);
+      return url;
+    }
+
+    function createBookCover(){
+      const page=document.createElement("section");
+      page.className="book-page book-cover";
+      page.innerHTML=`<img src="${familyImage}" alt="משפחת ${esc(family.name)}">
+        <h1>THAILAND 2026</h1>
+        <h2>המסע של משפחת ${esc(family.name)}</h2>
+        <p>26.07.2026 - 19.08.2026</p>`;
+      return page;
+    }
+
+    function createBookDayPage(date,dayNum,photos,photoUrls,pageIndex,totalPages){
+      const page=document.createElement("section");
+      page.className="book-page";
+      const hotel=hotelFor(date);
+      const flight=flightFor(date);
+      const title=hotel?hotel.city:flight?flight.title:"יום במסע";
+      page.innerHTML=`<header class="book-day-head">
+          <div><h2>${esc(title)}</h2><p>${fmtDate(date)}${hotel?` · ${esc(hotel.shortName)}`:""}${flight?.flightNumber?` · ${esc(flight.flightNumber)}`:""}</p></div>
+          <div class="book-day-badge">יום ${dayNum}${totalPages>1?` · ${pageIndex+1}/${totalPages}`:""}</div>
+        </header>`;
+      const layout=document.createElement("div");
+      layout.className="book-layout";
+      const photoBox=document.createElement("div");
+      photoBox.className=`book-photos ${photos.length===1?"one":photos.length===2?"two":""}`;
+      if(!photos.length){
+        photoBox.innerHTML='<div class="book-empty">📸<br>לא הועלו תמונות ביום זה</div>';
+      }else{
+        photos.forEach((p,i)=>{
+          const frame=document.createElement("div");
+          frame.className="book-photo";
+          frame.innerHTML=`<img src="${photoUrls[i]}" alt="תמונה מיום ${dayNum}">`;
+          photoBox.appendChild(frame);
+        });
+      }
+      layout.appendChild(photoBox);
+      layout.appendChild(createBookRoute(date));
+      page.appendChild(layout);
+      const captions=[...new Set(photos.map(p=>p.caption).filter(Boolean))];
+      if(captions.length){
+        const caption=document.createElement("div");
+        caption.className="book-caption";
+        caption.textContent=captions.join(" · ");
+        page.appendChild(caption);
+      }
+      return page;
+    }
+
+    async function waitForBookImages(container){
+      const images=[...container.querySelectorAll("img")];
+      await Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
+        img.onload=resolve;img.onerror=resolve;
+      })));
+      if(document.fonts?.ready) await document.fonts.ready;
+    }
+
+    async function exportFamilyBookPdf(){
+      const btn=$("exportFamilyPdf");
+      const status=$("pdfExportStatus");
+      const urlsToRevoke=[];
+      const stage=$("pdfBookStage");
+      const original=btn.innerHTML;
+      try{
+        if(!pdfIsUnlocked()){
+          throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+        }
+        btn.disabled=true;
+        btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
+        status.textContent="אוסף את תמונות המשפחה…";
+        stage.innerHTML="";
+
+        const uploads=await fetchFamilyBookUploads();
+        const byDate=new Map();
+        uploads.forEach(p=>{
+          if(!byDate.has(p.tripDate))byDate.set(p.tripDate,[]);
+          byDate.get(p.tripDate).push(p);
+        });
+
+        const pages=[createBookCover()];
+        for(let i=0;i<daysTotal;i++){
+          const date=addDays(CONFIG.trip.startDate,i);
+          const dayUploads=byDate.get(date)||[];
+          const chunks=[];
+          if(!dayUploads.length)chunks.push([]);
+          else{
+            for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage){
+              chunks.push(dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage));
+            }
+          }
+
+          for(let chunkIndex=0;chunkIndex<chunks.length;chunkIndex++){
+            const chunk=chunks[chunkIndex];
+            const urls=[];
+            for(const upload of chunk){
+              urls.push(await blobUrlForUpload(upload,urlsToRevoke));
+            }
+            pages.push(createBookDayPage(date,i+1,chunk,urls,chunkIndex,chunks.length));
+          }
+        }
+
+        pages.forEach(p=>stage.appendChild(p));
+        await waitForBookImages(stage);
+
+        const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+        for(let i=0;i<pages.length;i++){
+          status.textContent=`מעבד עמוד ${i+1} מתוך ${pages.length}…`;
+          const canvas=await html2canvas(pages[i],{
+            scale:1.45,useCORS:true,backgroundColor:"#ffffff",logging:false,
+            width:794,height:1123,windowWidth:794,windowHeight:1123
+          });
+          const image=canvas.toDataURL("image/jpeg",.84);
+          if(i>0)pdf.addPage("a4","portrait");
+          pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
+          await new Promise(r=>setTimeout(r,20));
+        }
+
+        status.textContent="מוריד את ספר המסע…";
+        pdf.save(`Thailand-2026-משפחת-${family.name}.pdf`);
+        status.textContent="ספר המסע נוצר בהצלחה ✅";
+      }catch(err){
+        console.error(err);
+        status.textContent=err?.message||"יצירת ה-PDF נכשלה.";
+        alert(err?.message||"יצירת ה-PDF נכשלה.");
+      }finally{
+        btn.disabled=false;
+        btn.innerHTML=original;
+        stage.innerHTML="";
+        urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
+      }
+    }
+
+    $("exportFamilyPdf").onclick=exportFamilyBookPdf;
+
     function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
     function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
     $("menuBtn").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("drawerShade").onclick=closeDrawer;
@@ -1320,6 +1566,8 @@
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
       }else{
         renderFamily();await initFirebase();
+        updatePdfAvailability();
+        setInterval(updatePdfAvailability,60000);
         if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);
       }
     }

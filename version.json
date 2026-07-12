@@ -1,5 +1,5 @@
 {
-  "version": "6.6.0-test",
+  "version": "6.6.1-test",
   "releasedAt": "2026-07-12",
-  "message": "Temporary QA build: PDF unlocked, ZIP testing enabled"
+  "message": "Optimized compact PDF QA build for mobile"
 }

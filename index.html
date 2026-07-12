@@ -672,7 +672,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "6.6.0-test";
+    const APP_VERSION = "6.6.1-test";
 
     let CONFIG = {
       firebase: {
@@ -1485,7 +1485,7 @@
         }
         btn.disabled=true;
         btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
-        status.textContent="בדיקה: אוסף את תמונות המשפחה מ־Firebase…";
+        status.textContent="בדיקה מהירה: אוסף תמונות ובונה רק ימים שבהם קיימות העלאות…";
         stage.innerHTML="";
 
         const uploads=await fetchFamilyBookUploads();
@@ -1495,27 +1495,42 @@
           byDate.get(p.tripDate).push(p);
         });
 
-        const pages=[createBookCover(),createIntroPage(),createFullRoutePage()];
+        const pages=[createBookCover()];
         const allPhotoUrls=[];
+        const photoDates=[...byDate.keys()].sort();
+
+        // QA/mobile optimization: render only dates that actually contain photos.
+        // The final locked build may include all trip days after performance approval.
+        if(photoDates.length){
+          pages.push(createIntroPage());
+          pages.push(createFullRoutePage());
+        }
+
         let previousDestination=null;
-        for(let i=0;i<daysTotal;i++){
-          const date=addDays(CONFIG.trip.startDate,i);
+        for(const date of photoDates){
+          const dayIndex=Math.round((parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000);
+          const dayNum=dayIndex+1;
           const currentDestination=destinationForDate(date);
+
           if(previousDestination && currentDestination.id!==previousDestination.id){
             pages.push(createTransitionPage(`Welcome to ${currentDestination.name}`,fmtDate(date)));
           }
           previousDestination=currentDestination;
+
           const dayUploads=byDate.get(date)||[];
-          const chunks=[];
-          if(!dayUploads.length)chunks.push([]);
-          else for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage)chunks.push(dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage));
-          for(const chunk of chunks){
+          for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage){
+            const chunk=dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage);
             const urls=[];
-            for(const upload of chunk){const url=await blobUrlForUpload(upload,urlsToRevoke);urls.push(url);allPhotoUrls.push(url)}
-            pages.push(createBookDayPage(date,i+1,chunk,urls));
+            for(const upload of chunk){
+              const url=await blobUrlForUpload(upload,urlsToRevoke);
+              urls.push(url);
+              allPhotoUrls.push(url);
+            }
+            pages.push(createBookDayPage(date,dayNum,chunk,urls));
           }
         }
-        if(allPhotoUrls.length)pages.push(createCollagePage(allPhotoUrls));
+
+        if(allPhotoUrls.length>1) pages.push(createCollagePage(allPhotoUrls));
         pages.push(createFinalPage());
         pages.forEach(p=>stage.appendChild(p));
         await waitForBookImages(stage);
@@ -1523,14 +1538,22 @@
         const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
         for(let i=0;i<pages.length;i++){
           status.textContent=`מעבד עמוד ${i+1} מתוך ${pages.length}…`;
+          const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          const renderScale=mobile?0.82:1.08;
           const canvas=await html2canvas(pages[i],{
-            scale:1.45,useCORS:true,backgroundColor:"#ffffff",logging:false,
+            scale:renderScale,
+            useCORS:true,
+            backgroundColor:"#ffffff",
+            logging:false,
+            imageTimeout:12000,
+            removeContainer:true,
             width:794,height:1123,windowWidth:794,windowHeight:1123
           });
-          const image=canvas.toDataURL("image/jpeg",.84);
+          const image=canvas.toDataURL("image/jpeg",mobile ? .70 : .78);
           if(i>0)pdf.addPage("a4","portrait");
           pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
-          await new Promise(r=>setTimeout(r,20));
+          canvas.width=1;canvas.height=1;
+          await new Promise(r=>setTimeout(r,120));
         }
 
         status.textContent="מוריד את ספר המסע…";

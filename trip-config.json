@@ -1,0 +1,306 @@
+{
+  "schemaVersion": 1,
+  "travelersCount": 18,
+  "trip": {
+    "title": "Thailand 2026",
+    "startDate": "2026-07-26",
+    "endDate": "2026-08-19",
+    "timezone": "Asia/Bangkok"
+  },
+  "testMode": {
+    "enabled": true,
+    "forcedDate": "2026-07-26",
+    "showSimulationButton": false
+  },
+  "families": [
+    {
+      "id": "bohadana",
+      "name": "בוהדנה"
+    },
+    {
+      "id": "ovadia",
+      "name": "עובדיה"
+    },
+    {
+      "id": "moshe",
+      "name": "משה"
+    },
+    {
+      "id": "sadeh",
+      "name": "שדה"
+    },
+    {
+      "id": "buzaglo",
+      "name": "בוזגלו"
+    }
+  ],
+  "familyImages": {
+    "bohadana": "buhadana.png",
+    "ovadia": "ovadia.png",
+    "moshe": "moshe.png",
+    "sadeh": "sadeh.png",
+    "buzaglo": "buzaglo.png"
+  },
+  "puzzle": {
+    "totalPieces": 8,
+    "layout": [
+      1,
+      3,
+      8,
+      6,
+      5,
+      7,
+      2,
+      4
+    ],
+    "rewardOrder": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+  },
+  "taskPlan": {},
+  "mapStops": [
+    {
+      "id": "israel-out",
+      "name": "יציאה מישראל",
+      "date": "2026-07-26",
+      "icon": "🇮🇱",
+      "x": 15,
+      "y": 13,
+      "day": 1,
+      "flight": true
+    },
+    {
+      "id": "phuket",
+      "name": "פוקט",
+      "date": "2026-07-27",
+      "icon": "🏝️",
+      "x": 78,
+      "y": 23,
+      "day": 2,
+      "hotel": "Four Points Phuket"
+    },
+    {
+      "id": "khaolak",
+      "name": "קאו לאק",
+      "date": "2026-08-02",
+      "icon": "🌊",
+      "x": 22,
+      "y": 34,
+      "day": 8,
+      "hotel": "La Vela Khao Lak"
+    },
+    {
+      "id": "krabi",
+      "name": "קראבי",
+      "date": "2026-08-04",
+      "icon": "⛰️",
+      "x": 76,
+      "y": 47,
+      "day": 10,
+      "hotel": "Dusit Thani Krabi"
+    },
+    {
+      "id": "samui",
+      "name": "קו סמוי",
+      "date": "2026-08-06",
+      "icon": "🌴",
+      "x": 25,
+      "y": 59,
+      "day": 12,
+      "hotel": "Lemongrass Pool Villa"
+    },
+    {
+      "id": "pattaya",
+      "name": "פאטייה",
+      "date": "2026-08-12",
+      "icon": "🎡",
+      "x": 76,
+      "y": 71,
+      "day": 18,
+      "hotel": "Centara Grand Mirage Pattaya"
+    },
+    {
+      "id": "bangkok",
+      "name": "בנגקוק",
+      "date": "2026-08-16",
+      "icon": "🏙️",
+      "x": 28,
+      "y": 82,
+      "day": 22,
+      "hotel": "Eastin Grand Hotel Bangkok"
+    },
+    {
+      "id": "israel-in",
+      "name": "חזרה לישראל",
+      "date": "2026-08-19",
+      "icon": "🇮🇱",
+      "x": 79,
+      "y": 92,
+      "day": 25,
+      "flight": true
+    }
+  ],
+  "hotels": [
+    {
+      "shortName": "Four Points Phuket",
+      "city": "פוקט",
+      "startDate": "2026-07-27",
+      "endDate": "2026-08-02",
+      "mapsQuery": "Four Points by Sheraton Phuket Patong Beach Resort"
+    },
+    {
+      "shortName": "La Vela Khao Lak",
+      "city": "קאו לאק",
+      "startDate": "2026-08-02",
+      "endDate": "2026-08-04",
+      "mapsQuery": "La Vela Khao Lak"
+    },
+    {
+      "shortName": "Dusit Thani Krabi",
+      "city": "קראבי",
+      "startDate": "2026-08-04",
+      "endDate": "2026-08-06",
+      "mapsQuery": "Dusit Thani Krabi Beach Resort"
+    },
+    {
+      "shortName": "Lemongrass Pool Villa",
+      "city": "קו סמוי",
+      "startDate": "2026-08-06",
+      "endDate": "2026-08-10",
+      "mapsQuery": "Lemongrass Pool Villa Koh Samui"
+    },
+    {
+      "shortName": "Banana Fan Koh Samui",
+      "city": "קו סמוי",
+      "startDate": "2026-08-10",
+      "endDate": "2026-08-12",
+      "mapsQuery": "Banana Fan Sea Resort Koh Samui"
+    },
+    {
+      "shortName": "Centara Grand Mirage Pattaya",
+      "city": "פאטייה",
+      "startDate": "2026-08-12",
+      "endDate": "2026-08-16",
+      "mapsQuery": "Centara Grand Mirage Beach Resort Pattaya"
+    },
+    {
+      "shortName": "Eastin Grand Hotel Bangkok",
+      "city": "בנגקוק",
+      "startDate": "2026-08-16",
+      "endDate": "2026-08-19",
+      "mapsQuery": "Eastin Grand Hotel Sathorn Bangkok"
+    }
+  ],
+  "flights": [
+    {
+      "title": "טיסה הלוך",
+      "flightNumber": "EK2471",
+      "date": "2026-07-26",
+      "time": "19:45",
+      "from": "נתב״ג",
+      "to": "פוקט",
+      "via": "דובאי",
+      "icon": "✈️"
+    },
+    {
+      "title": "טיסת פנים",
+      "date": "2026-08-06",
+      "time": "18:25",
+      "from": "קראבי",
+      "to": "קו סמוי",
+      "icon": "🛫"
+    },
+    {
+      "title": "טיסת פנים",
+      "date": "2026-08-12",
+      "time": "11:10",
+      "from": "קו סמוי",
+      "to": "פאטייה",
+      "icon": "🛫"
+    },
+    {
+      "title": "טיסה חזרה",
+      "flightNumber": "EK377",
+      "date": "2026-08-19",
+      "time": "02:50",
+      "from": "בנגקוק",
+      "to": "נתב״ג",
+      "via": "דובאי",
+      "icon": "🛬"
+    }
+  ],
+  "pdfBook": {
+    "unlockDate": "2026-08-19",
+    "unlockTime": "10:00",
+    "unlockTimezone": "Asia/Dubai",
+    "maxPhotosPerPage": 4
+  },
+  "tasks": {},
+  "defaultTask": {
+    "title": "המשימה תיפתח בקרוב",
+    "description": "המשימה המשפחתית של היום עדיין לא הוזנה. אפשר לשמור תמונות מהיום ולחזור לכאן בהמשך."
+  },
+  "destinations": [
+    {
+      "name": "יציאה מישראל",
+      "icon": "✈️",
+      "date": "2026-07-26",
+      "color": "blue"
+    },
+    {
+      "name": "פוקט",
+      "icon": "🏝️",
+      "date": "2026-07-27",
+      "color": "orange"
+    },
+    {
+      "name": "קאו לאק",
+      "icon": "🌊",
+      "date": "2026-08-02",
+      "color": "green"
+    },
+    {
+      "name": "קראבי",
+      "icon": "⛰️",
+      "date": "2026-08-04",
+      "color": "purple"
+    },
+    {
+      "name": "קו סמוי",
+      "icon": "🌴",
+      "date": "2026-08-06",
+      "color": "green"
+    },
+    {
+      "name": "פאטייה",
+      "icon": "🎡",
+      "date": "2026-08-12",
+      "color": "orange"
+    },
+    {
+      "name": "בנגקוק",
+      "icon": "🏙️",
+      "date": "2026-08-16",
+      "color": "blue"
+    },
+    {
+      "name": "חזרה לישראל",
+      "icon": "🇮🇱",
+      "date": "2026-08-19",
+      "color": "purple"
+    }
+  ],
+  "upload": {
+    "maxFiles": 8,
+    "maxWidth": 1600,
+    "quality": 0.82,
+    "maxBytes": 2500000
+  }
+}

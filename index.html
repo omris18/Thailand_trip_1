@@ -606,7 +606,9 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const CONFIG = {
+    const APP_VERSION = "6.3.0";
+
+    let CONFIG = {
       firebase: {
         apiKey: "AIzaSyAgDNINMadRnwwl6IwL9JGrrSer0yWNk_4",
         authDomain: "thailand-trip-5e400.firebaseapp.com",
@@ -616,109 +618,64 @@
         appId: "1:1058440245906:web:2fab0377761e1cc820ac4b",
         measurementId: "G-8SRQHMRLZ1"
       },
-      adminEmail: "omris18@gmail.com",
-      trip: { startDate:"2026-07-26", endDate:"2026-08-19", timezone:"Asia/Bangkok" },
-      testMode: { enabled:true, forcedDate:"2026-07-26", showSimulationButton:false },
-      families: [
-        {id:"bohadana",name:"בוהדנה"},
-        {id:"ovadia",name:"עובדיה"},
-        {id:"moshe",name:"משה"},
-        {id:"sadeh",name:"שדה"},
-        {id:"buzaglo",name:"בוזגלו"}
-      ],
-      familyImages: {
-        bohadana: "buhadana.png",
-        ovadia: "ovadia.png",
-        moshe: "moshe.png",
-        sadeh: "sadeh.png",
-        buzaglo: "buzaglo.png"
-      },
-      puzzle: {
-        totalPieces: 8,
-        // סדר המיקום הפיזי לפי השרטוט TEST:
-        layout: [1,3,8,6,5,7,2,4],
-        // כרגע כל השלמה כרונולוגית פותחת את החלק הבא.
-        // כשנסגור את טבלת המשימות נחליף כאן את הסדר המדויק.
-        rewardOrder: [1,2,3,4,5,6,7,8]
-      },
-      taskPlan: {
-        // כאן נכניס בסוף את 8 המשימות הזהות לכל המשפחות.
-        // כל משימה תקבל מספר, תאריך וחלק פאזל תואם.
-        // דוגמה:
-        // 1: {date:"2026-07-26", title:"...", description:"...", puzzlePiece:1, minPhotos:1}
-      },
-      mapStops: [
-        {id:"israel-out",name:"יציאה מישראל",date:"2026-07-26",icon:"🇮🇱",x:15,y:13,day:1,flight:true},
-        {id:"phuket",name:"פוקט",date:"2026-07-27",icon:"🏝️",x:78,y:23,day:2,hotel:"Four Points Phuket"},
-        {id:"khaolak",name:"קאו לאק",date:"2026-08-02",icon:"🌊",x:22,y:34,day:8,hotel:"La Vela Khao Lak"},
-        {id:"krabi",name:"קראבי",date:"2026-08-04",icon:"⛰️",x:76,y:47,day:10,hotel:"Dusit Thani Krabi"},
-        {id:"samui",name:"קו סמוי",date:"2026-08-06",icon:"🌴",x:25,y:59,day:12,hotel:"Lemongrass Pool Villa"},
-        {id:"pattaya",name:"פאטייה",date:"2026-08-12",icon:"🎡",x:76,y:71,day:18,hotel:"Centara Grand Mirage Pattaya"},
-        {id:"bangkok",name:"בנגקוק",date:"2026-08-16",icon:"🏙️",x:28,y:82,day:22,hotel:"Eastin Grand Hotel Bangkok"},
-        {id:"israel-in",name:"חזרה לישראל",date:"2026-08-19",icon:"🇮🇱",x:79,y:92,day:25,flight:true}
-      ],
-      hotels: [
-        {shortName:"Four Points Phuket",city:"פוקט",startDate:"2026-07-27",endDate:"2026-08-02",mapsQuery:"Four Points by Sheraton Phuket Patong Beach Resort"},
-        {shortName:"La Vela Khao Lak",city:"קאו לאק",startDate:"2026-08-02",endDate:"2026-08-04",mapsQuery:"La Vela Khao Lak"},
-        {shortName:"Dusit Thani Krabi",city:"קראבי",startDate:"2026-08-04",endDate:"2026-08-06",mapsQuery:"Dusit Thani Krabi Beach Resort"},
-        {shortName:"Lemongrass Pool Villa",city:"קו סמוי",startDate:"2026-08-06",endDate:"2026-08-10",mapsQuery:"Lemongrass Pool Villa Koh Samui"},
-        {shortName:"Banana Fan Koh Samui",city:"קו סמוי",startDate:"2026-08-10",endDate:"2026-08-12",mapsQuery:"Banana Fan Sea Resort Koh Samui"},
-        {shortName:"Centara Grand Mirage Pattaya",city:"פאטייה",startDate:"2026-08-12",endDate:"2026-08-16",mapsQuery:"Centara Grand Mirage Beach Resort Pattaya"},
-        {shortName:"Eastin Grand Hotel Bangkok",city:"בנגקוק",startDate:"2026-08-16",endDate:"2026-08-19",mapsQuery:"Eastin Grand Hotel Sathorn Bangkok"}
-      ],
-      flights: [
-        {title:"טיסה הלוך",flightNumber:"EK2471",date:"2026-07-26",time:"19:45",from:"נתב״ג",to:"דובאי ומשם תאילנד",icon:"✈️"},
-        {title:"טיסת פנים",date:"2026-08-06",time:"18:25",from:"קראבי",to:"קו סמוי",icon:"🛫"},
-        {title:"טיסת פנים",date:"2026-08-12",time:"11:10",from:"קו סמוי",to:"פאטייה",icon:"🛫"},
-        {title:"טיסה חזרה",flightNumber:"EK377",date:"2026-08-19",time:"02:50",from:"בנגקוק",to:"דובאי",icon:"🛬"},
-        {title:"עצירה בדובאי",date:"2026-08-19",time:"בוקר",from:"דובאי",to:"נתב״ג",icon:"🇦🇪"}
-      ],
-      pdfBook: {
-        unlockDate:"2026-08-19",
-        unlockTime:"10:00",
-        unlockTimezone:"Asia/Dubai",
-        maxPhotosPerPage:4
-      },
-      tasks: {
-        "2026-07-26": {default:{title:"משימת הפתיחה",description:"הצטלמו יחד לפני היציאה למסע. זוהי משימת בדיקה עד שנכניס את רשימת המשימות הסופית."}}
-      },
-      defaultTask:{title:"המשימה תיפתח בקרוב",description:"המשימה המשפחתית של היום עדיין לא הוזנה. אפשר לשמור תמונות מהיום ולחזור לכאן בהמשך."},
-      destinations: [
-        {name:"יציאה מישראל",icon:"✈️",date:"2026-07-26",color:"blue"},
-        {name:"פוקט",icon:"🏝️",date:"2026-07-27",color:"orange"},
-        {name:"קאו לאק",icon:"🌊",date:"2026-08-02",color:"green"},
-        {name:"קראבי",icon:"⛰️",date:"2026-08-04",color:"purple"},
-        {name:"קו סמוי",icon:"🌴",date:"2026-08-06",color:"green"},
-        {name:"פאטייה",icon:"🎡",date:"2026-08-12",color:"orange"},
-        {name:"בנגקוק",icon:"🏙️",date:"2026-08-16",color:"blue"},
-        {name:"חזרה לישראל",icon:"🇮🇱",date:"2026-08-19",color:"purple"}
-      ],
-      upload:{maxFiles:8,maxWidth:1600,quality:.82,maxBytes:2500000}
+      adminEmail: "omris18@gmail.com"
     };
+
 
     const $ = id => document.getElementById(id);
     const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
     const parseDate = s => new Date(`${s}T12:00:00`);
     const addDays = (s,n) => {const d=parseDate(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
-    const daysTotal = Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
     const fmtDate = s => parseDate(s).toLocaleDateString("he-IL",{day:"2-digit",month:"2-digit",year:"numeric"});
     const fmtTime = value => {
       if(!value) return "—";
       const d = value.toDate ? value.toDate() : new Date(value);
       return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
     };
-    const APP_VERSION = "6.2.0";
+
     const urlParams = new URLSearchParams(location.search);
     const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
     const familyKey = urlParams.get("key") || "";
-    const family = CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
     const isAdminRoute = urlParams.has("admin");
-    const localCompletedKey = `thailand2026:${family.id}:completed`;
-    const localUploadsKey = `thailand2026:${family.id}:uploads`;
-    let completed = new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
-    let activeDate = null, activeDayNum = 1, selectedFiles = [], currentUser = null;
+
+    let daysTotal=0;
+    let family=null;
+    let localCompletedKey="";
+    let localUploadsKey="";
+    let completed=new Set();
+    let activeDate=null,activeDayNum=1,selectedFiles=[],currentUser=null;
+    let today="";
+    let familyImage="";
 
     let app,auth,db,storage;
+
+    async function loadTripConfig(){
+      const response=await fetch(`trip-config.json?v=${APP_VERSION}`,{cache:"no-store"});
+      if(!response.ok) throw new Error(`לא ניתן לטעון את trip-config.json (${response.status})`);
+      const tripConfig=await response.json();
+      CONFIG={...CONFIG,...tripConfig};
+
+      family=CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
+      if(!family) throw new Error("לא נמצאה משפחה תואמת בקובץ ההגדרות.");
+
+      daysTotal=Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+      localCompletedKey=`thailand2026:${family.id}:completed`;
+      localUploadsKey=`thailand2026:${family.id}:uploads`;
+      completed=new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
+      today=currentTripDate();
+      familyImage=CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
+    }
+
+    function tripStats(){
+      return {
+        travelers:Number(CONFIG.travelersCount||0),
+        families:CONFIG.families.length,
+        hotels:CONFIG.hotels.length,
+        flights:CONFIG.flights.length,
+        tasks:Object.keys(CONFIG.taskPlan||{}).length,
+        days:daysTotal
+      };
+    }
 
     function runVersionMigration(){
       const versionKey="thailand2026:appVersion";
@@ -1037,7 +994,7 @@
       }
     }
     function renderFlights(){
-      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}</p></div></article>`).join("");
+      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p></div></article>`).join("");
     }
     function openDay(date,num){
       activeDate=date;activeDayNum=num;selectedFiles=[];
@@ -1299,7 +1256,7 @@
       page.className="book-page book-intro";
       page.innerHTML=`<header class="editorial-head"><div><h2>התחלנו את המסע</h2><div class="meta">משפחת ${esc(family.name)} · תאילנד 2026</div></div><div style="font-size:48px">✈️</div></header>`;
       const grid=document.createElement("div");grid.className="intro-grid";
-      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}</div>`;grid.appendChild(ticket)});
+      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}${f.via?` · דרך ${esc(f.via)}`:""}</div>`;grid.appendChild(ticket)});
       page.appendChild(grid);return page;
     }
     function createFullRoutePage(){
@@ -1590,6 +1547,13 @@
 
     async function boot(){
       runVersionMigration();
+      try{
+        await loadTripConfig();
+      }catch(err){
+        console.error(err);
+        document.body.innerHTML=`<main style="max-width:600px;margin:60px auto;padding:24px;font-family:Arial;text-align:center"><h1>שגיאה בטעינת האתר</h1><p>${esc(err.message)}</p><p>ודאו שהקובץ trip-config.json הועלה לצד index.html.</p></main>`;
+        return;
+      }
       initSplash();
       if(isAdminRoute){
         $("familyApp").classList.add("hidden");$("adminApp").classList.remove("hidden");fillAdminDates();

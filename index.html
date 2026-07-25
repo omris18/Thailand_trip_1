@@ -103,6 +103,7 @@
     .login-card{max-width:430px;margin:9vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:var(--shadow)}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:17px 0}.stat{background:#fff;border-radius:19px;padding:16px;box-shadow:var(--shadow)}.stat span{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:31px}
     .admin-panel{background:#fff;border-radius:22px;padding:17px;box-shadow:var(--shadow);margin:15px 0;overflow:auto}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:end}.toolbar .field{margin:0;min-width:170px}
+    .flight-admin-list{display:grid;gap:12px;margin-top:14px}.flight-admin-card{border:1px solid var(--line);border-radius:18px;padding:14px;background:#f8fafc}.flight-admin-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.flight-admin-fields{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px}.flight-admin-fields .field{margin:0}.flight-admin-note{grid-column:span 2}@media(max-width:800px){.flight-admin-fields{grid-template-columns:1fr 1fr}.flight-admin-note{grid-column:span 2}}@media(max-width:520px){.flight-admin-fields{grid-template-columns:1fr}.flight-admin-note{grid-column:auto}}
     table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:right;white-space:nowrap}th{font-size:12px;color:#667085}
     .badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}
     .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}.photo-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb}.photo-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-meta{padding:9px;font-size:12px}.photo-meta strong{display:block}
@@ -591,6 +592,16 @@
 
       <section class="admin-panel">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:2px">✈️ ניהול טיסות</h2><p style="margin:0;color:var(--muted)">השינויים נשמרים ב־Firebase ומופיעים מיד לכל המשפחות ובספר ה־PDF.</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="addFlightBtn" class="btn secondary">＋ הוספת טיסה</button><button id="restoreFlightsBtn" class="btn ghost">שחזור נתוני ברירת מחדל</button></div>
+        </div>
+        <div id="adminFlightList" class="flight-admin-list"></div>
+        <button id="saveFlightsBtn" class="btn primary full" style="margin-top:14px">💾 שמירת כל הטיסות</button>
+        <div id="flightEditNotice" class="notice info hidden"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div><h2 style="margin-bottom:2px">🎯 ניהול משימות</h2><p style="margin:0;color:var(--muted)">כל שינוי נשמר ב־Firebase ומופיע למשפחות בסריקה הבאה.</p></div>
           <button id="seedTasksBtn" class="btn secondary">טעינת המשימות המאושרות</button>
         </div>
@@ -630,7 +641,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 7.1.0-GOLD · Build 20260712.01</p>
+            <p style="margin:0;color:var(--muted)">Version 7.2.0-GOLD · Build 20260725.01</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -641,7 +652,7 @@
           <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
           <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
           <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">7.1.0-GOLD</strong><span>גרסה</span></div>
+          <div class="stat"><strong id="healthVersion">7.2.0-GOLD</strong><span>גרסה</span></div>
         </div>
         <div id="healthNotice" class="notice info hidden"></div>
       </section>
@@ -692,8 +703,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.1.1-GOLD";
-    const BUILD_ID = "20260712.02";
+    const APP_VERSION = "7.2.0-GOLD";
+    const BUILD_ID = "20260725.01";
 
     let CONFIG = {
       firebase: {
@@ -707,6 +718,7 @@
       },
       adminEmail: "omris18@gmail.com"
     };
+    let DEFAULT_FLIGHTS=[];
 
 
     const $ = id => document.getElementById(id);
@@ -793,6 +805,8 @@
       if(!response.ok) throw new Error(`לא ניתן לטעון את trip-config.json (${response.status})`);
       const tripConfig=await response.json();
       CONFIG={...CONFIG,...tripConfig};
+      DEFAULT_FLIGHTS=(CONFIG.flights||[]).map(f=>({...f}));
+      CONFIG.flights=normalizeFlights(CONFIG.flights||[]);
 
       family=CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
       if(!family) throw new Error("לא נמצאה משפחה תואמת בקובץ ההגדרות.");
@@ -804,6 +818,46 @@
       today=currentTripDate();
       familyImage=CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
       remoteTasks=[...(CONFIG.seedTasks||[])].filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    }
+
+    function normalizeFlights(flights){
+      if(!Array.isArray(flights)) return [];
+      return flights.map((flight,index)=>({
+        id:String(flight.id||`flight-${index+1}`),
+        title:String(flight.title||"טיסה"),
+        flightNumber:String(flight.flightNumber||""),
+        date:String(flight.date||""),
+        time:String(flight.time||""),
+        from:String(flight.from||""),
+        to:String(flight.to||""),
+        via:String(flight.via||""),
+        icon:String(flight.icon||"✈️"),
+        status:String(flight.status||""),
+        note:String(flight.note||"")
+      })).filter(f=>/^\d{4}-\d{2}-\d{2}$/.test(f.date));
+    }
+
+    function flightExtraHtml(f){
+      const extras=[];
+      if(f.status) extras.push(`<span class="badge ${f.status.includes("בוטל")?"no":f.status.includes("עיכוב")||f.status.includes("נדח")?"wait":"ok"}">${esc(f.status)}</span>`);
+      if(f.note) extras.push(`<span>${esc(f.note)}</span>`);
+      return extras.length?`<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:5px;font-size:12px">${extras.join("")}</div>`:"";
+    }
+
+    async function loadRemoteFlights(){
+      try{
+        const snap=await getDoc(doc(db,"settings","flights"));
+        if(snap.exists() && Array.isArray(snap.data().items)){
+          const remote=normalizeFlights(snap.data().items);
+          if(remote.length) CONFIG.flights=remote;
+        }
+        renderFlights();
+        renderToday();
+        renderJourney();
+      }catch(err){
+        console.warn("Remote flights load failed; using trip-config fallback.",err);
+        logDiagnostic("warn","Remote flights load failed",err?.message||String(err));
+      }
     }
 
     function tripStats(){
@@ -966,15 +1020,21 @@
 
     async function loadRemoteTasksAndAnnouncement(){
       try{
-        const [tasksSnap,announcementSnap]=await Promise.all([
+        const [tasksSnap,announcementSnap,flightsSnap]=await Promise.all([
           getDocs(collection(db,"tasks")),
-          getDoc(doc(db,"settings","announcement"))
+          getDoc(doc(db,"settings","announcement")),
+          getDoc(doc(db,"settings","flights"))
         ]);
 
         if(!tasksSnap.empty){
           remoteTasks=[];
           tasksSnap.forEach(d=>remoteTasks.push({id:d.id,...d.data()}));
           remoteTasks=remoteTasks.filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+        }
+
+        if(flightsSnap.exists() && Array.isArray(flightsSnap.data().items)){
+          const remoteFlights=normalizeFlights(flightsSnap.data().items);
+          if(remoteFlights.length) CONFIG.flights=remoteFlights;
         }
 
         const announcement=announcementSnap.exists()?announcementSnap.data():null;
@@ -987,7 +1047,7 @@
             box.classList.add("hidden");
           }
         }
-        renderToday();
+        renderToday();renderFlights();renderJourney();
       }catch(err){
         console.warn("Remote tasks/announcement load failed; using local seed tasks.",err);
       }
@@ -1124,7 +1184,7 @@
         const card=document.createElement("div");
         card.className=`day-card ${i%2===0?"left":"right"} ${!h&&!f?"empty":""}`;
         if(h) card.innerHTML=`${date===today?'<span class="today-pill">היום</span>':""}<strong>🏨 ${esc(h.shortName)}</strong><small>${esc(h.city)}</small><a href="${mapsUrl(h)}" target="_blank" rel="noopener noreferrer">📍 ניווט למלון</a>`;
-        else if(f) card.innerHTML=`<strong>${f.icon} ${esc(f.title)}</strong><small>${esc(f.from)} ← ${esc(f.to)}</small><small>${esc(f.time)}</small>`;
+        else if(f) card.innerHTML=`<strong>${esc(f.icon)} ${esc(f.title)}</strong><small>${esc(f.from)} ← ${esc(f.to)}</small><small>${esc(f.time)}${f.status?` · ${esc(f.status)}`:""}</small>`;
         const node=document.createElement("button");node.type="button";node.className=`day-node ${state}`;
         node.innerHTML=`${state==="future"?"🔒":state==="done"?"✓":""}<strong>${i+1}</strong><span>יום</span>`;
         node.setAttribute("aria-label",`פתיחת יום ${i+1}, ${fmtDate(date)}`);
@@ -1206,7 +1266,7 @@
       }
     }
     function renderFlights(){
-      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${f.icon}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p></div></article>`).join("");
+      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${esc(f.icon)}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p>${flightExtraHtml(f)}</div></article>`).join("");
     }
     function openDay(date,num){
       activeDate=date;activeDayNum=num;selectedFiles=[];
@@ -1543,7 +1603,7 @@
       page.className="book-page book-intro";
       page.innerHTML=`<header class="editorial-head"><div><h2>התחלנו את המסע</h2><div class="meta">משפחת ${esc(family.name)} · תאילנד 2026</div></div><div style="font-size:48px">✈️</div></header>`;
       const grid=document.createElement("div");grid.className="intro-grid";
-      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}${f.via?` · דרך ${esc(f.via)}`:""}</div>`;grid.appendChild(ticket)});
+      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}${f.via?` · דרך ${esc(f.via)}`:""}${f.status?` · ${esc(f.status)}`:""}${f.note?`<br>${esc(f.note)}`:""}</div>`;grid.appendChild(ticket)});
       page.appendChild(grid);return page;
     }
     function createFullRoutePage(){
@@ -1748,6 +1808,97 @@
         logDiagnostic("error","Health check failed",err?.message||String(err));
         setNotice(notice,`בדיקת המערכת נכשלה: ${err?.message||err}`,"error");
       }
+    }
+
+    function emptyFlight(index=0){
+      return {id:`flight-${Date.now()}-${index}`,title:"טיסה",flightNumber:"",date:CONFIG.trip.startDate,time:"",from:"",to:"",via:"",icon:"✈️",status:"",note:""};
+    }
+
+    function renderAdminFlights(){
+      const box=$("adminFlightList");
+      if(!box) return;
+      box.innerHTML="";
+      CONFIG.flights.forEach((flight,index)=>{
+        const card=document.createElement("article");
+        card.className="flight-admin-card";
+        card.dataset.index=String(index);
+        card.innerHTML=`<div class="flight-admin-head"><strong>טיסה ${index+1}</strong><button type="button" class="btn danger small remove-flight">מחיקה</button></div>
+          <div class="flight-admin-fields">
+            <label class="field"><span>כותרת</span><input data-key="title" value="${esc(flight.title)}"></label>
+            <label class="field"><span>מספר טיסה</span><input data-key="flightNumber" value="${esc(flight.flightNumber)}" placeholder="למשל EK2471"></label>
+            <label class="field"><span>תאריך</span><input data-key="date" type="date" value="${esc(flight.date)}"></label>
+            <label class="field"><span>שעה</span><input data-key="time" type="time" value="${esc(flight.time)}"></label>
+            <label class="field"><span>מוצא</span><input data-key="from" value="${esc(flight.from)}"></label>
+            <label class="field"><span>יעד</span><input data-key="to" value="${esc(flight.to)}"></label>
+            <label class="field"><span>דרך</span><input data-key="via" value="${esc(flight.via)}" placeholder="אופציונלי"></label>
+            <label class="field"><span>סמל</span><input data-key="icon" value="${esc(flight.icon)}" maxlength="4"></label>
+            <label class="field"><span>סטטוס</span><input data-key="status" value="${esc(flight.status)}" placeholder="בזמן / עיכוב / נדחתה"></label>
+            <label class="field flight-admin-note"><span>הערה למשפחות</span><input data-key="note" value="${esc(flight.note)}" placeholder="למשל: ההמראה נדחתה בשעה"></label>
+          </div>`;
+        card.querySelector(".remove-flight").onclick=()=>{
+          if(CONFIG.flights.length<=1) return setNotice($("flightEditNotice"),"חייבת להישאר לפחות טיסה אחת.","error");
+          CONFIG.flights.splice(index,1);renderAdminFlights();
+        };
+        box.appendChild(card);
+      });
+    }
+
+    function readFlightsFromEditor(){
+      return [...document.querySelectorAll(".flight-admin-card")].map((card,index)=>{
+        const value=key=>card.querySelector(`[data-key="${key}"]`)?.value.trim()||"";
+        return {id:CONFIG.flights[index]?.id||`flight-${index+1}`,title:value("title")||"טיסה",flightNumber:value("flightNumber"),date:value("date"),time:value("time"),from:value("from"),to:value("to"),via:value("via"),icon:value("icon")||"✈️",status:value("status"),note:value("note")};
+      });
+    }
+
+    function validateFlights(flights){
+      if(!flights.length) return "יש להזין לפחות טיסה אחת.";
+      for(let i=0;i<flights.length;i++){
+        const f=flights[i];
+        if(!f.date||!f.time||!f.from||!f.to) return `בטיסה ${i+1} חובה למלא תאריך, שעה, מוצא ויעד.`;
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return `התאריך בטיסה ${i+1} אינו תקין.`;
+        if(!/^\d{2}:\d{2}$/.test(f.time)) return `השעה בטיסה ${i+1} אינה תקינה.`;
+      }
+      return "";
+    }
+
+    async function loadAdminFlights(){
+      try{
+        await loadRemoteFlights();
+      }finally{
+        renderAdminFlights();
+      }
+    }
+
+    async function saveAdminFlights(){
+      const notice=$("flightEditNotice");
+      const flights=readFlightsFromEditor();
+      const error=validateFlights(flights);
+      if(error) return setNotice(notice,error,"error");
+      const btn=$("saveFlightsBtn");
+      btn.disabled=true;
+      try{
+        await setDoc(doc(db,"settings","flights"),{items:flights,updatedAt:serverTimestamp(),updatedBy:currentUser?.email||"admin"},{merge:true});
+        CONFIG.flights=normalizeFlights(flights);
+        renderAdminFlights();
+        logDiagnostic("info","Flights updated",{count:CONFIG.flights.length});
+        setNotice(notice,"הטיסות נשמרו ומופיעות לכל המשפחות ✅","ok");
+      }catch(err){
+        logDiagnostic("error","Flights save failed",err?.message||String(err));
+        setNotice(notice,firebaseErrorText(err),"error");
+      }finally{btn.disabled=false}
+    }
+
+    function addAdminFlight(){
+      CONFIG.flights.push(emptyFlight(CONFIG.flights.length));
+      renderAdminFlights();
+      $("adminFlightList").lastElementChild?.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+
+    function restoreDefaultFlights(){
+      if(!confirm("לשחזר בעורך את נתוני הטיסות המקוריים? השינוי יישמר רק לאחר לחיצה על שמירה.")) return;
+      CONFIG.flights=normalizeFlights(DEFAULT_FLIGHTS.map(f=>({...f})));
+      renderAdminFlights();
+      setNotice($("flightEditNotice"),"נתוני ברירת המחדל נטענו לעורך. לחצו שמירה כדי לפרסם.","info");
     }
 
     async function loadAdminTasks(){
@@ -2000,7 +2151,7 @@
         onAuthStateChanged(auth,user=>{
           if(user?.email?.toLowerCase()===CONFIG.adminEmail.toLowerCase()){
             currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;
-            loadAdmin();loadAdminTasks();loadAnnouncementEditor();
+            loadAdmin();loadAdminTasks();loadAnnouncementEditor();loadAdminFlights();
           }else{
             $("adminDashboard").classList.add("hidden");$("adminLogin").classList.remove("hidden");
             if(user&&user.email)setNotice($("loginNotice"),"המשתמש מחובר אך אינו מוגדר כמנהל.","error");
@@ -2016,6 +2167,9 @@
         $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));
         $("runHealthCheck").onclick=runHealthCheck;
         $("downloadDiagnostics").onclick=downloadDiagnostics;
+        $("addFlightBtn").onclick=addAdminFlight;
+        $("restoreFlightsBtn").onclick=restoreDefaultFlights;
+        $("saveFlightsBtn").onclick=saveAdminFlights;
       }else{
         renderFamily();await initFirebase();
         updatePdfAvailability();

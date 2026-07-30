@@ -1,7 +1,0 @@
-{
-  "version": "7.3.0-HOTFIX",
-  "build": "20260730.01",
-  "releasedAt": "2026-07-30",
-  "channel": "hotfix",
-  "message": "Destination-based task access, puzzle animation and family progress dashboard"
-}

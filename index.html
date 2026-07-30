@@ -511,7 +511,7 @@
           <small>אפשר לבחור כמה תמונות</small>
         </label>
       </div>
-      <div class="upload-limit-note">אפשר להעלות עד 15 תמונות בכל משימה</div>
+      <div class="upload-limit-note">אפשר להעלות עד 8 תמונות בכל משימה</div>
       <div id="preview" class="preview"></div>
 
       <label class="field"><span>כמה מילים על החוויה</span><textarea id="caption" rows="3" placeholder="מה היה מיוחד היום?"></textarea></label>
@@ -737,8 +737,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.3.1-DASHBOARD";
-    const BUILD_ID = "20260730.02";
+    const APP_VERSION = "7.3.3-PHOTO-ONLY-HOTFIX";
+    const BUILD_ID = "20260731.02";
 
     let CONFIG = {
       firebase: {
@@ -1012,6 +1012,9 @@
       openDay(fallbackDate,fallbackDay);
     }
 
+    function isRealTask(task){
+      return Boolean(task?.id && task.active!==false);
+    }
     function requiredPhotoCount(task){
       if(task?.photoRule==="perFamilyMember") return Number(family.memberCount||1);
       return Math.max(1,Number(task?.minPhotos||1));
@@ -1126,6 +1129,7 @@
         completedPuzzlePieces=new Set();
         snap.forEach(d=>{
           const data=d.data();
+          if(!data.taskId) return;
           completed.add(data.tripDate);
           if(Number.isInteger(data.puzzlePiece) && data.puzzlePiece>=1 && data.puzzlePiece<=8){
             completedPuzzlePieces.add(data.puzzlePiece);
@@ -1229,7 +1233,12 @@
       $("todayTitle").textContent=`היום הוא יום ${idx} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
       $("todaySubtitle").textContent=h?`${h.city} · ${h.shortName}`:f?`${f.title} · ${f.time}`:"יום מעבר";
       const currentStop=CONFIG.mapStops[currentStopIndex()];
-      $("openTodayBtn").onclick=()=>currentStop?openDestination(currentStop.name,today,idx):openDay(today,idx);
+      $("openTodayBtn").onclick=()=>{
+        const todayTask=taskFor(today);
+        if(todayTask?.id && taskIsReleased(todayTask)) openDay(today,idx);
+        else if(currentStop) openDestination(currentStop.name,today,idx);
+        else openDay(today,idx);
+      };
     }
     function renderJourney(){
       const box=$("journey");box.innerHTML="";
@@ -1335,12 +1344,17 @@
       $("preview").innerHTML="";$("caption").value="";hideNotice($("taskNotice"));$("uploadProgressWrap").classList.add("hidden");$("uploadProgress").style.width="0";
       const t=taskFor(date),h=hotelFor(date),f=flightFor(date);
       activeTask=t;
+      const realTask=isRealTask(t);
       $("dayBadge").textContent=`יום ${num}`;$("dayLocation").textContent=`${fmtDate(date)}${h?` · ${h.city}`:f?` · ${f.title}`:""}`;
-      $("taskTitle").textContent=t.title;$("taskDescription").textContent=t.description;
+      $("taskTitle").textContent=realTask?t.title:"התמונות של היום";
+      $("taskDescription").textContent=realTask?t.description:"אין משימה מיוחדת היום, אבל אפשר לשמור כאן תמונות וזיכרונות מהיום.";
       const required=requiredPhotoCount(t);
-      $("taskRequirement").textContent=t.photoRule==="perFamilyMember"
-        ? `📸 משפחת ${family.name}: נדרשות ${required} תמונות — אחת לכל בן משפחה.`
-        : `📸 יש להעלות לפחות ${required} ${required===1?"תמונה":"תמונות"}.${t.puzzlePiece?` השלמה תפתח את חלק פאזל מספר ${t.puzzlePiece}.`:" משימה זו אינה פותחת חלק פאזל."}`;
+      $("taskRequirement").textContent=realTask
+        ? (t.photoRule==="perFamilyMember"
+          ? `📸 משפחת ${family.name}: נדרשות ${required} תמונות — אחת לכל בן משפחה.`
+          : `📸 יש להעלות לפחות ${required} ${required===1?"תמונה":"תמונות"}.${t.puzzlePiece?` השלמה תפתח את חלק פאזל מספר ${t.puzzlePiece}.`:" משימה זו אינה פותחת חלק פאזל."}`)
+        : "📸 התמונות יישמרו באלבום המשפחתי בלבד. לא תתווסף חותמת ולא ייפתח חלק פאזל.";
+      $("submitTaskBtn").textContent=realTask?"סיימנו את המשימה! ✅":"שמרו את התמונות 📸";
       if(h){$("hotelBox").classList.remove("hidden");$("hotelName").textContent=h.shortName;$("mapsLink").href=mapsUrl(h)}else $("hotelBox").classList.add("hidden");
       if(completed.has(date)) setNotice($("taskNotice"),"המשימה כבר הושלמה במכשיר הזה. אפשר להעלות תמונות נוספות.","ok");
       $("dayDialog").showModal();
@@ -1411,27 +1425,33 @@
         const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,isSimulation,createdAt:serverTimestamp()};
         const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
       }
-      await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
-        familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
-        completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
-        taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,
-        isSimulation,completedAt:serverTimestamp()
-      },{merge:true});
-      completed.add(activeDate);
-      if(Number.isInteger(activeTask?.puzzlePiece)) completedPuzzlePieces.add(activeTask.puzzlePiece);
-      localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+      const realTask=isRealTask(activeTask);
+      if(realTask){
+        await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
+          familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
+          completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
+          taskId:activeTask.id,puzzlePiece:activeTask?.puzzlePiece||null,
+          isSimulation,completedAt:serverTimestamp()
+        },{merge:true});
+        completed.add(activeDate);
+        if(Number.isInteger(activeTask?.puzzlePiece)) completedPuzzlePieces.add(activeTask.puzzlePiece);
+        localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+      }
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
-      renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();animatePuzzlePiece(activeTask?.puzzlePiece);confetti();showSuccess();
+      renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
+      if(realTask){animatePuzzlePiece(activeTask?.puzzlePiece);confetti();}
+      showSuccess(realTask);
       return photoDocs;
     }
     $("submitTaskBtn").onclick=async()=>{
       const btn=$("submitTaskBtn"),original=btn.innerHTML;
       try{
         btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מעלה…';hideNotice($("taskNotice"));
+        const realTask=isRealTask(activeTask);
         await uploadFiles(selectedFiles,$("caption").value.trim(),false);
-        setNotice($("taskNotice"),"התמונות נשמרו ב־Firebase והמשימה הושלמה ✅","ok");
+        setNotice($("taskNotice"),realTask?"התמונות נשמרו והמשימה הושלמה ✅":"התמונות נשמרו בהצלחה באלבום המשפחתי 📸","ok");
         setTimeout(()=>$("dayDialog").close(),1200);
       }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
       finally{btn.disabled=false;btn.innerHTML=original}
@@ -1455,10 +1475,12 @@
       setTimeout(()=>piece.remove(),1250);
     }
 
-    function showSuccess(){
-      $("successText").textContent=activeTask?.puzzlePiece
-        ? `המשימה הושלמה! חלק פאזל מספר ${activeTask.puzzlePiece} נפתח בדרכון המשפחתי.`
-        : "משימת נתב״ג הושלמה בהצלחה. המסע שלכם התחיל!";
+    function showSuccess(realTask=isRealTask(activeTask)){
+      $("successText").textContent=!realTask
+        ? "התמונות נשמרו בהצלחה באלבום המשפחתי."
+        : activeTask?.puzzlePiece
+          ? `המשימה הושלמה! חלק פאזל מספר ${activeTask.puzzlePiece} נפתח בדרכון המשפחתי.`
+          : "המשימה הושלמה בהצלחה!";
       $("successOverlay").classList.add("show");
     }
     $("closeSuccess").onclick=()=>$("successOverlay").classList.remove("show");
@@ -2148,6 +2170,7 @@
     }
 
     function renderFamilyProgressDashboard(completions,allUploads){
+      completions=completions.filter(c=>Boolean(c.taskId));
       const totalPieces=Number(CONFIG.puzzle?.totalPieces||8);
       const tasks=activeAdminTasks();
       const puzzleTasks=tasks.filter(t=>normalizedPiece(t.puzzlePiece)!==null);

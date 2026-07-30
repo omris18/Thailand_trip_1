@@ -208,7 +208,7 @@
     .map-stop[data-tone="aqua"]{--accent:#0891b2;--accent-rgb:8,145,178}.map-stop[data-tone="green"]{--accent:#16a34a;--accent-rgb:22,163,74}
     .map-stop[data-tone="teal"]{--accent:#0d9488;--accent-rgb:13,148,136}.map-stop[data-tone="orange"]{--accent:#ea580c;--accent-rgb:234,88,12}
     .map-stop[data-tone="purple"]{--accent:#7c3aed;--accent-rgb:124,58,237}.map-stop[data-tone="gold"]{--accent:#ca8a04;--accent-rgb:202,138,4}
-    .map-stop-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.54));
+    .map-stop-card{position:relative;overflow:visible;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.54));
       backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);border-radius:23px;padding:12px;
       box-shadow:0 16px 38px rgba(15,23,42,.16),inset 0 1px 0 rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.82);cursor:pointer;transition:transform .25s ease,box-shadow .25s ease,opacity .25s ease}
     .map-stop-card:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 8% 5%,rgba(var(--accent-rgb),.24),transparent 44%);pointer-events:none}
@@ -219,8 +219,8 @@
     .map-stop-card strong{display:block;font-size:13px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.map-stop-card small{display:block;color:#475467;font-size:10px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .map-thumb{width:38px;height:38px;border-radius:12px;object-fit:cover;border:2px solid rgba(255,255,255,.9);box-shadow:0 5px 14px rgba(15,23,42,.18);flex:0 0 auto}
     .map-stop-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.map-mini-btn{border:0;border-radius:999px;padding:5px 9px;background:rgba(255,255,255,.7);color:var(--accent);font-size:10px;font-weight:900;text-decoration:none;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(var(--accent-rgb),.16)}
-    .destination-days{direction:ltr;display:flex;align-items:flex-start;gap:3px;margin-top:9px;padding-top:8px;border-top:1px solid rgba(255,255,255,.72);overflow-x:auto;scrollbar-width:none}.destination-days::-webkit-scrollbar{display:none}
-    .destination-day{position:relative;flex:1 0 27px;min-width:27px;border:0;background:transparent;padding:0 0 13px;cursor:pointer;color:#64748b;font-weight:900;font-size:10px}
+    .destination-days{direction:ltr;display:flex;align-items:flex-start;gap:3px;margin-top:9px;padding:8px 3px 2px;border-top:1px solid rgba(255,255,255,.72);overflow-x:auto;scrollbar-width:none}.destination-days::-webkit-scrollbar{display:none}
+    .destination-day{position:relative;flex:1 0 27px;min-width:27px;border:0;background:transparent;padding:0 0 15px;cursor:pointer;color:#64748b;font-weight:900;font-size:10px}
     .destination-day:before{content:"";position:absolute;top:13px;left:-50%;right:50%;height:3px;background:#cbd5e1;z-index:0}.destination-day:first-child:before{display:none}
     .destination-day-dot{position:relative;z-index:1;width:25px;height:25px;margin:auto;border-radius:50%;display:grid;place-items:center;background:#e2e8f0;border:2px solid rgba(255,255,255,.95);box-shadow:0 3px 8px rgba(15,23,42,.12)}
     .destination-day.past .destination-day-dot,.destination-day.done .destination-day-dot{background:var(--accent);color:#fff}.destination-day.past:before,.destination-day.done:before{background:var(--accent)}
@@ -750,8 +750,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.0.0";
-    const BUILD_ID = "20260731.74";
+    const APP_VERSION = "8.0.1";
+    const BUILD_ID = "20260731.801";
 
     let CONFIG = {
       firebase: {
@@ -808,7 +808,17 @@
 
         const data=await response.json();
         const latest=String(data.version||"").trim();
-        if(!latest || latest===APP_VERSION) return false;
+        const versionParts=value=>String(value||"").match(/\d+/g)?.slice(0,3).map(Number)||[0,0,0];
+        const compareVersions=(a,b)=>{
+          const av=versionParts(a),bv=versionParts(b);
+          for(let i=0;i<3;i++){
+            const diff=(av[i]||0)-(bv[i]||0);
+            if(diff) return diff;
+          }
+          return 0;
+        };
+        // Never downgrade a newer index.html because version.json was not replaced yet.
+        if(!latest || compareVersions(latest,APP_VERSION)<=0) return false;
 
         const currentUrl=new URL(location.href);
         const requestedVersion=currentUrl.searchParams.get("v");
@@ -1311,7 +1321,7 @@
         $("movingPlaneLabel").style.left=`${planeStop.x}%`;$("movingPlaneLabel").style.top=`${planeStop.y}%`;
       }
       $("movingPlane").classList.toggle("hidden",trip.after);
-      $("movingPlaneLabel").textContent=trip.after?"🏆 המסע הושלם":trip.inTrip?`יום ${trip.dayNumber} · משפחת ${family.name}`:`משפחת ${family.name}`;
+      $("movingPlaneLabel").textContent="";
       $("mapStatusText").textContent=trip.before?"עוד מעט יוצאים לדרך":trip.after?"🏆 המסע הושלם · ספר הזיכרונות מחכה לכם":`יום ${trip.dayNumber} מתוך ${daysTotal} · ${areaForDate(trip.date)}`;
       const progress=trip.before?0:trip.after?1:activeIndex/Math.max(1,stops.length-1);
       $("routeProgress").style.strokeDashoffset=String(1-progress);

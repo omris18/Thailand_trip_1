@@ -411,6 +411,11 @@
       </section>
 
       <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+      <details id="familyDebugPanel" class="card" style="margin-top:10px;display:none;direction:ltr;text-align:left">
+        <summary style="cursor:pointer;font-weight:700">פרטי אבחון</summary>
+        <pre id="familyDebugText" style="white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:260px;overflow:auto"></pre>
+        <button id="copyFamilyDebug" type="button" class="secondary" style="margin-top:8px">העתקת דוח אבחון</button>
+      </details>
       <div id="globalAnnouncement" class="global-announcement hidden"></div>
 
       <section class="trip-progress-card">
@@ -750,8 +755,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.0.1";
-    const BUILD_ID = "20260731.801";
+    const APP_VERSION = "8.0.2-debug";
+    const BUILD_ID = "20260731.802";
 
     let CONFIG = {
       firebase: {
@@ -800,6 +805,49 @@
 
     let app,auth,db,storage;
     const diagnosticLog=[];
+
+    const INIT_TIMEOUT_MS=15000;
+    let currentInitStage="boot";
+
+    function familyDebugReport(){
+      return [
+        `Thailand Trip ${APP_VERSION}`,
+        `Build ${BUILD_ID}`,
+        `Stage: ${currentInitStage}`,
+        `Generated: ${new Date().toISOString()}`,
+        `URL: ${location.href}`,
+        `User agent: ${navigator.userAgent}`,
+        "",
+        ...diagnosticLog.map(x=>`${x.time} [${x.level}] ${x.message}${x.details?` | ${x.details}`:""}`)
+      ].join("\n");
+    }
+
+    function refreshFamilyDebug(show=false){
+      const panel=$("familyDebugPanel"), text=$("familyDebugText");
+      if(!panel||!text) return;
+      text.textContent=familyDebugReport();
+      if(show) panel.style.display="block";
+    }
+
+    function setInitStage(stage,message){
+      currentInitStage=stage;
+      logDiagnostic("info",`Init: ${stage}`);
+      const banner=$("connectionBanner");
+      if(banner && message) setNotice(banner,message,"info");
+      refreshFamilyDebug(false);
+    }
+
+    function withTimeout(promise,label,ms=INIT_TIMEOUT_MS){
+      let timer;
+      const timeout=new Promise((_,reject)=>{
+        timer=setTimeout(()=>{
+          const err=new Error(`${label} לא הסתיים בתוך ${Math.round(ms/1000)} שניות.`);
+          err.code="app/timeout";
+          reject(err);
+        },ms);
+      });
+      return Promise.race([Promise.resolve(promise),timeout]).finally(()=>clearTimeout(timer));
+    }
 
     async function checkForAppUpdate(){
       try{
@@ -1117,22 +1165,44 @@
 
     async function initFirebase(){
       try{
+        setInitStage("firebase-app","מאתחל את Firebase…");
         app=initializeApp(CONFIG.firebase);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app);
-        await setPersistence(auth,browserLocalPersistence);
+
+        setInitStage("auth-persistence","מכין התחברות מאובטחת…");
+        await withTimeout(setPersistence(auth,browserLocalPersistence),"שמירת ההתחברות");
+
         if(!isAdminRoute){
-          if(!auth.currentUser) await signInAnonymously(auth);
+          setInitStage("anonymous-auth","מתחבר באופן מאובטח…");
+          if(!auth.currentUser) await withTimeout(signInAnonymously(auth),"התחברות אנונימית");
           currentUser=auth.currentUser;
-          await establishFamilySession();
+
+          setInitStage("family-session","מאמת את הקישור המשפחתי…");
+          await withTimeout(establishFamilySession(),"אימות המשפחה");
+
+          setInitStage("scan-record","מסנכרן את הביקור…");
+          await withTimeout(recordScan(),"רישום הסריקה",8000);
+
+          setInitStage("remote-content","טוען משימות ועדכונים…");
+          await withTimeout(loadRemoteTasksAndAnnouncement(),"טעינת משימות ועדכונים");
+
+          setInitStage("family-data","טוען את התקדמות המשפחה…");
+          const completionsReady=await withTimeout(loadFamilyCompletions(),"טעינת התקדמות המשפחה");
+          if(completionsReady===false) throw new Error("טעינת נתוני המשפחה נכשלה.");
+
+          currentInitStage="complete";
           setNotice($("connectionBanner"),`מחובר ומסונכרן כמשפחת ${family.name} ✅ · גרסה ${APP_VERSION}`,"ok");
           logDiagnostic("info","Family connected",family.id);
-          await recordScan();
-          await loadRemoteTasksAndAnnouncement();
-          await loadFamilyCompletions();
+          refreshFamilyDebug(false);
         }
         return true;
       }catch(err){
         console.error(err);
-        if(!isAdminRoute) setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+        logDiagnostic("error",`Initialization failed at ${currentInitStage}`,err?.stack||err?.message||String(err));
+        if(!isAdminRoute){
+          const msg=`החיבור נעצר בשלב: ${currentInitStage}. ${firebaseErrorText(err)}`;
+          setNotice($("connectionBanner"),msg,"error");
+          refreshFamilyDebug(true);
+        }
         return false;
       }
     }
@@ -1211,9 +1281,12 @@
         });
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
         renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
+        return true;
       }catch(err){
         console.error(err);
+        logDiagnostic("error","Family completions load failed",err?.stack||err?.message||String(err));
         setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+        return false;
       }
     }
 
@@ -2563,12 +2636,32 @@
         $("restoreFlightsBtn").onclick=restoreDefaultFlights;
         $("saveFlightsBtn").onclick=saveAdminFlights;
       }else{
-        renderFamily();await initFirebase();
-        updatePdfAvailability();
-        setInterval(updatePdfAvailability,60000);
-        if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);
+        try{
+          setInitStage("render-family","מכין את המסך המשפחתי…");
+          renderFamily();
+          const firebaseReady=await initFirebase();
+          if(!firebaseReady) return;
+          updatePdfAvailability();
+          setInterval(updatePdfAvailability,60000);
+          if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);
+        }catch(err){
+          console.error(err);
+          logDiagnostic("error",`Family boot failed at ${currentInitStage}`,err?.stack||err?.message||String(err));
+          setNotice($("connectionBanner"),`האתר נעצר בשלב: ${currentInitStage}. ${firebaseErrorText(err)}`,"error");
+          refreshFamilyDebug(true);
+        }
       }
     }
+    $("copyFamilyDebug")?.addEventListener("click",async()=>{
+      const report=familyDebugReport();
+      try{
+        await navigator.clipboard.writeText(report);
+        $("copyFamilyDebug").textContent="הדוח הועתק ✅";
+      }catch{
+        const blob=new Blob([report],{type:"text/plain;charset=utf-8"});
+        triggerBlobDownload(blob,`Thailand-Diagnostics-${BUILD_ID}.txt`);
+      }
+    });
     boot();
   </script>
 </body>

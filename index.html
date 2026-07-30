@@ -323,6 +323,22 @@
     .admin-announcement{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
     @media(max-width:800px){.task-admin-grid{grid-template-columns:1fr}.admin-announcement{grid-template-columns:1fr}.task-editor .two-cols{grid-template-columns:1fr}}
 
+    /* --- 7.3 family progress dashboard --- */
+    .family-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    .family-progress-card{border:1px solid #e5e7eb;border-radius:18px;padding:14px;background:#fff;cursor:pointer;transition:.2s}
+    .family-progress-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.1)}
+    .family-progress-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .family-progress-head strong{font-size:17px}.family-progress-count{font-weight:900;color:var(--purple)}
+    .family-progress-bar{height:11px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0 7px}
+    .family-progress-bar>div{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:999px}
+    .family-progress-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+    .family-detail{margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb;display:none}
+    .family-progress-card.open .family-detail{display:block}
+    .family-task-row{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed #e5e7eb;font-size:13px}
+    .family-task-row:last-child{border-bottom:0}
+    .puzzle-fly-piece{position:fixed;z-index:10001;width:82px;height:82px;border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(15,23,42,.35);pointer-events:none;animation:puzzleFly 1.15s cubic-bezier(.2,.8,.2,1) forwards}
+    @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
+
   </style>
 </head>
 <body>
@@ -572,8 +588,8 @@
 
       <section class="stats">
         <div class="stat"><span>משפחות</span><strong id="statFamilies">5</strong></div>
-        <div class="stat"><span>סרקו</span><strong id="statScans">0</strong></div>
-        <div class="stat"><span>השלימו</span><strong id="statDone">0</strong></div>
+        <div class="stat"><span>חלקי פאזל</span><strong id="statScans">0</strong></div>
+        <div class="stat"><span>משימות שהושלמו</span><strong id="statDone">0</strong></div>
         <div class="stat"><span>תמונות</span><strong id="statPhotos">0</strong></div>
       </section>
 
@@ -641,7 +657,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 7.2.0-GOLD · Build 20260725.01</p>
+            <p style="margin:0;color:var(--muted)">Version 7.3.0-HOTFIX · Build 20260730.01</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -652,17 +668,17 @@
           <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
           <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
           <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">7.2.0-GOLD</strong><span>גרסה</span></div>
+          <div class="stat"><strong id="healthVersion">7.3.0-HOTFIX</strong><span>גרסה</span></div>
         </div>
         <div id="healthNotice" class="notice info hidden"></div>
       </section>
 
       <section class="admin-panel">
-        <h2>סטטוס משפחות</h2>
-        <table>
-          <thead><tr><th>משפחה</th><th>סריקה</th><th>משימה</th><th>תמונות</th><th>עדכון אחרון</th><th>יום נבחר</th><th>כל הטיול</th></tr></thead>
-          <tbody id="adminRows"></tbody>
-        </table>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:3px">🧩 התקדמות משפחות</h2><p style="margin:0;color:var(--muted)">לחיצה על משפחה מציגה משימות, חלקי פאזל וזמני השלמה.</p></div>
+          <span class="badge ok">מתעדכן בזמן אמת</span>
+        </div>
+        <div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
       </section>
 
       <section class="admin-panel">
@@ -694,7 +710,7 @@
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, setDoc, doc, getDocs, getDoc, query, where,
-      orderBy, limit, serverTimestamp, Timestamp
+      orderBy, limit, serverTimestamp, Timestamp, onSnapshot
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
     import {
       getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
@@ -703,8 +719,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.2.0-GOLD";
-    const BUILD_ID = "20260725.01";
+    const APP_VERSION = "7.3.0-HOTFIX";
+    const BUILD_ID = "20260730.01";
 
     let CONFIG = {
       firebase: {
@@ -957,6 +973,26 @@
       const task=remoteTasks.find(t=>t.date===date && t.active!==false);
       return task || {...CONFIG.defaultTask,id:null,puzzlePiece:null,minPhotos:1,photoRule:"fixed",active:false};
     };
+    const tasksForDestination = destination => remoteTasks
+      .filter(t=>t.active!==false && t.destination===destination)
+      .sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    const taskIsReleased = task => Boolean(task?.date && task.date<=today);
+    function openDestination(destination,fallbackDate,fallbackDay){
+      const tasks=tasksForDestination(destination);
+      const released=tasks.filter(taskIsReleased);
+      const chosen=released.find(t=>!completed.has(t.date)) || released.at(-1);
+      if(chosen){
+        const num=Math.round((parseDate(chosen.date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+        openDay(chosen.date,num);
+        return;
+      }
+      if(tasks.length){
+        const next=tasks[0];
+        alert(`המשימה של ${destination} תיפתח ב־${fmtDate(next.date)}.`);
+        return;
+      }
+      openDay(fallbackDate,fallbackDay);
+    }
 
     function requiredPhotoCount(task){
       if(task?.photoRule==="perFamilyMember") return Number(family.memberCount||1);
@@ -1126,7 +1162,7 @@
             </div>
           </div>`;
 
-        const open=()=>openDay(stop.date,stop.day);
+        const open=()=>openDestination(stop.name,stop.date,stop.day);
         wrap.querySelector(".open-stop-day").onclick=open;
         wrap.querySelector(".map-stop-card").addEventListener("keydown",e=>{
           if(e.key==="Enter") open();
@@ -1174,7 +1210,8 @@
       const h=hotelFor(today),f=flightFor(today);
       $("todayTitle").textContent=`היום הוא יום ${idx} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
       $("todaySubtitle").textContent=h?`${h.city} · ${h.shortName}`:f?`${f.title} · ${f.time}`:"יום מעבר";
-      $("openTodayBtn").onclick=()=>openDay(today,idx);
+      const currentStop=CONFIG.mapStops[currentStopIndex()];
+      $("openTodayBtn").onclick=()=>currentStop?openDestination(currentStop.name,today,idx):openDay(today,idx);
     }
     function renderJourney(){
       const box=$("journey");box.innerHTML="";
@@ -1269,6 +1306,11 @@
       $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${esc(f.icon)}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p>${flightExtraHtml(f)}</div></article>`).join("");
     }
     function openDay(date,num){
+      const requestedTask=taskFor(date);
+      if(requestedTask?.id && !taskIsReleased(requestedTask)){
+        alert(`המשימה תיפתח ב־${fmtDate(requestedTask.date)}.`);
+        return;
+      }
       activeDate=date;activeDayNum=num;selectedFiles=[];
       $("cameraInput").value="";
       $("galleryInput").value="";
@@ -1363,7 +1405,7 @@
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
-      renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();confetti();showSuccess();
+      renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();animatePuzzlePiece(activeTask?.puzzlePiece);confetti();showSuccess();
       return photoDocs;
     }
     $("submitTaskBtn").onclick=async()=>{
@@ -1377,6 +1419,23 @@
       finally{btn.disabled=false;btn.innerHTML=original}
     };
 
+
+    function animatePuzzlePiece(pieceNum){
+      if(!Number.isInteger(pieceNum)) return;
+      const layout=CONFIG.puzzle.layout||[];
+      const index=layout.indexOf(pieceNum);
+      if(index<0) return;
+      const row=Math.floor(index/4),col=index%4;
+      const piece=document.createElement("div");
+      piece.className="puzzle-fly-piece";
+      const bgX=col===0?"0%":col===1?"33.333%":col===2?"66.666%":"100%";
+      const bgY=row===0?"0%":"100%";
+      piece.style.backgroundImage=`url('${familyImage}')`;
+      piece.style.backgroundSize="400% 200%";
+      piece.style.backgroundPosition=`${bgX} ${bgY}`;
+      document.body.appendChild(piece);
+      setTimeout(()=>piece.remove(),1250);
+    }
 
     function showSuccess(){
       $("successText").textContent=activeTask?.puzzlePiece
@@ -1990,39 +2049,63 @@
       setNotice($("announcementNotice"),"ההודעה נשמרה ותופיע לכל המשפחות בסריקה הבאה ✅","ok");
     }
 
+    let adminRealtimeUnsubscribe=null;
     async function loadAdmin(){
       const date=$("adminDate").value;
-      $("adminRows").innerHTML=`<tr><td colspan="6">טוען נתונים…</td></tr>`;$("adminGallery").innerHTML="";setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
+      $("adminRows").innerHTML=`<div class="notice info">טוען התקדמות משפחות…</div>`;
+      $("adminGallery").innerHTML="";
+      setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
       try{
-        const [scansSnap,doneSnap,uploadsSnap]=await Promise.all([
-          getDocs(query(collection(db,"scans"),where("tripDate","==",date))),
-          getDocs(query(collection(db,"completions"),where("tripDate","==",date))),
-          getDocs(query(collection(db,"uploads"),where("tripDate","==",date)))
+        const [doneSnap,uploadsSnap]=await Promise.all([
+          getDocs(collection(db,"completions")),
+          getDocs(collection(db,"uploads"))
         ]);
-        const scans=new Map(),done=new Map(),photos=new Map(),allPhotos=[];
-        scansSnap.forEach(d=>{const x=d.data(),old=scans.get(x.familyId);if(!old||fmtTime(x.createdAt)>fmtTime(old.createdAt))scans.set(x.familyId,x)});
-        doneSnap.forEach(d=>done.set(d.data().familyId,d.data()));
-        uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allPhotos.push(x);if(!photos.has(x.familyId))photos.set(x.familyId,[]);photos.get(x.familyId).push(x)});
-        allPhotos.sort((a,b)=>{
-          const ta=a.createdAt?.toMillis?.()||0;
-          const tb=b.createdAt?.toMillis?.()||0;
-          return tb-ta;
-        });
-        $("statScans").textContent=scans.size;$("statDone").textContent=done.size;$("statPhotos").textContent=allPhotos.length;
+        const completions=[],allUploads=[],dayPhotos=[];
+        doneSnap.forEach(d=>completions.push({id:d.id,...d.data()}));
+        uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allUploads.push(x);if(x.tripDate===date)dayPhotos.push(x)});
+        const totalPieces=CONFIG.puzzle.totalPieces||8;
+        const totalCompleted=completions.length;
+        const uniquePieces=new Set(completions.map(c=>`${c.familyId}:${c.puzzlePiece}`).filter(x=>!x.endsWith(':null')&&!x.endsWith(':undefined'))).size;
+        $("statScans").textContent=uniquePieces;
+        $("statDone").textContent=totalCompleted;
+        $("statPhotos").textContent=dayPhotos.length;
         $("adminRows").innerHTML=CONFIG.families.map(f=>{
-          const s=scans.get(f.id),c=done.get(f.id),p=photos.get(f.id)||[];
-          return `<tr><td><strong>משפחת ${esc(f.name)}</strong></td><td>${s?'<span class="badge ok">✓ נסרק</span>':'<span class="badge no">לא נסרק</span>'}</td><td>${c?'<span class="badge ok">✓ הושלם</span>':'<span class="badge wait">ממתין</span>'}</td><td>${p.length}</td><td>${fmtTime(c?.completedAt||s?.createdAt)}</td><td><button class="btn secondary small family-zip" data-family="${f.id}" ${p.length?"":"disabled"}>ZIP יום</button></td><td><button class="btn ghost small family-trip-zip" data-family="${f.id}">ZIP מלא</button></td></tr>`;
+          const familyDone=completions.filter(c=>c.familyId===f.id).sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||""));
+          const pieces=new Set(familyDone.map(c=>c.puzzlePiece).filter(n=>Number.isInteger(n)));
+          const percent=Math.round((pieces.size/totalPieces)*100);
+          const last=familyDone.slice().sort((a,b)=>(b.completedAt?.toMillis?.()||0)-(a.completedAt?.toMillis?.()||0))[0];
+          const taskRows=remoteTasks.filter(t=>t.puzzlePiece).map(t=>{
+            const done=familyDone.find(c=>c.taskId===t.id || c.tripDate===t.date);
+            return `<div class="family-task-row"><span>${done?"✅":"⏳"} ${esc(t.title)}</span><span>${done?fmtTime(done.completedAt):"טרם הושלמה"}</span></div>`;
+          }).join("");
+          return `<article class="family-progress-card" data-family="${f.id}">
+            <div class="family-progress-head"><strong>משפחת ${esc(f.name)}</strong><span class="family-progress-count">${pieces.size}/${totalPieces}</span></div>
+            <div class="family-progress-bar"><div style="width:${percent}%"></div></div>
+            <div class="family-progress-meta"><span>${familyDone.length} משימות הושלמו</span><span>${last?`עדכון ${fmtTime(last.completedAt)}`:"ללא השלמות"}</span></div>
+            <div class="family-detail">${taskRows||'<div class="notice info">אין משימות להצגה.</div>'}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn secondary small family-trip-zip" data-family="${f.id}">ZIP מלא</button></div></div>
+          </article>`;
         }).join("");
-        document.querySelectorAll(".family-zip").forEach(b=>b.onclick=()=>downloadZip(date,b.dataset.family,allPhotos.filter(p=>p.familyId===b.dataset.family)));
+        document.querySelectorAll(".family-progress-card").forEach(card=>card.addEventListener("click",e=>{if(e.target.closest("button"))return;card.classList.toggle("open")}));
         document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=()=>downloadFullTripZip(b.dataset.family));
-        $("adminGallery").innerHTML="";
-        if(!allPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
+        dayPhotos.sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+        if(!dayPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
         else{
           hideNotice($("adminGalleryNotice"));
-          allPhotos.forEach(p=>{const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber)}</strong>${esc(p.caption||"")}</div>`;$("adminGallery").appendChild(card)});
+          dayPhotos.forEach(p=>{const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber)}</strong>${esc(p.caption||"")}</div>`;$("adminGallery").appendChild(card)});
         }
-        $("downloadAllZip").onclick=()=>downloadZip(date,"all",allPhotos);
-      }catch(err){console.error(err);$("adminRows").innerHTML=`<tr><td colspan="6">${esc(firebaseErrorText(err))}</td></tr>`;setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error")}
+        $("downloadAllZip").onclick=()=>downloadZip(date,"all",dayPhotos);
+      }catch(err){
+        console.error(err);
+        $("adminRows").innerHTML=`<div class="notice error">${esc(firebaseErrorText(err))}</div>`;
+        setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error");
+      }
+    }
+
+    function startAdminRealtime(){
+      if(adminRealtimeUnsubscribe) adminRealtimeUnsubscribe();
+      adminRealtimeUnsubscribe=onSnapshot(collection(db,"completions"),()=>{
+        if(!$("adminDashboard").classList.contains("hidden")) loadAdmin();
+      },err=>console.warn("Admin realtime unavailable",err));
     }
 
     async function fetchAllTripData(){

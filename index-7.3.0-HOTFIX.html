@@ -1,0 +1,2266 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#6d28d9">
+  <meta name="description" content="המסע המשפחתי שלנו בתאילנד 2026">
+  <title>תאילנד 2026 – המסע המשפחתי</title>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#6d28d9;--purple2:#9333ea;--pink:#ec4899;--orange:#f97316;
+      --green:#16a34a;--red:#dc2626;--blue:#0284c7;--ink:#172033;--muted:#667085;
+      --line:#e5e7eb;--surface:#fff;--bg:#edf8ff;--shadow:0 16px 42px rgba(15,23,42,.14);
+      --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Heebo",Arial,sans-serif;color:var(--ink);background:#dff3ff}
+    button,input,textarea,select,a{font:inherit}
+    button,a{touch-action:manipulation}
+    button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+      outline:3px solid rgba(2,132,199,.35);outline-offset:2px
+    }
+    .hidden{display:none!important}
+    .app{max-width:640px;min-height:100vh;margin:auto;background:linear-gradient(#e7f8ff,#fff);box-shadow:0 0 70px rgba(15,23,42,.16);padding-bottom:calc(88px + var(--safe-bottom))}
+    .hero{position:relative;min-height:255px;overflow:hidden;background:
+      radial-gradient(circle at 15% 30%,rgba(255,255,255,.55),transparent 24%),
+      linear-gradient(155deg,#0ea5e9 0%,#38bdf8 40%,#a78bfa 100%)}
+    .hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.15)}
+    .hero:before{width:230px;height:230px;left:-80px;bottom:-110px}
+    .hero:after{width:160px;height:160px;right:-55px;top:40px}
+    .hero-inner{position:relative;z-index:2;padding:calc(18px + var(--safe-top)) 17px 34px;color:#fff;text-align:center}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .circle-btn{border:0;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.94);box-shadow:0 8px 22px rgba(15,23,42,.18);font-size:21px;cursor:pointer}
+    .trip-chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:7px 13px;border-radius:999px;font-size:13px;font-weight:800;backdrop-filter:blur(10px)}
+    .hero h1{font-size:clamp(31px,8.7vw,49px);line-height:1.05;margin:32px 0 8px;font-weight:900;text-shadow:0 3px 13px rgba(15,23,42,.22)}
+    .hero p{margin:0;font-size:17px;font-weight:600}
+    main{padding:0 14px}
+    .status-card{position:relative;margin:-25px 0 18px;background:#fff;border-radius:23px;padding:16px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:3}
+    .status-main{min-width:0}.status-main strong{display:block;font-size:16px}.status-main p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 5px rgba(34,197,94,.13);margin-left:7px}
+    .btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+    .btn.primary{background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;box-shadow:0 9px 20px rgba(109,40,217,.24)}
+    .btn.secondary{background:#f1e9ff;color:var(--purple)}
+    .btn.danger{background:#fee2e2;color:#991b1b}
+    .btn.ghost{background:#f8fafc;color:#344054;border:1px solid #e5e7eb}
+    .btn.small{padding:9px 12px;font-size:13px;white-space:nowrap}
+    .btn.full{width:100%;font-size:16px}
+    .section-title{display:flex;justify-content:space-between;align-items:end;margin:24px 4px 10px}
+    .eyebrow{font-size:12px;font-weight:900;color:var(--purple);letter-spacing:.035em}
+    .section-title h2{margin:0;font-size:26px}.section-title small{color:var(--muted);font-weight:700}
+    .journey{position:relative;padding:5px 0 18px}
+    .journey:before{content:"";position:absolute;top:35px;bottom:35px;right:50%;transform:translateX(50%);width:10px;border-radius:20px;background:repeating-linear-gradient(180deg,#fff 0 15px,#c4b5fd 15px 30px);box-shadow:0 0 0 4px rgba(255,255,255,.78)}
+    .day-row{position:relative;display:grid;grid-template-columns:1fr 88px 1fr;align-items:center;min-height:121px}
+    .day-node{grid-column:2;width:75px;height:75px;margin:auto;border:5px solid #fff;border-radius:50%;z-index:2;color:#fff;box-shadow:0 9px 22px rgba(15,23,42,.22);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+    .day-node strong{font-size:22px}.day-node span{font-size:11px;margin-top:3px;font-weight:800}
+    .day-node.future{background:linear-gradient(145deg,#a5aab4,#536070)}
+    .day-node.past{background:linear-gradient(145deg,#38bdf8,#0369a1)}
+    .day-node.today{background:linear-gradient(145deg,#facc15,#f97316);transform:scale(1.11);box-shadow:0 0 0 7px rgba(14,165,233,.19),0 11px 25px rgba(249,115,22,.28)}
+    .day-node.done{background:linear-gradient(145deg,#34d399,#15803d)}
+    .day-card{background:#fff;border-radius:18px;padding:11px 12px;box-shadow:var(--shadow);z-index:2;min-width:0}
+    .day-card.left{grid-column:1}.day-card.right{grid-column:3}.day-card.empty{visibility:hidden}
+    .day-card strong{display:block;font-size:13px;line-height:1.25}.day-card small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .day-card a{display:inline-block;color:#0369a1;font-size:12px;font-weight:900;text-decoration:none;margin-top:5px}
+    .today-pill{display:inline-block;background:#fb7185;color:#fff;border-radius:999px;padding:2px 8px;font-size:10px;font-weight:900;margin-bottom:4px}
+    .panel{background:#fff;border-radius:24px;padding:18px;margin:17px 0;box-shadow:var(--shadow)}
+    .passport-top{display:flex;align-items:center;gap:12px}.passport-icon{font-size:37px}.panel h3{margin:0}.panel p{margin:4px 0 0;color:var(--muted)}
+    .stamps{display:flex;gap:8px;overflow:auto;padding:13px 1px 2px}
+    .stamp{min-width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#f1f5f9;color:#94a3b8;font-weight:900;border:2px dashed #cbd5e1}
+    .stamp.done{background:#dcfce7;color:#166534;border:2px solid #4ade80;transform:rotate(-6deg)}
+    .flight{display:flex;gap:11px;padding:13px 0;border-top:1px solid var(--line)}
+    .flight:first-child{border-top:0}.flight-icon{width:45px;height:45px;border-radius:14px;background:#e0f2fe;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+    .flight strong{display:block}.flight p{font-size:13px}
+    .bottom-nav{position:fixed;z-index:20;bottom:0;left:50%;transform:translateX(-50%);width:min(640px,100%);background:rgba(255,255,255,.96);backdrop-filter:blur(14px);display:flex;justify-content:space-around;padding:9px 6px calc(9px + var(--safe-bottom));box-shadow:0 -8px 25px rgba(15,23,42,.09)}
+    .nav-btn{border:0;background:none;color:#667085;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:20px;cursor:pointer}.nav-btn span{font-size:11px}.nav-btn.active{color:var(--purple)}
+    dialog{border:0;padding:0;background:transparent;width:min(560px,calc(100% - 22px));max-width:560px}
+    dialog::backdrop{background:rgba(15,23,42,.68);backdrop-filter:blur(4px)}
+    .modal{background:#fff;border-radius:26px;padding:22px;position:relative;max-height:89vh;overflow:auto}
+    .modal-close{position:absolute;left:13px;top:13px;width:39px;height:39px;border:0;border-radius:50%;background:#f3f4f6;cursor:pointer}
+    .day-badge{width:66px;height:66px;margin:auto;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#facc15,#f97316);color:#fff;font-weight:900}
+    .modal h2{text-align:center;margin:11px 0 5px}.modal-lead{text-align:center;color:var(--muted);margin:0 0 16px}
+    .hotel-box{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:17px;padding:12px;margin:14px 0}
+    .hotel-box span{display:block;color:var(--muted);font-size:11px}.hotel-box strong{display:block;font-size:13px}
+    .upload-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .upload-zone{display:flex;flex-direction:column;align-items:center;text-align:center;border:2px dashed #c4b5fd;background:#faf5ff;border-radius:19px;padding:20px;cursor:pointer}
+    .upload-zone input{display:none}.upload-zone b{font-size:16px}.upload-zone small{color:var(--muted)}.camera{font-size:34px}
+    .upload-choice{min-height:145px;justify-content:center}
+    .upload-choice:first-child{background:#eff6ff;border-color:#93c5fd}
+    .upload-choice:last-child{background:#faf5ff;border-color:#c4b5fd}
+    .upload-limit-note{text-align:center;color:var(--muted);font-size:12px;margin-top:8px}
+    .preview{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.preview img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:11px}
+    .field{display:block;margin:15px 0}.field span{display:block;font-weight:800;margin-bottom:5px}.field textarea,.field input,.field select{width:100%;border:1px solid #d0d5dd;border-radius:13px;padding:11px;background:#fff}
+    .notice{border-radius:13px;padding:11px 12px;font-size:13px;margin:11px 0}.notice.info{background:#eff6ff;color:#1e40af}.notice.ok{background:#dcfce7;color:#166534}.notice.error{background:#fee2e2;color:#991b1b}.notice.warn{background:#fff7ed;color:#9a3412}
+    .progress{height:9px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:9px 0}.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));transition:width .25s}
+    .drawer-shade{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:28}.drawer{position:fixed;z-index:29;right:0;top:0;width:min(330px,86%);height:100%;background:#fff;padding:24px;box-shadow:-18px 0 45px rgba(15,23,42,.22)}
+    .drawer .close-drawer{position:absolute;left:15px;top:15px}.drawer h3{margin:48px 0 15px}.drawer button,.drawer a{width:100%;margin:6px 0;text-align:right;justify-content:flex-start}
+    .admin-wrap{min-height:100vh;background:#f3f7fb;padding:calc(18px + var(--safe-top)) 14px 40px}.admin-inner{max-width:1100px;margin:auto}
+    .admin-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.admin-head h1{margin:0}
+    .login-card{max-width:430px;margin:9vh auto;background:#fff;border-radius:25px;padding:24px;box-shadow:var(--shadow)}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:17px 0}.stat{background:#fff;border-radius:19px;padding:16px;box-shadow:var(--shadow)}.stat span{color:var(--muted);font-size:13px}.stat strong{display:block;font-size:31px}
+    .admin-panel{background:#fff;border-radius:22px;padding:17px;box-shadow:var(--shadow);margin:15px 0;overflow:auto}.toolbar{display:flex;gap:9px;flex-wrap:wrap;align-items:end}.toolbar .field{margin:0;min-width:170px}
+    .flight-admin-list{display:grid;gap:12px;margin-top:14px}.flight-admin-card{border:1px solid var(--line);border-radius:18px;padding:14px;background:#f8fafc}.flight-admin-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.flight-admin-fields{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px}.flight-admin-fields .field{margin:0}.flight-admin-note{grid-column:span 2}@media(max-width:800px){.flight-admin-fields{grid-template-columns:1fr 1fr}.flight-admin-note{grid-column:span 2}}@media(max-width:520px){.flight-admin-fields{grid-template-columns:1fr}.flight-admin-note{grid-column:auto}}
+    table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:11px;border-bottom:1px solid #e5e7eb;text-align:right;white-space:nowrap}th{font-size:12px;color:#667085}
+    .badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:900}.badge.ok{background:#dcfce7;color:#166534}.badge.wait{background:#fef3c7;color:#92400e}.badge.no{background:#fee2e2;color:#991b1b}
+    .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}.photo-card{background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb}.photo-card img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.photo-meta{padding:9px;font-size:12px}.photo-meta strong{display:block}
+    .spinner{display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+    .confetti{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}.confetti i{position:absolute;top:-20px;width:10px;height:18px;background:hsl(var(--h),90%,58%);animation:fall 1.9s ease-in forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.1}}
+    @media(max-width:720px){.stats{grid-template-columns:1fr 1fr}.admin-head{align-items:flex-start}.admin-wrap{padding-left:10px;padding-right:10px}}
+    @media(max-width:420px){
+      main{padding:0 11px}.hero h1{font-size:32px}.day-row{grid-template-columns:1fr 76px 1fr;min-height:113px}.day-node{width:65px;height:65px}
+      .day-card{padding:9px}.day-card strong{font-size:11px}.status-card{align-items:flex-start}.btn.small{padding:8px 10px}.preview{grid-template-columns:repeat(2,1fr)}
+    }
+
+    /* --- App experience upgrades --- */
+    .splash{
+      position:fixed;inset:0;z-index:9999;display:grid;place-items:center;
+      background:linear-gradient(180deg,#38bdf8 0%,#7dd3fc 46%,#fef3c7 100%);
+      overflow:hidden;color:#fff;text-align:center;transition:opacity .55s ease,visibility .55s ease
+    }
+    .splash.hidden-splash{opacity:0;visibility:hidden}
+    .splash-sun{position:absolute;left:8%;top:9%;width:94px;height:94px;border-radius:50%;
+      background:rgba(255,255,255,.55);box-shadow:0 0 60px rgba(255,255,255,.55)}
+    .splash-cloud{position:absolute;font-size:58px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.08));opacity:.9;animation:cloudMove 7s linear infinite}
+    .splash-cloud.c1{top:17%;left:-20%}.splash-cloud.c2{top:31%;right:-22%;animation-delay:-3s}
+    .splash-content{position:relative;z-index:4;padding:20px;width:min(520px,92vw)}
+    .splash-logo{font-size:58px;animation:popIn .75s cubic-bezier(.2,.8,.2,1)}
+    .splash h1{font-size:clamp(38px,11vw,66px);margin:4px 0 6px;font-weight:900;text-shadow:0 4px 16px rgba(15,23,42,.2)}
+    .splash p{font-size:18px;font-weight:700;margin:0 0 28px}
+    .flight-track{position:relative;height:110px;margin-top:16px}
+    .flight-line{position:absolute;left:7%;right:7%;top:55px;border-top:3px dashed rgba(255,255,255,.75)}
+    .plane-animated{position:absolute;top:22px;left:5%;font-size:48px;transform:rotate(5deg);animation:planeFly 3.6s cubic-bezier(.35,.02,.2,1) forwards}
+    .flag-il,.flag-th{position:absolute;top:65px;font-size:34px}.flag-il{left:2%}.flag-th{right:2%}
+    .splash-skip{margin-top:8px;border:0;border-radius:999px;padding:10px 18px;background:rgba(255,255,255,.18);
+      color:#fff;border:1px solid rgba(255,255,255,.35);font-weight:800;backdrop-filter:blur(8px);cursor:pointer}
+    @keyframes planeFly{0%{left:5%;transform:translateY(12px) rotate(-10deg)}45%{transform:translateY(-10px) rotate(6deg)}100%{left:84%;transform:translateY(4px) rotate(11deg)}}
+    @keyframes cloudMove{from{transform:translateX(0)}to{transform:translateX(140vw)}}
+    @keyframes popIn{0%{transform:scale(.7);opacity:0}100%{transform:scale(1);opacity:1}}
+    .trip-progress-card{background:#fff;border-radius:22px;padding:15px 16px;margin:0 0 17px;box-shadow:var(--shadow)}
+    .trip-progress-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+    .trip-progress-head strong{font-size:15px}.trip-progress-head span{font-weight:900;color:var(--purple)}
+    .trip-progress-bar{height:13px;background:#e9d5ff;border-radius:999px;overflow:hidden}
+    .trip-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#ec4899,#f97316);border-radius:999px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+    .trip-progress-sub{font-size:12px;color:var(--muted);margin-top:7px}
+    .success-overlay{position:fixed;inset:0;z-index:9998;display:grid;place-items:center;background:rgba(15,23,42,.62);backdrop-filter:blur(5px);opacity:0;visibility:hidden;transition:.3s}
+    .success-overlay.show{opacity:1;visibility:visible}
+    .success-card{background:#fff;border-radius:28px;padding:28px 24px;text-align:center;width:min(430px,90vw);box-shadow:0 24px 70px rgba(0,0,0,.3);animation:popIn .45s ease}
+    .success-icon{font-size:64px}.success-card h2{margin:6px 0}.success-card p{color:var(--muted)}
+
+
+    .passport-screen{background:
+      linear-gradient(rgba(255,255,255,.92),rgba(255,255,255,.92)),
+      repeating-linear-gradient(0deg,#f5ecd8 0 2px,#f1e4c7 2px 4px);
+      border-radius:26px;padding:22px;max-height:89vh;overflow:auto;position:relative}
+    .passport-cover{background:linear-gradient(145deg,#4c1d95,#6d28d9 55%,#312e81);
+      color:#fef3c7;border-radius:22px;padding:28px 20px;text-align:center;box-shadow:inset 0 0 0 3px rgba(254,243,199,.35),0 14px 34px rgba(49,46,129,.28)}
+    .passport-cover .crest{font-size:54px}.passport-cover h2{margin:8px 0 2px;letter-spacing:.04em}.passport-cover p{margin:0;opacity:.9}
+    .passport-family{margin-top:16px;padding:12px;border-top:1px solid rgba(254,243,199,.35);font-weight:900}
+    .passport-page-title{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 12px}
+    .passport-page-title h3{margin:0}.passport-page-title span{font-size:12px;color:var(--muted)}
+    .passport-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .passport-stamp-card{position:relative;min-height:142px;background:#fffaf0;border-radius:18px;padding:14px;border:1px solid #eadfc7;overflow:hidden}
+    .passport-stamp-card.locked{filter:grayscale(.8);opacity:.58}
+    .passport-stamp-card:before{content:"";position:absolute;inset:8px;border:1px dashed rgba(120,53,15,.16);border-radius:14px;pointer-events:none}
+    .stamp-mark{width:92px;height:92px;border:4px double #7c2d12;border-radius:50%;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      color:#7c2d12;font-weight:900;text-align:center;line-height:1;transform:rotate(-8deg);mix-blend-mode:multiply;animation:stampHit .45s cubic-bezier(.2,.9,.3,1)}
+    .stamp-mark.blue{border-color:#1d4ed8;color:#1d4ed8;transform:rotate(7deg)}
+    .stamp-mark.green{border-color:#166534;color:#166534;transform:rotate(-4deg)}
+    .stamp-mark.purple{border-color:#6b21a8;color:#6b21a8;transform:rotate(5deg)}
+    .stamp-mark.orange{border-color:#c2410c;color:#c2410c;transform:rotate(-7deg)}
+    .stamp-icon{font-size:28px}.stamp-city{font-size:13px;margin-top:4px}.stamp-date{font-size:10px;margin-top:5px;letter-spacing:.06em}
+    .locked-mark{width:80px;height:80px;border:2px dashed #94a3b8;border-radius:50%;display:grid;place-items:center;margin:auto;color:#64748b;font-size:28px}
+    .passport-destination{margin-top:9px;text-align:center;font-weight:800;font-size:13px}
+    .passport-summary{margin-top:16px;background:#fff;border:1px solid #eadfc7;border-radius:16px;padding:14px;text-align:center}
+    @keyframes stampHit{0%{transform:scale(1.7) rotate(-18deg);opacity:0}70%{transform:scale(.95) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
+    @media(max-width:430px){.passport-grid{grid-template-columns:1fr 1fr;gap:9px}.passport-stamp-card{min-height:130px;padding:10px}.stamp-mark{width:82px;height:82px}}
+
+
+    /* --- Interactive journey map --- */
+    .journey-map{
+      position:relative;min-height:910px;margin:8px 0 22px;border-radius:28px;overflow:hidden;
+      background:
+        radial-gradient(circle at 25% 16%,rgba(255,255,255,.85),transparent 15%),
+        linear-gradient(180deg,#bfeaff 0%,#dff7ff 35%,#d9f7e8 66%,#fff4d6 100%);
+      box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.8)
+    }
+    .journey-map:before{content:"";position:absolute;inset:0;background:
+      radial-gradient(ellipse at 20% 72%,rgba(34,197,94,.25) 0 12%,transparent 13%),
+      radial-gradient(ellipse at 77% 48%,rgba(34,197,94,.21) 0 13%,transparent 14%),
+      radial-gradient(ellipse at 61% 20%,rgba(34,197,94,.18) 0 10%,transparent 11%);
+      pointer-events:none}
+    .map-title{position:absolute;top:18px;right:20px;left:20px;z-index:4;display:flex;justify-content:space-between;align-items:center;
+      background:rgba(255,255,255,.88);backdrop-filter:blur(10px);border-radius:18px;padding:12px 14px;box-shadow:0 8px 25px rgba(15,23,42,.11)}
+    .map-title strong{font-size:16px}.map-title small{color:var(--muted);font-weight:700}
+    .route-svg{position:absolute;inset:76px 0 0;width:100%;height:calc(100% - 76px);z-index:1;overflow:visible}
+    .route-path{fill:none;stroke:#fff;stroke-width:18;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 5px 4px rgba(15,23,42,.13))}
+    .route-dash{fill:none;stroke:#8b5cf6;stroke-width:5;stroke-linecap:round;stroke-dasharray:10 13}
+    .route-progress{fill:none;stroke:url(#progressGradient);stroke-width:7;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.2s ease}
+    .map-stop{position:absolute;z-index:3;width:46%;max-width:240px;transform:translate(-50%,-50%)}
+    .map-stop-card{background:rgba(255,255,255,.94);border-radius:18px;padding:11px 12px;box-shadow:0 11px 28px rgba(15,23,42,.15);border:2px solid transparent;cursor:pointer}
+    .map-stop.current .map-stop-card{border-color:#f97316;box-shadow:0 0 0 7px rgba(249,115,22,.16),0 11px 28px rgba(15,23,42,.15)}
+    .map-stop.completed .map-stop-card{border-color:#22c55e}
+    .map-stop.future{opacity:.72;filter:grayscale(.3)}
+    .map-stop-head{display:flex;align-items:center;gap:8px}.map-stop-icon{font-size:25px}.map-stop-card strong{display:block;font-size:13px;line-height:1.2}
+    .map-stop-card small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .map-stop-actions{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}.map-mini-btn{border:0;border-radius:999px;padding:5px 8px;background:#eef2ff;color:#4338ca;font-size:10px;font-weight:900;text-decoration:none;cursor:pointer}
+    .map-day-badge{position:absolute;top:-12px;left:-8px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--purple);font-weight:900;box-shadow:0 5px 13px rgba(15,23,42,.17)}
+    .map-plane{position:absolute;z-index:5;font-size:42px;transform:translate(-50%,-50%) rotate(12deg);filter:drop-shadow(0 8px 7px rgba(15,23,42,.22));transition:left 1.1s ease,top 1.1s ease;animation:planeBob 2.2s ease-in-out infinite}
+    .map-plane-label{position:absolute;z-index:5;transform:translate(-50%,18px);background:#fff;color:#4c1d95;font-size:10px;font-weight:900;border-radius:999px;padding:4px 8px;box-shadow:0 6px 15px rgba(15,23,42,.13);white-space:nowrap}
+    .map-legend{position:absolute;bottom:14px;left:14px;right:14px;z-index:4;background:rgba(255,255,255,.89);border-radius:16px;padding:9px 12px;display:flex;justify-content:center;gap:14px;font-size:11px;font-weight:800}
+    .map-legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:4px}.map-legend .done i{background:#22c55e}.map-legend .now i{background:#f97316}.map-legend .next i{background:#9ca3af}
+    .family-photo-strip{display:flex;align-items:center;gap:12px;background:#fff;border-radius:22px;padding:12px;margin:0 0 17px;box-shadow:var(--shadow)}
+    .family-photo-strip img{width:76px;height:76px;object-fit:cover;border-radius:18px;background:#f8fafc}
+    .family-photo-strip strong{display:block}.family-photo-strip p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    @keyframes planeBob{0%,100%{margin-top:0}50%{margin-top:-7px}}
+    @media(max-width:430px){
+      .journey-map{min-height:870px}.map-stop{width:49%}.map-stop-card{padding:9px}.map-stop-icon{font-size:21px}.map-stop-card strong{font-size:11px}
+      .map-title{right:10px;left:10px}.map-plane{font-size:36px}
+    }
+
+
+    /* --- Puzzle & reminder upgrades --- */
+    .passport-puzzle-section{margin-top:20px;background:#fff;border:1px solid #eadfc7;border-radius:20px;padding:14px}
+    .passport-puzzle-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+    .passport-puzzle-head h3{margin:0}.passport-puzzle-head span{font-size:12px;color:var(--muted);font-weight:800}
+    .family-puzzle{display:grid;direction:ltr;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);aspect-ratio:2/1;border-radius:16px;overflow:hidden;border:2px solid #e7dcc3;background:#e5e7eb}
+    .puzzle-tile{position:relative;direction:rtl;overflow:hidden;border:1px solid rgba(255,255,255,.85)}
+    .puzzle-tile .tile-image{position:absolute;inset:0;background-repeat:no-repeat;background-size:400% 200%;filter:saturate(1.03)}
+    .puzzle-tile.locked .tile-image{filter:blur(9px) grayscale(1);transform:scale(1.08);opacity:.25}
+    .puzzle-lock{position:absolute;inset:0;display:grid;place-items:center;background:rgba(30,41,59,.6);color:#fff;font-size:24px;font-weight:900}
+    .puzzle-number{position:absolute;top:6px;right:6px;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:#5b21b6;font-weight:900;font-size:12px;box-shadow:0 3px 9px rgba(0,0,0,.15)}
+    .puzzle-complete{margin-top:10px;text-align:center;color:#166534;font-weight:900}
+    .reminder-card{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #fdba74;border-radius:22px;padding:16px;margin:17px 0;box-shadow:var(--shadow)}
+    .reminder-top{display:flex;align-items:center;gap:12px}.reminder-icon{font-size:35px}.reminder-card h3{margin:0}.reminder-card p{margin:3px 0 0;color:#7c2d12;font-size:13px}
+    .reminder-controls{display:flex;gap:8px;align-items:end;margin-top:13px;flex-wrap:wrap}
+    .reminder-controls label{display:block;flex:1;min-width:120px}.reminder-controls label span{display:block;font-size:11px;font-weight:900;margin-bottom:4px}
+    .reminder-controls input{width:100%;border:1px solid #fdba74;border-radius:12px;padding:9px;background:#fff}
+    .reminder-note{font-size:11px;color:#92400e;margin-top:8px}
+
+
+    /* --- Family travel book PDF --- */
+    .pdf-export-card{background:linear-gradient(135deg,#ede9fe,#fdf2f8);border:1px solid #c4b5fd;border-radius:24px;padding:18px;margin:17px 0;box-shadow:var(--shadow)}
+    .pdf-export-top{display:flex;gap:12px;align-items:center}.pdf-export-icon{font-size:38px}.pdf-export-card h3{margin:0}.pdf-export-card p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pdf-export-actions{margin-top:13px}.pdf-export-status{font-size:12px;color:#5b21b6;margin-top:9px;font-weight:700}
+    .pdf-stage{position:fixed;left:-12000px;top:0;width:794px;z-index:-1000;background:#fff}
+    .book-page{direction:rtl;width:794px;height:1123px;background:#fff;position:relative;overflow:hidden;font-family:"Heebo",Arial,sans-serif;color:#172033;padding:48px}
+    .book-page:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(224,242,254,.5),transparent 34%,rgba(237,233,254,.45));pointer-events:none}
+    .book-cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(150deg,#0ea5e9,#7c3aed 55%,#ec4899);color:#fff}
+    .book-cover:before{background:radial-gradient(circle at 18% 16%,rgba(255,255,255,.3),transparent 20%),radial-gradient(circle at 84% 78%,rgba(255,255,255,.2),transparent 24%)}
+    .book-cover img{width:390px;height:390px;object-fit:contain;border-radius:38px;background:rgba(255,255,255,.94);padding:18px;box-shadow:0 25px 60px rgba(15,23,42,.3);position:relative}
+    .book-cover h1{font-size:58px;margin:26px 0 5px;position:relative}.book-cover h2{font-size:31px;margin:0;position:relative}.book-cover p{font-size:20px;position:relative}
+    .book-day-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #7c3aed;padding-bottom:15px;position:relative}
+    .book-day-head h2{font-size:34px;margin:0}.book-day-head p{margin:4px 0 0;color:#667085;font-size:17px}.book-day-badge{background:#7c3aed;color:#fff;border-radius:18px;padding:10px 16px;font-size:20px;font-weight:900}
+    .book-layout{display:grid;grid-template-columns:1fr 190px;gap:25px;margin-top:25px;position:relative}
+    .book-photos{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;align-content:start}
+    .book-photo{height:310px;border-radius:22px;overflow:hidden;background:#f1f5f9;box-shadow:0 9px 23px rgba(15,23,42,.13)}
+    .book-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .book-photos.one{grid-template-columns:1fr}.book-photos.one .book-photo{height:710px}
+    .book-photos.two{grid-template-columns:1fr}.book-photos.two .book-photo{height:345px}
+    .book-empty{height:710px;border:3px dashed #cbd5e1;border-radius:25px;display:grid;place-items:center;text-align:center;color:#64748b;font-size:25px;padding:30px;background:#f8fafc}
+    .book-caption{position:absolute;right:48px;left:263px;bottom:45px;border-top:1px solid #e5e7eb;padding-top:12px;color:#475467;font-size:16px;max-height:70px;overflow:hidden}
+    .book-route{background:#f8fafc;border:1px solid #e2e8f0;border-radius:22px;padding:16px;height:830px}
+    .book-route h3{margin:0 0 14px;text-align:center;color:#5b21b6}.book-route-line{position:relative;height:755px}
+    .book-route-line:before{content:"";position:absolute;right:24px;top:20px;bottom:20px;width:5px;background:linear-gradient(#7c3aed,#ec4899,#f97316);border-radius:999px}
+    .book-route-stop{position:relative;display:flex;align-items:center;gap:9px;height:94px;font-size:12px;font-weight:800}
+    .book-route-dot{width:19px;height:19px;border-radius:50%;background:#cbd5e1;border:4px solid #fff;box-shadow:0 0 0 2px #cbd5e1;z-index:2;flex:0 0 auto}
+    .book-route-stop.passed .book-route-dot{background:#22c55e;box-shadow:0 0 0 2px #22c55e}.book-route-stop.current .book-route-dot{background:#f97316;box-shadow:0 0 0 3px #f97316}
+    .book-route-plane{position:absolute;right:4px;font-size:31px;transform:rotate(-90deg) translateY(-2px);z-index:4;filter:drop-shadow(0 5px 5px rgba(15,23,42,.2))}
+
+
+    /* --- Coffee table book 6.2 --- */
+    .book-cover-luxury{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(150deg,#f6c48d 0%,#f9e3c6 38%,#7dd3fc 100%);color:#0f2f57}
+    .book-cover-luxury .cover-frame{position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid rgba(15,47,87,.25);padding:28px}
+    .book-cover-luxury .cover-title{font-family:Georgia,serif;font-style:italic;font-size:72px;line-height:.9;margin:0}
+    .book-cover-luxury .cover-year{font-size:44px;font-weight:900;margin:8px 0 18px}
+    .book-cover-luxury .cover-photo{width:430px;height:340px;object-fit:contain;background:#fff;border:14px solid #fff;box-shadow:0 20px 50px rgba(15,47,87,.28);transform:rotate(-2deg)}
+    .book-cover-luxury .cover-family{margin-top:24px;background:rgba(255,255,255,.72);padding:10px 28px;border-radius:6px;font-size:26px;font-weight:900}
+    .book-cover-luxury .cover-stamp{position:absolute;left:42px;bottom:38px;width:120px;height:120px;border:4px double #7c2d12;border-radius:50%;display:grid;place-items:center;color:#7c2d12;font-weight:900;transform:rotate(-12deg)}
+    .book-intro,.book-day-editorial,.book-collage,.book-final{background:#fbf7ef}
+    .intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+    .flight-ticket{background:#fff;border:1px solid #d7dce3;border-radius:20px;padding:22px;box-shadow:0 10px 25px rgba(15,23,42,.08)}
+    .flight-ticket h3{margin:0 0 12px;color:#173b67}.flight-ticket .big{font-size:28px;font-weight:900;color:#0f2f57}
+    .flight-ticket .route{display:flex;justify-content:space-between;margin:16px 0;font-size:18px;font-weight:800}.flight-ticket .meta{color:#667085}
+    .full-route-page{background:#eef8fb}
+    .route-hero{height:860px;border-radius:28px;background:linear-gradient(180deg,#dff4ff,#ecfdf5);position:relative;margin-top:28px;overflow:hidden}
+    .route-hero-line{position:absolute;right:50%;top:90px;bottom:90px;width:7px;background:repeating-linear-gradient(#7c3aed 0 14px,transparent 14px 27px);border-radius:999px}
+    .route-hero-stop{position:absolute;right:50%;transform:translateX(50%);display:flex;align-items:center;gap:16px;width:420px}
+    .route-hero-stop:nth-child(odd){flex-direction:row-reverse}
+    .route-hero-dot{width:26px;height:26px;border-radius:50%;background:#fff;border:7px solid #7c3aed;box-shadow:0 6px 15px rgba(15,23,42,.15)}
+    .route-hero-label{background:#fff;border-radius:16px;padding:12px 18px;box-shadow:0 8px 20px rgba(15,23,42,.12);font-size:18px;font-weight:900}
+    .route-hero-plane{position:absolute;right:calc(50% - 29px);font-size:50px;transform:rotate(-90deg)}
+    .book-transition{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(145deg,#fde7c7,#c7ecff);color:#123a66}
+    .book-transition h1{font-family:Georgia,serif;font-style:italic;font-size:78px;margin:0 0 14px}.book-transition p{font-size:24px}
+    .editorial-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #173b67;padding-bottom:14px}
+    .editorial-head h2{font-size:42px;margin:0;color:#123a66}.editorial-head .meta{font-size:18px;color:#667085}
+    .editorial-body{display:grid;grid-template-columns:85px 1fr;gap:24px;margin-top:24px}
+    .editorial-route{position:relative;border-left:2px dashed #173b67;min-height:840px}
+    .editorial-plane{position:absolute;left:-21px;font-size:35px;transform:rotate(-90deg)}
+    .editorial-main{display:grid;gap:14px}.editorial-hero{height:500px;border-radius:24px;overflow:hidden;box-shadow:0 12px 28px rgba(15,23,42,.14)}
+    .editorial-hero img,.editorial-thumb img{width:100%;height:100%;object-fit:cover}.editorial-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .editorial-thumb{height:190px;border-radius:18px;overflow:hidden}.editorial-story{font-size:18px;line-height:1.6;color:#344054;margin-top:14px;padding:0 8px}
+    .collage-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:230px;gap:12px;margin-top:26px}.collage-grid img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+    .collage-grid img:nth-child(1){grid-column:span 2;grid-row:span 2}
+    .book-final{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.book-final h1{font-family:Georgia,serif;font-size:56px;color:#123a66;margin:0}
+    .book-final p{font-size:24px;line-height:1.7;max-width:620px;color:#475467}.book-final .heart{font-size:70px}
+
+
+    /* --- Live task management 6.5 --- */
+    .global-announcement{margin:0 0 15px;background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #f59e0b;border-radius:18px;padding:13px 15px;box-shadow:var(--shadow);font-weight:800;color:#92400e}
+    .task-requirement{margin:10px 0;background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;border-radius:13px;padding:10px 12px;font-size:13px;font-weight:800}
+    .task-admin-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .task-list{display:grid;gap:9px}
+    .task-admin-row{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #e5e7eb;border-radius:15px;padding:11px;background:#fafafa}
+    .task-admin-row strong{display:block}.task-admin-row small{color:var(--muted)}
+    .task-editor{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px}
+    .task-editor h3{margin-top:0}
+    .task-editor .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .admin-announcement{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+    @media(max-width:800px){.task-admin-grid{grid-template-columns:1fr}.admin-announcement{grid-template-columns:1fr}.task-editor .two-cols{grid-template-columns:1fr}}
+
+    /* --- 7.3 family progress dashboard --- */
+    .family-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+    .family-progress-card{border:1px solid #e5e7eb;border-radius:18px;padding:14px;background:#fff;cursor:pointer;transition:.2s}
+    .family-progress-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.1)}
+    .family-progress-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .family-progress-head strong{font-size:17px}.family-progress-count{font-weight:900;color:var(--purple)}
+    .family-progress-bar{height:11px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0 7px}
+    .family-progress-bar>div{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:999px}
+    .family-progress-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+    .family-detail{margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb;display:none}
+    .family-progress-card.open .family-detail{display:block}
+    .family-task-row{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed #e5e7eb;font-size:13px}
+    .family-task-row:last-child{border-bottom:0}
+    .puzzle-fly-piece{position:fixed;z-index:10001;width:82px;height:82px;border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(15,23,42,.35);pointer-events:none;animation:puzzleFly 1.15s cubic-bezier(.2,.8,.2,1) forwards}
+    @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
+
+  </style>
+</head>
+<body>
+
+  <section id="splashScreen" class="splash" aria-label="פתיחת המסע">
+    <div class="splash-sun"></div>
+    <div class="splash-cloud c1">☁️</div>
+    <div class="splash-cloud c2">☁️</div>
+    <div class="splash-content">
+      <div class="splash-logo">🇹🇭</div>
+      <h1>THAILAND 2026</h1>
+      <p id="splashFamily">המסע המשפחתי מתחיל</p>
+      <div class="flight-track">
+        <div class="flight-line"></div>
+        <span class="flag-il">🇮🇱</span>
+        <span class="plane-animated">✈️</span>
+        <span class="flag-th">🇹🇭</span>
+      </div>
+      <button id="skipSplash" class="splash-skip">דלג לפתיחה</button>
+    </div>
+  </section>
+  <div id="familyApp" class="app">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="topbar">
+          <button id="menuBtn" class="circle-btn" aria-label="פתיחת תפריט">☰</button>
+          <div class="trip-chip">🇹🇭 תאילנד 2026</div>
+          <button id="familyBtn" class="circle-btn" aria-label="פרטי משפחה">👨‍👩‍👧‍👦</button>
+        </div>
+        <h1 id="welcome">ברוכים הבאים!</h1>
+        <p>המסע המשפחתי שלנו מתחיל כאן</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="status-card">
+        <div class="status-main">
+          <strong><span class="dot"></span><span id="todayTitle">בודק את יום הטיול...</span></strong>
+          <p id="todaySubtitle"></p>
+        </div>
+        <button id="openTodayBtn" class="btn primary small">פתחו את היום</button>
+      </section>
+
+      <div id="connectionBanner" class="notice info">מתחבר ל־Firebase…</div>
+      <div id="globalAnnouncement" class="global-announcement hidden"></div>
+
+      <section class="trip-progress-card">
+        <div class="trip-progress-head"><strong>התקדמות בטיול</strong><span id="tripProgressPercent">0%</span></div>
+        <div class="trip-progress-bar"><div id="tripProgressFill" class="trip-progress-fill"></div></div>
+        <div id="tripProgressSub" class="trip-progress-sub">מתכוננים למסע</div>
+      </section>
+
+      <section class="reminder-card">
+        <div class="reminder-top">
+          <div class="reminder-icon">📸</div>
+          <div><h3>תזכורת לתמונה יומית</h3><p>הוסיפו ליומן הטלפון תזכורת חוזרת לצלם לפחות תמונה אחת בכל יום.</p></div>
+        </div>
+        <div class="reminder-controls">
+          <label><span>שעת התזכורת</span><input id="reminderTime" type="time" value="20:00"></label>
+          <button id="addCalendarReminder" class="btn primary">📅 הוספה ליומן</button>
+        </div>
+        <div class="reminder-note">נוצר אירוע יומי חוזר בין 26.07.2026 ל־18.08.2026. לאחר הלחיצה הטלפון יבקש להוסיף אותו ליומן.</div>
+      </section>
+
+
+      <section class="family-photo-strip">
+        <img id="familyHeroImage" alt="התמונה המשפחתית">
+        <div><strong id="familyPhotoTitle">התמונה המשפחתית שלנו</strong><p>התמונה תשמש בהמשך גם לפאזל הדיגיטלי ולדרכון.</p></div>
+      </section>
+
+      <section class="section-title">
+        <div><div class="eyebrow">מפת המסע</div><h2>המסלול שלנו</h2></div>
+        <small>26.07–19.08</small>
+      </section>
+      <section id="journeyMap" class="journey-map" aria-label="מפת המסע האינטראקטיבית">
+        <div class="map-title"><div><strong>מתקדמים בין היעדים</strong><small id="mapStatusText">טוען את המיקום הנוכחי…</small></div><span>🗺️</span></div>
+        <svg id="routeSvg" class="route-svg" viewBox="0 0 600 820" preserveAspectRatio="none" aria-hidden="true">
+          <defs><linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7c3aed"/><stop offset="55%" stop-color="#ec4899"/><stop offset="100%" stop-color="#f97316"/></linearGradient></defs>
+          <path id="routeBase" class="route-path" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+          <path class="route-dash" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+          <path id="routeProgress" class="route-progress" pathLength="1" d="M92 60 C470 95, 500 180, 135 235 S95 390, 470 420 S500 585, 130 635 S115 760, 500 780"/>
+        </svg>
+        <div id="mapStops"></div>
+        <div id="movingPlane" class="map-plane">✈️</div>
+        <div id="movingPlaneLabel" class="map-plane-label">משפחתנו בדרך</div>
+        <div class="map-legend"><span class="done"><i></i>עברנו</span><span class="now"><i></i>אנחנו כאן</span><span class="next"><i></i>בהמשך</span></div>
+      </section>
+
+      <section class="panel">
+        <div class="passport-top"><div class="passport-icon">🛂</div><div><h3>הדרכון המשפחתי</h3><p id="passportText">החותמות יופיעו כאן לאחר השלמת משימות</p></div></div>
+        <div id="stamps" class="stamps"></div>
+      </section>
+
+
+      <section id="pdfExportCard" class="pdf-export-card hidden">
+        <div class="pdf-export-top">
+          <div class="pdf-export-icon">📖</div>
+          <div><h3>ספר המסע המשפחתי</h3><p>ייצוא כל התמונות, התאריכים והמסלול של משפחתכם לקובץ PDF מסודר.</p></div>
+        </div>
+        <div class="pdf-export-actions">
+          <button id="exportFamilyPdf" class="btn primary full">📄 יצירת ספר PDF</button>
+          <div id="pdfExportStatus" class="pdf-export-status"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title" style="margin-top:0"><div><div class="eyebrow">מידע שימושי</div><h2>הטיסות שלנו</h2></div></div>
+        <div id="flights"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" id="navJourney">🏠<span>המסע שלנו</span></button>
+      <button class="nav-btn" id="navPassport">🛂<span>הדרכון שלי</span></button>
+      <button class="nav-btn" id="navAlbum">🖼️<span>התמונות שלי</span></button>
+      <button class="nav-btn" id="navHelp">❓<span>עזרה</span></button>
+    </nav>
+  </div>
+
+  <div id="drawerShade" class="drawer-shade hidden"></div>
+  <aside id="drawer" class="drawer hidden">
+    <button id="drawerClose" class="circle-btn close-drawer">✕</button>
+    <h3>תפריט משפחתי</h3>
+    <button id="drawerJourney" class="btn ghost">🗺️ השביל שלנו</button>
+    <button id="drawerFlights" class="btn ghost">✈️ הטיסות שלנו</button>
+    <button id="shareBtn" class="btn ghost">📤 שיתוף הקישור</button>
+    <a href="?admin=1" class="btn ghost">🔐 כניסת מנהל</a>
+  </aside>
+
+  <dialog id="dayDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="dayDialog">✕</button>
+      <div id="dayBadge" class="day-badge">יום 1</div>
+      <div id="dayLocation" class="eyebrow" style="text-align:center;margin-top:12px"></div>
+      <h2 id="taskTitle">המשימה שלכם</h2>
+      <p id="taskDescription" class="modal-lead"></p>
+      <div id="taskRequirement" class="task-requirement"></div>
+
+      <div id="hotelBox" class="hotel-box">
+        <div><span>🏨 המלון שלנו</span><strong id="hotelName"></strong></div>
+        <a id="mapsLink" class="btn secondary small" target="_blank" rel="noopener noreferrer">📍 ניווט</a>
+      </div>
+
+      <div class="upload-actions">
+        <label class="upload-zone upload-choice">
+          <input id="cameraInput" type="file" accept="image/*" capture="environment">
+          <span class="camera">📷</span>
+          <b>צילום חדש</b>
+          <small>פותח את המצלמה</small>
+        </label>
+        <label class="upload-zone upload-choice">
+          <input id="galleryInput" type="file" accept="image/*" multiple>
+          <span class="camera">🖼️</span>
+          <b>בחירה מהגלריה</b>
+          <small>אפשר לבחור כמה תמונות</small>
+        </label>
+      </div>
+      <div class="upload-limit-note">אפשר להעלות עד 8 תמונות בכל משימה</div>
+      <div id="preview" class="preview"></div>
+
+      <label class="field"><span>כמה מילים על החוויה</span><textarea id="caption" rows="3" placeholder="מה היה מיוחד היום?"></textarea></label>
+      <div id="uploadProgressWrap" class="hidden"><div class="progress"><div id="uploadProgress"></div></div></div>
+      <div id="taskNotice" class="notice info hidden"></div>
+
+      <button id="submitTaskBtn" class="btn primary full">סיימנו את המשימה! ✅</button>
+    </div>
+  </dialog>
+
+
+  <dialog id="passportDialog">
+    <div class="passport-screen">
+      <button class="modal-close" data-close="passportDialog">✕</button>
+      <section class="passport-cover">
+        <div class="crest">🛂</div>
+        <div style="font-size:12px;font-weight:800;letter-spacing:.12em">KINGDOM OF THAILAND</div>
+        <h2>FAMILY PASSPORT</h2>
+        <p>THAILAND 2026</p>
+        <div id="passportFamilyName" class="passport-family">משפחת שדה</div>
+      </section>
+
+      <div class="passport-page-title">
+        <h3>חותמות המסע</h3>
+        <span id="passportStampCount">0 חותמות</span>
+      </div>
+
+      <div id="passportStampGrid" class="passport-grid"></div>
+
+      <section class="passport-puzzle-section">
+        <div class="passport-puzzle-head">
+          <h3>הפאזל המשפחתי</h3>
+          <span id="passportPuzzleCount">0 מתוך 8 חלקים</span>
+        </div>
+        <div id="familyPuzzle" class="family-puzzle" aria-label="הפאזל המשפחתי"></div>
+        <div id="puzzleCompleteText" class="puzzle-complete hidden">הפאזל הושלם! 🎉</div>
+      </section>
+
+      <div class="passport-summary">
+        <strong id="passportSummaryTitle">המסע רק מתחיל</strong>
+        <p id="passportSummaryText">כל משימה שתשלימו תוסיף חותמת חדשה לדרכון.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="helpDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="helpDialog">✕</button>
+      <h2>איך זה עובד?</h2>
+      <p>בכל יום סורקים את תג ה־NFC, פותחים את היום המתאים, מבצעים את המשימה ומעלים תמונות.</p>
+      <p>לחיצה על בועת המלון פותחת ניווט. יום שהושלם מקבל חותמת בדרכון המשפחתי.</p>
+      <button class="btn primary full" data-close="helpDialog">הבנתי</button>
+    </div>
+  </dialog>
+
+  <dialog id="albumDialog">
+    <div class="modal">
+      <button class="modal-close" data-close="albumDialog">✕</button>
+      <h2>התמונות שהעליתם מהמכשיר הזה</h2>
+      <div id="familyGallery" class="gallery"></div>
+      <div id="albumNotice" class="notice info">טוען…</div>
+    </div>
+  </dialog>
+
+  <section id="adminApp" class="admin-wrap hidden">
+    <div id="adminLogin" class="login-card">
+      <div class="eyebrow">תאילנד 2026</div>
+      <h1>כניסת מנהל</h1>
+      <p style="color:var(--muted)">הכניסה מתבצעת באמצעות משתמש Email/Password שהוגדר ב־Firebase Authentication.</p>
+      <label class="field"><span>אימייל</span><input id="adminEmail" type="email" value="omris18@gmail.com" autocomplete="username"></label>
+      <label class="field"><span>סיסמה</span><input id="adminPassword" type="password" autocomplete="current-password"></label>
+      <div id="loginNotice" class="notice error hidden"></div>
+      <button id="loginBtn" class="btn primary full">כניסה</button>
+      <a href="./" class="btn ghost full" style="margin-top:9px">חזרה לאתר המשפחות</a>
+    </div>
+
+    <div id="adminDashboard" class="admin-inner hidden">
+      <header class="admin-head">
+        <div><div class="eyebrow">תאילנד 2026</div><h1>ממשק מנהל</h1><p id="adminUserLabel" style="margin:4px 0;color:var(--muted)"></p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><a href="./" class="btn ghost">אתר משפחות</a><button id="logoutBtn" class="btn danger">התנתקות</button></div>
+      </header>
+
+      <div class="toolbar admin-panel">
+        <label class="field"><span>תאריך להצגה</span><select id="adminDate"></select></label>
+        <button id="refreshAdmin" class="btn primary">רענון נתונים</button>
+        <button id="downloadAllZip" class="btn secondary">⬇️ ZIP לכל התמונות ביום</button>
+        <button id="downloadTripZip" class="btn secondary">📦 ZIP מלא לכל הטיול</button>
+      </div>
+
+      <section class="stats">
+        <div class="stat"><span>משפחות</span><strong id="statFamilies">5</strong></div>
+        <div class="stat"><span>חלקי פאזל</span><strong id="statScans">0</strong></div>
+        <div class="stat"><span>משימות שהושלמו</span><strong id="statDone">0</strong></div>
+        <div class="stat"><span>תמונות</span><strong id="statPhotos">0</strong></div>
+      </section>
+
+
+      <section class="admin-panel">
+        <h2>📢 הודעה לכל המשפחות</h2>
+        <div class="admin-announcement">
+          <label class="field" style="margin:0"><span>הודעה שתופיע בראש האתר</span><textarea id="announcementText" rows="3" placeholder="לדוגמה: בגלל הגשם, המשימה עודכנה..."></textarea></label>
+          <div style="display:grid;gap:8px">
+            <label style="display:flex;gap:7px;align-items:center;font-weight:800"><input id="announcementActive" type="checkbox"> פעיל</label>
+            <button id="saveAnnouncement" class="btn primary">שמור הודעה</button>
+          </div>
+        </div>
+        <div id="announcementNotice" class="notice info hidden"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:2px">✈️ ניהול טיסות</h2><p style="margin:0;color:var(--muted)">השינויים נשמרים ב־Firebase ומופיעים מיד לכל המשפחות ובספר ה־PDF.</p></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="addFlightBtn" class="btn secondary">＋ הוספת טיסה</button><button id="restoreFlightsBtn" class="btn ghost">שחזור נתוני ברירת מחדל</button></div>
+        </div>
+        <div id="adminFlightList" class="flight-admin-list"></div>
+        <button id="saveFlightsBtn" class="btn primary full" style="margin-top:14px">💾 שמירת כל הטיסות</button>
+        <div id="flightEditNotice" class="notice info hidden"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:2px">🎯 ניהול משימות</h2><p style="margin:0;color:var(--muted)">כל שינוי נשמר ב־Firebase ומופיע למשפחות בסריקה הבאה.</p></div>
+          <button id="seedTasksBtn" class="btn secondary">טעינת המשימות המאושרות</button>
+        </div>
+        <div class="task-admin-grid" style="margin-top:15px">
+          <div id="adminTaskList" class="task-list"></div>
+          <div class="task-editor">
+            <h3>עריכת משימה</h3>
+            <input id="taskEditId" type="hidden">
+            <div class="two-cols">
+              <label class="field"><span>תאריך</span><input id="taskEditDate" type="date"></label>
+              <label class="field"><span>יעד</span><input id="taskEditDestination" type="text"></label>
+            </div>
+            <label class="field"><span>כותרת</span><input id="taskEditTitle" type="text"></label>
+            <label class="field"><span>מלל המשימה</span><textarea id="taskEditDescription" rows="6"></textarea></label>
+            <div class="two-cols">
+              <label class="field"><span>מינימום תמונות</span><input id="taskEditMinPhotos" type="number" min="1" max="18"></label>
+              <label class="field"><span>כלל תמונות</span>
+                <select id="taskEditPhotoRule">
+                  <option value="fixed">מספר קבוע</option>
+                  <option value="perFamilyMember">כמספר בני המשפחה</option>
+                </select>
+              </label>
+            </div>
+            <div class="two-cols">
+              <label class="field"><span>חלק פאזל</span><input id="taskEditPuzzlePiece" type="number" min="1" max="8" placeholder="ריק = ללא חלק"></label>
+              <label class="field"><span>סדר תצוגה</span><input id="taskEditSortOrder" type="number" min="0" max="20"></label>
+            </div>
+            <label style="display:flex;gap:8px;align-items:center;font-weight:800;margin:12px 0"><input id="taskEditActive" type="checkbox"> משימה פעילה</label>
+            <button id="saveTaskBtn" class="btn primary full">💾 שמירת משימה</button>
+            <div id="taskEditNotice" class="notice info hidden"></div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div>
+            <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
+            <p style="margin:0;color:var(--muted)">Version 7.3.0-HOTFIX · Build 20260730.01</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
+            <button id="downloadDiagnostics" class="btn secondary">הורדת Diagnostics</button>
+          </div>
+        </div>
+        <div id="healthGrid" class="stats" style="margin-top:14px">
+          <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
+          <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
+          <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
+          <div class="stat"><strong id="healthVersion">7.3.0-HOTFIX</strong><span>גרסה</span></div>
+        </div>
+        <div id="healthNotice" class="notice info hidden"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <div><h2 style="margin-bottom:3px">🧩 התקדמות משפחות</h2><p style="margin:0;color:var(--muted)">לחיצה על משפחה מציגה משימות, חלקי פאזל וזמני השלמה.</p></div>
+          <span class="badge ok">מתעדכן בזמן אמת</span>
+        </div>
+        <div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
+      </section>
+
+      <section class="admin-panel">
+        <h2>גלריית היום</h2>
+        <div id="adminGallery" class="gallery"></div>
+        <div id="adminGalleryNotice" class="notice info">בחרו תאריך ולחצו רענון.</div>
+      </section>
+    </div>
+  </section>
+
+
+  <section id="successOverlay" class="success-overlay">
+    <div class="success-card">
+      <div class="success-icon">🎉</div>
+      <h2>כל הכבוד!</h2>
+      <p id="successText">המשימה הושלמה והחותמת נוספה לדרכון.</p>
+      <button id="closeSuccess" class="btn primary full">ממשיכים במסע</button>
+    </div>
+  </section>
+
+  <div id="pdfBookStage" class="pdf-stage" aria-hidden="true"></div>
+  <div id="confetti" class="confetti hidden"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import {
+      getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged,
+      setPersistence, browserLocalPersistence, signOut
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, setDoc, doc, getDocs, getDoc, query, where,
+      orderBy, limit, serverTimestamp, Timestamp, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+    import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
+    import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
+    import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
+
+    const APP_VERSION = "7.3.0-HOTFIX";
+    const BUILD_ID = "20260730.01";
+
+    let CONFIG = {
+      firebase: {
+        apiKey: "AIzaSyAgDNINMadRnwwl6IwL9JGrrSer0yWNk_4",
+        authDomain: "thailand-trip-5e400.firebaseapp.com",
+        projectId: "thailand-trip-5e400",
+        storageBucket: "thailand-trip-5e400.firebasestorage.app",
+        messagingSenderId: "1058440245906",
+        appId: "1:1058440245906:web:2fab0377761e1cc820ac4b",
+        measurementId: "G-8SRQHMRLZ1"
+      },
+      adminEmail: "omris18@gmail.com"
+    };
+    let DEFAULT_FLIGHTS=[];
+
+
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+    const parseDate = s => new Date(`${s}T12:00:00`);
+    const addDays = (s,n) => {const d=parseDate(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+    const fmtDate = s => parseDate(s).toLocaleDateString("he-IL",{day:"2-digit",month:"2-digit",year:"numeric"});
+    const fmtTime = value => {
+      if(!value) return "—";
+      const d = value.toDate ? value.toDate() : new Date(value);
+      return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("he-IL",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+    };
+
+    const urlParams = new URLSearchParams(location.search);
+    const familyId = urlParams.get("f") || urlParams.get("family") || "sadeh";
+    const familyKey = urlParams.get("key") || "";
+    const isAdminRoute = urlParams.has("admin");
+
+    let daysTotal=0;
+    let family=null;
+    let remoteTasks=[];
+    let activeTask=null;
+    let completedPuzzlePieces=new Set();
+    let localCompletedKey="";
+    let localUploadsKey="";
+    let completed=new Set();
+    let activeDate=null,activeDayNum=1,selectedFiles=[],currentUser=null;
+    let today="";
+    let familyImage="";
+
+    let app,auth,db,storage;
+    const diagnosticLog=[];
+
+    async function checkForAppUpdate(){
+      try{
+        const response=await fetch(`version.json?t=${Date.now()}`,{cache:"no-store"});
+        if(!response.ok) return false;
+
+        const data=await response.json();
+        const latest=String(data.version||"").trim();
+        if(!latest || latest===APP_VERSION) return false;
+
+        const currentUrl=new URL(location.href);
+        const requestedVersion=currentUrl.searchParams.get("v");
+
+        if(requestedVersion!==latest){
+          currentUrl.searchParams.set("v",latest);
+          currentUrl.searchParams.set("_refresh",Date.now().toString());
+          location.replace(currentUrl.toString());
+          return true;
+        }
+
+        // Fallback for unusually persistent browser/CDN caching.
+        const retryKey=`thailand2026:updateRetry:${latest}`;
+        if(!sessionStorage.getItem(retryKey)){
+          sessionStorage.setItem(retryKey,"1");
+          currentUrl.searchParams.set("_refresh",Date.now().toString());
+          location.replace(currentUrl.toString());
+          return true;
+        }
+
+        console.warn(`Requested version ${latest}, but loaded ${APP_VERSION}.`);
+        return false;
+      }catch(err){
+        console.warn("Version check skipped:",err);
+        return false;
+      }
+    }
+
+    async function scheduleUpdateChecks(){
+      // Check again when the app returns from the background.
+      document.addEventListener("visibilitychange",async()=>{
+        if(document.visibilityState==="visible"){
+          await checkForAppUpdate();
+        }
+      });
+
+      // Also check periodically during a long-open session.
+      setInterval(()=>checkForAppUpdate(),5*60*1000);
+    }
+
+    async function loadTripConfig(){
+      const response=await fetch(`trip-config.json?v=${APP_VERSION}`,{cache:"no-store"});
+      if(!response.ok) throw new Error(`לא ניתן לטעון את trip-config.json (${response.status})`);
+      const tripConfig=await response.json();
+      CONFIG={...CONFIG,...tripConfig};
+      DEFAULT_FLIGHTS=(CONFIG.flights||[]).map(f=>({...f}));
+      CONFIG.flights=normalizeFlights(CONFIG.flights||[]);
+
+      family=CONFIG.families.find(f=>f.id===familyId) || CONFIG.families.find(f=>f.id==="sadeh");
+      if(!family) throw new Error("לא נמצאה משפחה תואמת בקובץ ההגדרות.");
+
+      daysTotal=Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+      localCompletedKey=`thailand2026:${family.id}:completed`;
+      localUploadsKey=`thailand2026:${family.id}:uploads`;
+      completed=new Set(JSON.parse(localStorage.getItem(localCompletedKey)||"[]"));
+      today=currentTripDate();
+      familyImage=CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
+      remoteTasks=[...(CONFIG.seedTasks||[])].filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    }
+
+    function normalizeFlights(flights){
+      if(!Array.isArray(flights)) return [];
+      return flights.map((flight,index)=>({
+        id:String(flight.id||`flight-${index+1}`),
+        title:String(flight.title||"טיסה"),
+        flightNumber:String(flight.flightNumber||""),
+        date:String(flight.date||""),
+        time:String(flight.time||""),
+        from:String(flight.from||""),
+        to:String(flight.to||""),
+        via:String(flight.via||""),
+        icon:String(flight.icon||"✈️"),
+        status:String(flight.status||""),
+        note:String(flight.note||"")
+      })).filter(f=>/^\d{4}-\d{2}-\d{2}$/.test(f.date));
+    }
+
+    function flightExtraHtml(f){
+      const extras=[];
+      if(f.status) extras.push(`<span class="badge ${f.status.includes("בוטל")?"no":f.status.includes("עיכוב")||f.status.includes("נדח")?"wait":"ok"}">${esc(f.status)}</span>`);
+      if(f.note) extras.push(`<span>${esc(f.note)}</span>`);
+      return extras.length?`<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:5px;font-size:12px">${extras.join("")}</div>`:"";
+    }
+
+    async function loadRemoteFlights(){
+      try{
+        const snap=await getDoc(doc(db,"settings","flights"));
+        if(snap.exists() && Array.isArray(snap.data().items)){
+          const remote=normalizeFlights(snap.data().items);
+          if(remote.length) CONFIG.flights=remote;
+        }
+        renderFlights();
+        renderToday();
+        renderJourney();
+      }catch(err){
+        console.warn("Remote flights load failed; using trip-config fallback.",err);
+        logDiagnostic("warn","Remote flights load failed",err?.message||String(err));
+      }
+    }
+
+    function tripStats(){
+      return {
+        travelers:Number(CONFIG.travelersCount||0),
+        families:CONFIG.families.length,
+        hotels:CONFIG.hotels.length,
+        flights:CONFIG.flights.length,
+        tasks:Object.keys(CONFIG.taskPlan||{}).length,
+        days:daysTotal
+      };
+    }
+
+
+    function logDiagnostic(level,message,details=""){
+      const item={
+        time:new Date().toISOString(),
+        level,
+        message,
+        details:typeof details==="string"?details:JSON.stringify(details)
+      };
+      diagnosticLog.push(item);
+      if(diagnosticLog.length>150) diagnosticLog.shift();
+    }
+
+    window.addEventListener("error",e=>{
+      logDiagnostic("error",e.message||"Unhandled error",`${e.filename||""}:${e.lineno||""}`);
+    });
+
+    window.addEventListener("unhandledrejection",e=>{
+      logDiagnostic("error","Unhandled promise rejection",e.reason?.message||String(e.reason||""));
+    });
+
+    function downloadDiagnostics(){
+      const payload=[
+        `Thailand Trip ${APP_VERSION}`,
+        `Build ${BUILD_ID}`,
+        `Generated ${new Date().toISOString()}`,
+        `User agent: ${navigator.userAgent}`,
+        `URL: ${location.href}`,
+        "",
+        ...diagnosticLog.map(x=>`${x.time} [${x.level}] ${x.message}${x.details?` | ${x.details}`:""}`)
+      ].join("\n");
+      triggerBlobDownload(new Blob([payload],{type:"text/plain;charset=utf-8"}),`Thailand-Diagnostics-${BUILD_ID}.txt`);
+    }
+
+    function runVersionMigration(){
+      const versionKey="thailand2026:appVersion";
+      const oldVersion=localStorage.getItem(versionKey);
+      if(oldVersion!==APP_VERSION){
+        Object.keys(localStorage).forEach(key=>{
+          if(key.startsWith("thailand2026:") && key!==versionKey){
+            localStorage.removeItem(key);
+          }
+        });
+        localStorage.setItem(versionKey,APP_VERSION);
+      }
+    }
+
+    function initSplash(){
+      if(isAdminRoute){
+        $("splashScreen")?.remove();
+        return;
+      }
+      $("splashFamily").textContent=`משפחת ${family.name} יוצאת להרפתקה`;
+      const splash=$("splashScreen");
+      const close=()=>splash.classList.add("hidden-splash");
+      $("skipSplash").onclick=close;
+      setTimeout(close,3900);
+      setTimeout(()=>splash.remove(),4600);
+    }
+
+    function updateTripProgress(){
+      let percent=0,sub="מתכוננים למסע";
+      if(today<CONFIG.trip.startDate){percent=0;sub=`יוצאים לדרך ב־${fmtDate(CONFIG.trip.startDate)}`;}
+      else if(today>CONFIG.trip.endDate){percent=100;sub="המסע הושלם!";}
+      else{
+        const dayIndex=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000);
+        percent=Math.max(0,Math.min(100,Math.round((dayIndex/(daysTotal-1))*100)));
+        sub=`יום ${dayIndex+1} מתוך ${daysTotal}`;
+      }
+      $("tripProgressPercent").textContent=`${percent}%`;
+      $("tripProgressSub").textContent=sub;
+      requestAnimationFrame(()=>$("tripProgressFill").style.width=`${percent}%`);
+    }
+
+    function currentTripDate(){
+      if(CONFIG.testMode.enabled) return CONFIG.testMode.forcedDate;
+      const parts = new Intl.DateTimeFormat("en-CA",{timeZone:CONFIG.trip.timezone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+      const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+      return `${p.year}-${p.month}-${p.day}`;
+    }
+    const hotelFor = date => CONFIG.hotels.find(h=>date>=h.startDate && date<h.endDate);
+    const flightFor = date => CONFIG.flights.find(f=>f.date===date);
+    const mapsUrl = h => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.mapsQuery)}`;
+    const taskFor = date => {
+      const task=remoteTasks.find(t=>t.date===date && t.active!==false);
+      return task || {...CONFIG.defaultTask,id:null,puzzlePiece:null,minPhotos:1,photoRule:"fixed",active:false};
+    };
+    const tasksForDestination = destination => remoteTasks
+      .filter(t=>t.active!==false && t.destination===destination)
+      .sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    const taskIsReleased = task => Boolean(task?.date && task.date<=today);
+    function openDestination(destination,fallbackDate,fallbackDay){
+      const tasks=tasksForDestination(destination);
+      const released=tasks.filter(taskIsReleased);
+      const chosen=released.find(t=>!completed.has(t.date)) || released.at(-1);
+      if(chosen){
+        const num=Math.round((parseDate(chosen.date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+        openDay(chosen.date,num);
+        return;
+      }
+      if(tasks.length){
+        const next=tasks[0];
+        alert(`המשימה של ${destination} תיפתח ב־${fmtDate(next.date)}.`);
+        return;
+      }
+      openDay(fallbackDate,fallbackDay);
+    }
+
+    function requiredPhotoCount(task){
+      if(task?.photoRule==="perFamilyMember") return Number(family.memberCount||1);
+      return Math.max(1,Number(task?.minPhotos||1));
+    }
+    const stateFor = date => completed.has(date)?"done":date<today?"past":date===today?"today":"future";
+
+    function setNotice(el,message,type="info"){
+      el.textContent=message;el.className=`notice ${type}`;el.classList.remove("hidden");
+    }
+    function hideNotice(el){el.classList.add("hidden")}
+    function firebaseErrorText(err){
+      const code=err?.code||"";
+      const map={
+        "auth/operation-not-allowed":"יש להפעיל Anonymous וגם Email/Password ב־Firebase Authentication.",
+        "auth/invalid-credential":"האימייל או הסיסמה אינם נכונים.",
+        "auth/unauthorized-domain":"יש להוסיף את omris18.github.io ל־Authentication → Settings → Authorized domains.",
+        "permission-denied":"Firebase דחה את הגישה. בדקו שהקישור כולל key משפחתי תקין ושכללי Firestore ו-Storage המעודכנים פורסמו.",
+        "storage/unauthorized":"Firebase חסם את הגישה לתמונה. יש לפרסם את כללי Storage המעודכנים המצורפים.",
+        "storage/bucket-not-found":"Firebase Storage עדיין לא הופעל בפרויקט.",
+        "storage/quota-exceeded":"מכסת האחסון הסתיימה.",
+        "storage/retry-limit-exceeded":"החיבור חלש מדי. נסו שוב בעוד רגע.",
+        "storage/unknown":"אירעה שגיאת Storage. בדקו שהאחסון פעיל ושה־Rules פורסמו."
+      };
+      return map[code] || err?.message || "אירעה שגיאה לא צפויה.";
+    }
+
+    async function establishFamilySession(){
+      if(!currentUser) throw new Error("לא נוצר משתמש אנונימי.");
+      if(!familyKey) throw new Error("הקישור חסר קוד משפחתי. יש להשתמש בקישור המלא שצרוב בתג ה-NFC.");
+      await setDoc(doc(db,"familySessions",currentUser.uid),{
+        familyId:family.id,
+        familyKey,
+        appVersion:APP_VERSION,
+        createdAt:serverTimestamp(),
+        updatedAt:serverTimestamp()
+      },{merge:true});
+    }
+
+    async function initFirebase(){
+      try{
+        app=initializeApp(CONFIG.firebase);auth=getAuth(app);db=getFirestore(app);storage=getStorage(app);
+        await setPersistence(auth,browserLocalPersistence);
+        if(!isAdminRoute){
+          if(!auth.currentUser) await signInAnonymously(auth);
+          currentUser=auth.currentUser;
+          await establishFamilySession();
+          setNotice($("connectionBanner"),`מחובר ומסונכרן כמשפחת ${family.name} ✅ · גרסה ${APP_VERSION}`,"ok");
+          logDiagnostic("info","Family connected",family.id);
+          await recordScan();
+          await loadRemoteTasksAndAnnouncement();
+          await loadFamilyCompletions();
+        }
+        return true;
+      }catch(err){
+        console.error(err);
+        if(!isAdminRoute) setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+        return false;
+      }
+    }
+
+    async function loadRemoteTasksAndAnnouncement(){
+      try{
+        const [tasksSnap,announcementSnap,flightsSnap]=await Promise.all([
+          getDocs(collection(db,"tasks")),
+          getDoc(doc(db,"settings","announcement")),
+          getDoc(doc(db,"settings","flights"))
+        ]);
+
+        if(!tasksSnap.empty){
+          remoteTasks=[];
+          tasksSnap.forEach(d=>remoteTasks.push({id:d.id,...d.data()}));
+          remoteTasks=remoteTasks.filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+        }
+
+        if(flightsSnap.exists() && Array.isArray(flightsSnap.data().items)){
+          const remoteFlights=normalizeFlights(flightsSnap.data().items);
+          if(remoteFlights.length) CONFIG.flights=remoteFlights;
+        }
+
+        const announcement=announcementSnap.exists()?announcementSnap.data():null;
+        const box=$("globalAnnouncement");
+        if(box){
+          if(announcement?.active && announcement?.text?.trim()){
+            box.textContent=announcement.text.trim();
+            box.classList.remove("hidden");
+          }else{
+            box.classList.add("hidden");
+          }
+        }
+        renderToday();renderFlights();renderJourney();
+      }catch(err){
+        console.warn("Remote tasks/announcement load failed; using local seed tasks.",err);
+      }
+    }
+
+    async function recordScan(){
+      if(!currentUser) return;
+      try{
+        await addDoc(collection(db,"scans"),{
+          familyId:family.id,tripDate:today,uid:currentUser.uid,
+          userAgent:navigator.userAgent.slice(0,300),createdAt:serverTimestamp()
+        });
+      }catch(err){console.warn("scan not recorded",err)}
+    }
+
+    async function loadFamilyCompletions(){
+      if(!currentUser) return;
+      try{
+        const q=query(collection(db,"completions"),where("familyId","==",family.id));
+        const snap=await getDocs(q);
+        completed=new Set();
+        completedPuzzlePieces=new Set();
+        snap.forEach(d=>{
+          const data=d.data();
+          completed.add(data.tripDate);
+          if(Number.isInteger(data.puzzlePiece) && data.puzzlePiece>=1 && data.puzzlePiece<=8){
+            completedPuzzlePieces.add(data.puzzlePiece);
+          }
+        });
+        localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+        renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
+      }catch(err){
+        console.error(err);
+        setNotice($("connectionBanner"),firebaseErrorText(err),"error");
+      }
+    }
+
+    function stopState(stop){
+      if(today > stop.date) return "completed";
+      if(today === stop.date) return "current";
+      return "future";
+    }
+
+    function currentStopIndex(){
+      let idx=0;
+      CONFIG.mapStops.forEach((s,i)=>{ if(today>=s.date) idx=i; });
+      return idx;
+    }
+
+    function renderInteractiveMap(){
+      const box=$("mapStops");
+      if(!box) return;
+      box.innerHTML="";
+      const currentIdx=currentStopIndex();
+
+      CONFIG.mapStops.forEach((stop,index)=>{
+        const state=stopState(stop);
+        const wrap=document.createElement("div");
+        wrap.className=`map-stop ${state}`;
+        wrap.style.left=`${stop.x}%`;
+        wrap.style.top=`${stop.y}%`;
+
+        const hotel=CONFIG.hotels.find(h=>h.shortName===stop.hotel);
+        wrap.innerHTML=`<div class="map-day-badge">${stop.day}</div>
+          <div class="map-stop-card" role="button" tabindex="0">
+            <div class="map-stop-head">
+              <span class="map-stop-icon">${stop.icon}</span>
+              <div>
+                <strong>${esc(stop.name)}</strong>
+                <small>${fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small>
+              </div>
+            </div>
+            <div class="map-stop-actions">
+              <button class="map-mini-btn open-stop-day">פתחו את היום</button>
+              ${hotel?`<a class="map-mini-btn" href="${mapsUrl(hotel)}" target="_blank" rel="noopener noreferrer">ניווט</a>`:""}
+            </div>
+          </div>`;
+
+        const open=()=>openDestination(stop.name,stop.date,stop.day);
+        wrap.querySelector(".open-stop-day").onclick=open;
+        wrap.querySelector(".map-stop-card").addEventListener("keydown",e=>{
+          if(e.key==="Enter") open();
+        });
+        box.appendChild(wrap);
+      });
+
+      const stop=CONFIG.mapStops[currentIdx] || CONFIG.mapStops[0];
+      if(!stop) return;
+
+      $("movingPlane").style.left=`${stop.x}%`;
+      $("movingPlane").style.top=`${stop.y}%`;
+      $("movingPlaneLabel").style.left=`${stop.x}%`;
+      $("movingPlaneLabel").style.top=`${stop.y}%`;
+      $("movingPlaneLabel").textContent=`משפחת ${family.name} כאן`;
+
+      $("mapStatusText").textContent=
+        today<CONFIG.trip.startDate
+          ?"עוד מעט יוצאים לדרך"
+          :today>CONFIG.trip.endDate
+            ?"המסע הושלם"
+            :`כעת באזור ${stop.name}`;
+
+      const progress=Math.max(0,Math.min(1,currentIdx/(CONFIG.mapStops.length-1)));
+      $("routeProgress").style.strokeDashoffset=String(1-progress);
+    }
+
+    function renderFamily(){
+      $("welcome").textContent=`ברוכים הבאים, משפחת ${family.name}!`;
+      document.title=`משפחת ${family.name} | תאילנד 2026`;
+      $("familyBtn").onclick=()=>alert(`משפחת ${family.name}`);
+      $("familyHeroImage").src=familyImage;
+      $("familyHeroImage").alt=`משפחת ${family.name}`;
+      $("familyPhotoTitle").textContent=`התמונה של משפחת ${family.name}`;
+      renderToday();renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();renderFlights();updateTripProgress();updatePdfAvailability();
+    }
+    function renderToday(){
+      if(today<CONFIG.trip.startDate){
+        $("todayTitle").textContent="הטיול עוד לא התחיל";$("todaySubtitle").textContent=`מתחילים ב־${fmtDate(CONFIG.trip.startDate)}`;$("openTodayBtn").disabled=true;return;
+      }
+      if(today>CONFIG.trip.endDate){
+        $("todayTitle").textContent="הטיול הסתיים";$("todaySubtitle").textContent="כל הזיכרונות נשמרו במערכת";$("openTodayBtn").disabled=true;return;
+      }
+      const idx=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+      const h=hotelFor(today),f=flightFor(today);
+      $("todayTitle").textContent=`היום הוא יום ${idx} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
+      $("todaySubtitle").textContent=h?`${h.city} · ${h.shortName}`:f?`${f.title} · ${f.time}`:"יום מעבר";
+      const currentStop=CONFIG.mapStops[currentStopIndex()];
+      $("openTodayBtn").onclick=()=>currentStop?openDestination(currentStop.name,today,idx):openDay(today,idx);
+    }
+    function renderJourney(){
+      const box=$("journey");box.innerHTML="";
+      for(let i=0;i<daysTotal;i++){
+        const date=addDays(CONFIG.trip.startDate,i),h=hotelFor(date),f=flightFor(date),state=stateFor(date);
+        const row=document.createElement("div");row.className="day-row";row.dataset.date=date;
+        const card=document.createElement("div");
+        card.className=`day-card ${i%2===0?"left":"right"} ${!h&&!f?"empty":""}`;
+        if(h) card.innerHTML=`${date===today?'<span class="today-pill">היום</span>':""}<strong>🏨 ${esc(h.shortName)}</strong><small>${esc(h.city)}</small><a href="${mapsUrl(h)}" target="_blank" rel="noopener noreferrer">📍 ניווט למלון</a>`;
+        else if(f) card.innerHTML=`<strong>${esc(f.icon)} ${esc(f.title)}</strong><small>${esc(f.from)} ← ${esc(f.to)}</small><small>${esc(f.time)}${f.status?` · ${esc(f.status)}`:""}</small>`;
+        const node=document.createElement("button");node.type="button";node.className=`day-node ${state}`;
+        node.innerHTML=`${state==="future"?"🔒":state==="done"?"✓":""}<strong>${i+1}</strong><span>יום</span>`;
+        node.setAttribute("aria-label",`פתיחת יום ${i+1}, ${fmtDate(date)}`);
+        node.onclick=()=>openDay(date,i+1);
+        row.append(card,node);box.appendChild(row);
+      }
+    }
+    function unlockedPuzzlePieces(){
+      return new Set([...completedPuzzlePieces].filter(n=>n>=1 && n<=CONFIG.puzzle.totalPieces));
+    }
+
+    function renderPassport(){
+      const box=$("stamps");box.innerHTML="";
+      const unlocked=unlockedPuzzlePieces();
+      CONFIG.puzzle.rewardOrder.forEach(pieceNum=>{
+        const s=document.createElement("span");
+        s.className=`stamp ${unlocked.has(pieceNum)?"done":""}`;
+        s.textContent=unlocked.has(pieceNum)?"✓":pieceNum;
+        s.title=`חלק פאזל ${pieceNum}`;
+        box.appendChild(s);
+      });
+      $("passportText").textContent=unlocked.size
+        ? `אספתם ${unlocked.size} מתוך ${CONFIG.puzzle.totalPieces} חלקים`
+        : "החלקים יופיעו כאן לאחר השלמת משימות";
+    }
+
+    function destinationCompleted(destination){
+      return [...completed].some(date => date >= destination.date);
+    }
+
+
+    function renderFamilyPuzzle(){
+      const box=$("familyPuzzle");
+      if(!box) return;
+      box.innerHTML="";
+      const unlocked=unlockedPuzzlePieces();
+      const layout=CONFIG.puzzle.layout;
+      layout.forEach((pieceNum,index)=>{
+        const row=Math.floor(index/4),col=index%4;
+        const tile=document.createElement("div");
+        tile.className=`puzzle-tile ${unlocked.has(pieceNum)?"":"locked"}`;
+        const bgX=col===0?"0%":col===1?"33.333%":col===2?"66.666%":"100%";
+        const bgY=row===0?"0%":"100%";
+        tile.innerHTML=`<div class="tile-image" style="background-image:url('${familyImage}');background-position:${bgX} ${bgY}"></div>
+          <span class="puzzle-number">${pieceNum}</span>
+          ${unlocked.has(pieceNum)?"":'<div class="puzzle-lock">🔒</div>'}`;
+        box.appendChild(tile);
+      });
+      $("passportPuzzleCount").textContent=`${unlocked.size} מתוך ${CONFIG.puzzle.totalPieces} חלקים`;
+      $("puzzleCompleteText").classList.toggle("hidden",unlocked.size!==CONFIG.puzzle.totalPieces);
+    }
+
+    function renderPassportScreen(){
+      $("passportFamilyName").textContent=`משפחת ${family.name}`;
+      renderFamilyPuzzle();
+      const grid=$("passportStampGrid");
+      grid.innerHTML="";
+      let count=0;
+      CONFIG.destinations.forEach((d,index)=>{
+        const unlocked=destinationCompleted(d);
+        if(unlocked) count++;
+        const card=document.createElement("article");
+        card.className=`passport-stamp-card ${unlocked?"":"locked"}`;
+        card.innerHTML=unlocked
+          ? `<div class="stamp-mark ${d.color}"><div class="stamp-icon">${d.icon}</div><div class="stamp-city">${esc(d.name)}</div><div class="stamp-date">${fmtDate(d.date)}</div></div><div class="passport-destination">חותמת ${index+1}</div>`
+          : `<div class="locked-mark">🔒</div><div class="passport-destination">${esc(d.name)}<br><small>${fmtDate(d.date)}</small></div>`;
+        grid.appendChild(card);
+      });
+      $("passportStampCount").textContent=`${count} מתוך ${CONFIG.destinations.length} חותמות`;
+      if(count===0){
+        $("passportSummaryTitle").textContent="המסע רק מתחיל";
+        $("passportSummaryText").textContent="כל משימה שתשלימו תוסיף חותמת חדשה לדרכון.";
+      }else if(count===CONFIG.destinations.length){
+        $("passportSummaryTitle").textContent="הדרכון הושלם! 🎉";
+        $("passportSummaryText").textContent="אספתם את כל חותמות המסע המשפחתי בתאילנד.";
+      }else{
+        $("passportSummaryTitle").textContent=`כבר אספתם ${count} חותמות`;
+        $("passportSummaryText").textContent=`נשארו עוד ${CONFIG.destinations.length-count} יעדים להשלמת הדרכון.`;
+      }
+    }
+    function renderFlights(){
+      $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${esc(f.icon)}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p>${flightExtraHtml(f)}</div></article>`).join("");
+    }
+    function openDay(date,num){
+      const requestedTask=taskFor(date);
+      if(requestedTask?.id && !taskIsReleased(requestedTask)){
+        alert(`המשימה תיפתח ב־${fmtDate(requestedTask.date)}.`);
+        return;
+      }
+      activeDate=date;activeDayNum=num;selectedFiles=[];
+      $("cameraInput").value="";
+      $("galleryInput").value="";
+      $("preview").innerHTML="";$("caption").value="";hideNotice($("taskNotice"));$("uploadProgressWrap").classList.add("hidden");$("uploadProgress").style.width="0";
+      const t=taskFor(date),h=hotelFor(date),f=flightFor(date);
+      activeTask=t;
+      $("dayBadge").textContent=`יום ${num}`;$("dayLocation").textContent=`${fmtDate(date)}${h?` · ${h.city}`:f?` · ${f.title}`:""}`;
+      $("taskTitle").textContent=t.title;$("taskDescription").textContent=t.description;
+      const required=requiredPhotoCount(t);
+      $("taskRequirement").textContent=t.photoRule==="perFamilyMember"
+        ? `📸 משפחת ${family.name}: נדרשות ${required} תמונות — אחת לכל בן משפחה.`
+        : `📸 יש להעלות לפחות ${required} ${required===1?"תמונה":"תמונות"}.${t.puzzlePiece?` השלמה תפתח את חלק פאזל מספר ${t.puzzlePiece}.`:" משימה זו אינה פותחת חלק פאזל."}`;
+      if(h){$("hotelBox").classList.remove("hidden");$("hotelName").textContent=h.shortName;$("mapsLink").href=mapsUrl(h)}else $("hotelBox").classList.add("hidden");
+      if(completed.has(date)) setNotice($("taskNotice"),"המשימה כבר הושלמה במכשיר הזה. אפשר להעלות תמונות נוספות.","ok");
+      $("dayDialog").showModal();
+    }
+
+    async function compressImage(file){
+      const bitmap=await createImageBitmap(file);
+      const scale=Math.min(1,CONFIG.upload.maxWidth/Math.max(bitmap.width,bitmap.height));
+      const canvas=document.createElement("canvas");canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+      const ctx=canvas.getContext("2d",{alpha:false});ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
+      let quality=CONFIG.upload.quality,blob;
+      do{
+        blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("כשל בדחיסת התמונה")),"image/jpeg",quality));
+        quality-=.08;
+      }while(blob.size>CONFIG.upload.maxBytes&&quality>.42);
+      if(blob.size>CONFIG.upload.maxBytes) throw new Error("התמונה גדולה מדי גם לאחר הקטנה.");
+      return blob;
+    }
+    function showSelectedFiles(files){
+      const incoming=[...files];
+      selectedFiles=incoming.slice(0,CONFIG.upload.maxFiles);
+      const grid=$("preview");
+      grid.innerHTML="";
+      selectedFiles.forEach(file=>{
+        const img=document.createElement("img");
+        const u=URL.createObjectURL(file);
+        img.src=u;
+        img.onload=()=>URL.revokeObjectURL(u);
+        grid.appendChild(img);
+      });
+      if(incoming.length>CONFIG.upload.maxFiles){
+        setNotice($("taskNotice"),`נבחרו רק ${CONFIG.upload.maxFiles} התמונות הראשונות.`,"warn");
+      }
+    }
+
+    function mergeSelectedFiles(files){
+      const merged=[...selectedFiles,...files];
+      showSelectedFiles(merged);
+    }
+
+    $("cameraInput").addEventListener("change",e=>{
+      if(e.target.files?.length) mergeSelectedFiles(e.target.files);
+    });
+
+    $("galleryInput").addEventListener("change",e=>{
+      if(e.target.files?.length) mergeSelectedFiles(e.target.files);
+    });
+
+    async function uploadFiles(files,caption,isSimulation=false){
+      if(!currentUser) throw new Error("אין חיבור משתמש ל־Firebase.");
+      const required=requiredPhotoCount(activeTask);
+      if(files.length<required) throw new Error(`המשימה דורשת לפחות ${required} ${required===1?"תמונה":"תמונות"}.`);
+      const uploadId=crypto.randomUUID(),photoDocs=[];
+      $("uploadProgressWrap").classList.remove("hidden");
+      for(let i=0;i<files.length;i++){
+        const file=files[i];
+        const blob=isSimulation?file:await compressImage(file);
+        const path=`trip-photos/${family.id}/${activeDate}/${uploadId}-${String(i+1).padStart(2,"0")}.jpg`;
+        const storageRef=ref(storage,path);
+        await new Promise((resolve,reject)=>{
+          const task=uploadBytesResumable(storageRef,blob,{contentType:"image/jpeg",customMetadata:{familyId:family.id,tripDate:activeDate,uid:currentUser.uid}});
+          task.on("state_changed",snap=>{
+            const base=(i/files.length)*100,part=(snap.bytesTransferred/snap.totalBytes)*(100/files.length);
+            $("uploadProgress").style.width=`${Math.round(base+part)}%`;
+          },reject,resolve);
+        });
+        const url=await getDownloadURL(storageRef);
+        const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,isSimulation,createdAt:serverTimestamp()};
+        const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
+      }
+      await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
+        familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
+        completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
+        taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,
+        isSimulation,completedAt:serverTimestamp()
+      },{merge:true});
+      completed.add(activeDate);
+      if(Number.isInteger(activeTask?.puzzlePiece)) completedPuzzlePieces.add(activeTask.puzzlePiece);
+      localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
+      const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
+      local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
+      localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
+      renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();animatePuzzlePiece(activeTask?.puzzlePiece);confetti();showSuccess();
+      return photoDocs;
+    }
+    $("submitTaskBtn").onclick=async()=>{
+      const btn=$("submitTaskBtn"),original=btn.innerHTML;
+      try{
+        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מעלה…';hideNotice($("taskNotice"));
+        await uploadFiles(selectedFiles,$("caption").value.trim(),false);
+        setNotice($("taskNotice"),"התמונות נשמרו ב־Firebase והמשימה הושלמה ✅","ok");
+        setTimeout(()=>$("dayDialog").close(),1200);
+      }catch(err){console.error(err);setNotice($("taskNotice"),firebaseErrorText(err),"error")}
+      finally{btn.disabled=false;btn.innerHTML=original}
+    };
+
+
+    function animatePuzzlePiece(pieceNum){
+      if(!Number.isInteger(pieceNum)) return;
+      const layout=CONFIG.puzzle.layout||[];
+      const index=layout.indexOf(pieceNum);
+      if(index<0) return;
+      const row=Math.floor(index/4),col=index%4;
+      const piece=document.createElement("div");
+      piece.className="puzzle-fly-piece";
+      const bgX=col===0?"0%":col===1?"33.333%":col===2?"66.666%":"100%";
+      const bgY=row===0?"0%":"100%";
+      piece.style.backgroundImage=`url('${familyImage}')`;
+      piece.style.backgroundSize="400% 200%";
+      piece.style.backgroundPosition=`${bgX} ${bgY}`;
+      document.body.appendChild(piece);
+      setTimeout(()=>piece.remove(),1250);
+    }
+
+    function showSuccess(){
+      $("successText").textContent=activeTask?.puzzlePiece
+        ? `המשימה הושלמה! חלק פאזל מספר ${activeTask.puzzlePiece} נפתח בדרכון המשפחתי.`
+        : "משימת נתב״ג הושלמה בהצלחה. המסע שלכם התחיל!";
+      $("successOverlay").classList.add("show");
+    }
+    $("closeSuccess").onclick=()=>$("successOverlay").classList.remove("show");
+
+    function confetti(){
+      const box=$("confetti");box.innerHTML="";box.classList.remove("hidden");
+      for(let i=0;i<55;i++){const p=document.createElement("i");p.style.left=`${Math.random()*100}%`;p.style.setProperty("--h",Math.random()*360);p.style.animationDelay=`${Math.random()*.5}s`;box.appendChild(p)}
+      setTimeout(()=>box.classList.add("hidden"),2600);
+    }
+
+    async function loadOwnAlbum(){
+      const gallery=$("familyGallery"),notice=$("albumNotice");gallery.innerHTML="";
+      try{
+        if(!currentUser) throw new Error("אין חיבור.");
+        const q=query(collection(db,"uploads"),where("familyId","==",family.id));
+        const snap=await getDocs(q);
+        const items=[];
+        snap.forEach(d=>items.push({id:d.id,...d.data()}));
+        items.sort((a,b)=>{
+          const ta=a.createdAt?.toMillis?.()||0;
+          const tb=b.createdAt?.toMillis?.()||0;
+          return tb-ta;
+        });
+        if(!items.length){
+          setNotice(notice,"עדיין לא הועלו תמונות למשפחה.","info");
+          return;
+        }
+        hideNotice(notice);
+        items.forEach(p=>{
+          const card=document.createElement("article");
+          card.className="photo-card";
+          card.innerHTML=`<img src="${esc(p.downloadUrl)}" alt="תמונה מיום ${esc(p.dayNumber)}" loading="lazy"><div class="photo-meta"><strong>יום ${esc(p.dayNumber)} · ${fmtDate(p.tripDate)}</strong>${esc(p.caption||"")}</div>`;
+          gallery.appendChild(card);
+        });
+      }catch(err){
+        console.error(err);
+        setNotice(notice,firebaseErrorText(err),"error");
+      }
+    }
+
+    function formatIcsDate(dateStr,timeStr){
+      const [y,m,d]=dateStr.split("-").map(Number);
+      const [hh,mm]=timeStr.split(":").map(Number);
+      return `${String(y).padStart(4,"0")}${String(m).padStart(2,"0")}${String(d).padStart(2,"0")}T${String(hh).padStart(2,"0")}${String(mm).padStart(2,"0")}00`;
+    }
+
+    function downloadDailyReminder(){
+      const time=$("reminderTime").value||"20:00";
+      const dtStart=formatIcsDate(CONFIG.trip.startDate,time);
+      const reminderCount=Math.round((parseDate(CONFIG.trip.endDate)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+      const uid=`thailand-photo-${family.id}@thailand-trip-5e400`;
+      const ics=[
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Thailand Trip 2026//Daily Photo Reminder//HE",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        `UID:${uid}`,
+        `DTSTART;TZID=Asia/Bangkok:${dtStart}`,
+        `RRULE:FREQ=DAILY;COUNT=${reminderCount}`,
+        "SUMMARY:📸 לצלם תמונה יומית מהטיול",
+        `DESCRIPTION:משפחת ${family.name} – זכרו לצלם לפחות תמונה אחת היום למזכרת מתאילנד 2026.`,
+        "BEGIN:VALARM",
+        "TRIGGER:-PT0M",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:זמן לצלם תמונה יומית מהטיול 📸",
+        "END:VALARM",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+      const blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      a.download=`Thailand-2026-daily-photo-${family.id}.ics`;
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+      alert("קובץ התזכורת נוצר. פתחו אותו ובחרו להוסיף את האירוע החוזר ליומן.");
+    }
+
+    $("addCalendarReminder").onclick=downloadDailyReminder;
+
+
+    function zonedMinuteKey(timeZone){
+      const parts=new Intl.DateTimeFormat("en-CA",{
+        timeZone,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+      }).formatToParts(new Date());
+      const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+      return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+    }
+
+    function pdfIsUnlocked(){
+      if(CONFIG.pdfBook?.testUnlock===true) return true;
+      const unlock=`${CONFIG.pdfBook.unlockDate}T${CONFIG.pdfBook.unlockTime}`;
+      return zonedMinuteKey(CONFIG.pdfBook.unlockTimezone)>=unlock;
+    }
+
+    function updatePdfAvailability(){
+      $("pdfExportCard").classList.toggle("hidden",!pdfIsUnlocked());
+    }
+
+    function destinationForDate(date){
+      let current=CONFIG.mapStops[0];
+      CONFIG.mapStops.forEach(stop=>{if(date>=stop.date)current=stop});
+      return current;
+    }
+
+    function createBookRoute(date){
+      const route=document.createElement("aside");
+      route.className="book-route";
+      route.innerHTML="<h3>מסלול המסע</h3>";
+      const line=document.createElement("div");
+      line.className="book-route-line";
+      const active=destinationForDate(date);
+      let activeIndex=0;
+      CONFIG.mapStops.forEach((stop,index)=>{
+        if(stop.id===active.id)activeIndex=index;
+        const el=document.createElement("div");
+        el.className=`book-route-stop ${date>stop.date?"passed":date===stop.date?"current":""}`;
+        el.innerHTML=`<span class="book-route-dot"></span><span>${stop.icon} ${esc(stop.name)}</span>`;
+        line.appendChild(el);
+      });
+      const plane=document.createElement("div");
+      plane.className="book-route-plane";
+      plane.textContent="✈️";
+      plane.style.top=`${activeIndex*94+23}px`;
+      line.appendChild(plane);
+      route.appendChild(line);
+      return route;
+    }
+
+    async function fetchFamilyBookUploads(){
+      const snap=await getDocs(query(collection(db,"uploads"),where("familyId","==",family.id)));
+      const items=[];
+      snap.forEach(d=>items.push({id:d.id,...d.data()}));
+      items.sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||"") || ((a.createdAt?.toMillis?.()||0)-(b.createdAt?.toMillis?.()||0)));
+      return items;
+    }
+
+    async function fetchWithTimeout(url,options={},timeoutMs=20000){
+      const controller=new AbortController();
+      const timeout=setTimeout(()=>controller.abort(),timeoutMs);
+      try{
+        return await fetch(url,{...options,signal:controller.signal});
+      }finally{
+        clearTimeout(timeout);
+      }
+    }
+
+    async function fetchUploadBlob(upload){
+      let directUrl=upload?.downloadUrl||"";
+
+      if(!directUrl && upload?.storagePath){
+        directUrl=await getDownloadURL(ref(storage,upload.storagePath));
+      }
+
+      if(directUrl){
+        try{
+          const response=await fetchWithTimeout(directUrl,{
+            mode:"cors",
+            cache:"no-store",
+            credentials:"omit"
+          },20000);
+
+          if(!response.ok){
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const blob=await response.blob();
+          if(!blob.size) throw new Error("התקבל קובץ ריק.");
+          return blob;
+        }catch(err){
+          console.warn("Direct download URL failed, trying Firebase SDK fallback.",err);
+        }
+      }
+
+      if(upload?.storagePath){
+        try{
+          return await Promise.race([
+            getBlob(ref(storage,upload.storagePath)),
+            new Promise((_,reject)=>setTimeout(()=>reject(new Error("הקריאה מ-Firebase Storage חרגה מ-20 שניות.")),20000))
+          ]);
+        }catch(err){
+          throw new Error(`לא ניתן להוריד את התמונה ${upload.storagePath}: ${err?.message||err}`);
+        }
+      }
+
+      throw new Error("לרשומת התמונה אין downloadUrl או storagePath.");
+    }
+
+    function triggerBlobDownload(blob,fileName){
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url;
+      a.download=fileName;
+      a.style.display="none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    }
+
+    async function blobUrlForUpload(upload,urlsToRevoke){
+      const blob=await fetchUploadBlob(upload);
+      const url=URL.createObjectURL(blob);
+      urlsToRevoke.push(url);
+      return url;
+    }
+
+
+    function createBookCover(){
+      const page=document.createElement("section");
+      page.className="book-page book-cover-luxury";
+      page.innerHTML=`<div class="cover-frame"><h1 class="cover-title">Thailand</h1><div class="cover-year">2026</div><img class="cover-photo" src="${familyImage}" alt="משפחת ${esc(family.name)}"><div class="cover-family">משפחת ${esc(family.name)}</div><p>26.07.2026 – 19.08.2026</p><div class="cover-stamp">THAILAND<br>2026</div></div>`;
+      return page;
+    }
+    function createIntroPage(){
+      const page=document.createElement("section");
+      page.className="book-page book-intro";
+      page.innerHTML=`<header class="editorial-head"><div><h2>התחלנו את המסע</h2><div class="meta">משפחת ${esc(family.name)} · תאילנד 2026</div></div><div style="font-size:48px">✈️</div></header>`;
+      const grid=document.createElement("div");grid.className="intro-grid";
+      CONFIG.flights.filter(f=>f.flightNumber).forEach(f=>{const ticket=document.createElement("article");ticket.className="flight-ticket";ticket.innerHTML=`<h3>${esc(f.title)}</h3><div class="big">${esc(f.flightNumber)}</div><div class="route"><span>${esc(f.from)}</span><span>✈️</span><span>${esc(f.to)}</span></div><div class="meta">${fmtDate(f.date)} · ${esc(f.time)}${f.via?` · דרך ${esc(f.via)}`:""}${f.status?` · ${esc(f.status)}`:""}${f.note?`<br>${esc(f.note)}`:""}</div>`;grid.appendChild(ticket)});
+      page.appendChild(grid);return page;
+    }
+    function createFullRoutePage(){
+      const page=document.createElement("section");page.className="book-page full-route-page";
+      page.innerHTML=`<header class="editorial-head"><div><h2>מסלול הטיול שלנו</h2><div class="meta">ישראל → תאילנד → דובאי → ישראל</div></div><div style="font-size:46px">🗺️</div></header>`;
+      const hero=document.createElement("div");hero.className="route-hero";hero.innerHTML='<div class="route-hero-line"></div>';
+      CONFIG.mapStops.forEach((stop,index)=>{const el=document.createElement("div");el.className="route-hero-stop";el.style.top=`${70+index*95}px`;el.innerHTML=`<span class="route-hero-dot"></span><span class="route-hero-label">${stop.icon} ${esc(stop.name)} · ${fmtDate(stop.date)}</span>`;hero.appendChild(el)});
+      const plane=document.createElement("div");plane.className="route-hero-plane";plane.style.top="420px";plane.textContent="✈️";hero.appendChild(plane);page.appendChild(hero);return page;
+    }
+    function createTransitionPage(title,subtitle){
+      const page=document.createElement("section");page.className="book-page book-transition";
+      page.innerHTML=`<div style="font-size:75px">🌴</div><h1>${esc(title)}</h1><p>${esc(subtitle||"")}</p><div style="font-size:55px;margin-top:20px">♡</div>`;return page;
+    }
+    function createBookDayPage(date,dayNum,photos,photoUrls){
+      const page=document.createElement("section");page.className="book-page book-day-editorial";
+      const hotel=hotelFor(date),flight=flightFor(date),title=hotel?hotel.city:flight?flight.title:"יום במסע";
+      page.innerHTML=`<header class="editorial-head"><div><h2>יום ${dayNum} · ${esc(title)}</h2><div class="meta">${fmtDate(date)}${hotel?` · ${esc(hotel.shortName)}`:""}${flight?.flightNumber?` · ${esc(flight.flightNumber)}`:""}</div></div><div style="font-size:42px">${hotel?"📍":flight?"✈️":"📸"}</div></header>`;
+      const body=document.createElement("div");body.className="editorial-body";
+      const route=document.createElement("div");route.className="editorial-route";
+      const active=destinationForDate(date),activeIndex=Math.max(0,CONFIG.mapStops.findIndex(s=>s.id===active.id));
+      const plane=document.createElement("div");plane.className="editorial-plane";plane.style.top=`${Math.min(780,60+activeIndex*92)}px`;plane.textContent="✈️";route.appendChild(plane);
+      const main=document.createElement("div");main.className="editorial-main";
+      if(!photos.length){const empty=document.createElement("div");empty.className="book-empty";empty.textContent="לא הועלו תמונות ביום זה";main.appendChild(empty)}
+      else{
+        const hero=document.createElement("div");hero.className="editorial-hero";hero.innerHTML=`<img src="${photoUrls[0]}" alt="תמונה מיום ${dayNum}">`;main.appendChild(hero);
+        if(photoUrls.length>1){const thumbs=document.createElement("div");thumbs.className="editorial-thumbs";photoUrls.slice(1,4).forEach(url=>{const t=document.createElement("div");t.className="editorial-thumb";t.innerHTML=`<img src="${url}" alt="">`;thumbs.appendChild(t)});main.appendChild(thumbs)}
+        const captions=[...new Set(photos.map(p=>p.caption).filter(Boolean))];const story=document.createElement("div");story.className="editorial-story";story.textContent=captions.length?captions.join(" · "):"עוד יום שנשמור בלב.";main.appendChild(story)
+      }
+      body.appendChild(route);body.appendChild(main);page.appendChild(body);return page;
+    }
+    function createCollagePage(photoUrls){
+      const page=document.createElement("section");page.className="book-page book-collage";
+      page.innerHTML=`<header class="editorial-head"><div><h2>רגעים שנשארו איתנו</h2><div class="meta">קולאז׳ מהמסע המשפחתי</div></div><div style="font-size:44px">❤️</div></header>`;
+      const grid=document.createElement("div");grid.className="collage-grid";photoUrls.slice(0,10).forEach(url=>{const img=document.createElement("img");img.src=url;grid.appendChild(img)});page.appendChild(grid);return page;
+    }
+    function createFinalPage(){
+      const page=document.createElement("section");page.className="book-page book-final";
+      page.innerHTML=`<div class="heart">❤️</div><h1>המסע שלנו בתאילנד</h1><p>המסע הזה נגמר, אבל הסיפורים שלו ילוו אותנו עוד שנים.<br><br>לא משנה לאן נטוס בפעם הבאה — הכי כיף שאנחנו עושים את זה ביחד.</p><h2>משפחת ${esc(family.name)}</h2><div style="margin-top:30px;font-weight:900;color:#123a66">Thailand 2026</div>`;return page;
+    }
+
+    async function waitForBookImages(container){
+      const images=[...container.querySelectorAll("img")];
+      await Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{
+        img.onload=resolve;img.onerror=resolve;
+      })));
+      if(document.fonts?.ready) await document.fonts.ready;
+    }
+
+    async function exportFamilyBookPdf(){
+      const btn=$("exportFamilyPdf");
+      const status=$("pdfExportStatus");
+      const urlsToRevoke=[];
+      const stage=$("pdfBookStage");
+      const original=btn.innerHTML;
+      try{
+        if(!pdfIsUnlocked()){
+          throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+        }
+        btn.disabled=true;
+        btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
+        status.textContent="אוסף את תמונות המשפחה ובונה את ספר המסע…";
+        stage.innerHTML="";
+
+        const uploads=await fetchFamilyBookUploads();
+        const byDate=new Map();
+        uploads.forEach(p=>{
+          if(!byDate.has(p.tripDate))byDate.set(p.tripDate,[]);
+          byDate.get(p.tripDate).push(p);
+        });
+
+        const pages=[createBookCover()];
+        const allPhotoUrls=[];
+        const photoDates=[...byDate.keys()].sort();
+
+        // QA/mobile optimization: render only dates that actually contain photos.
+        // The final locked build may include all trip days after performance approval.
+        if(photoDates.length){
+          pages.push(createIntroPage());
+          pages.push(createFullRoutePage());
+        }
+
+        let previousDestination=null;
+        for(const date of photoDates){
+          const dayIndex=Math.round((parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000);
+          const dayNum=dayIndex+1;
+          const currentDestination=destinationForDate(date);
+
+          if(previousDestination && currentDestination.id!==previousDestination.id){
+            pages.push(createTransitionPage(`Welcome to ${currentDestination.name}`,fmtDate(date)));
+          }
+          previousDestination=currentDestination;
+
+          const dayUploads=byDate.get(date)||[];
+          for(let j=0;j<dayUploads.length;j+=CONFIG.pdfBook.maxPhotosPerPage){
+            const chunk=dayUploads.slice(j,j+CONFIG.pdfBook.maxPhotosPerPage);
+            const urls=[];
+            for(const upload of chunk){
+              const url=await blobUrlForUpload(upload,urlsToRevoke);
+              urls.push(url);
+              allPhotoUrls.push(url);
+            }
+            pages.push(createBookDayPage(date,dayNum,chunk,urls));
+          }
+        }
+
+        if(allPhotoUrls.length>1) pages.push(createCollagePage(allPhotoUrls));
+        pages.push(createFinalPage());
+        pages.forEach(p=>stage.appendChild(p));
+        await waitForBookImages(stage);
+
+        const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+        for(let i=0;i<pages.length;i++){
+          status.textContent=`מעבד עמוד ${i+1} מתוך ${pages.length}…`;
+          const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+          const renderScale=mobile?0.82:1.08;
+          const canvas=await html2canvas(pages[i],{
+            scale:renderScale,
+            useCORS:true,
+            backgroundColor:"#ffffff",
+            logging:false,
+            imageTimeout:12000,
+            removeContainer:true,
+            width:794,height:1123,windowWidth:794,windowHeight:1123
+          });
+          const image=canvas.toDataURL("image/jpeg",mobile ? .70 : .78);
+          if(i>0)pdf.addPage("a4","portrait");
+          pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
+          canvas.width=1;canvas.height=1;
+          await new Promise(r=>setTimeout(r,120));
+        }
+
+        status.textContent="מוריד את ספר המסע…";
+        const pdfBlob=pdf.output("blob");
+        triggerBlobDownload(pdfBlob,`Thailand-2026-משפחת-${family.name}.pdf`);
+        status.textContent="ספר המסע נוצר והורד בהצלחה ✅";
+      }catch(err){
+        console.error(err);
+        status.textContent=err?.message||"יצירת ה-PDF נכשלה.";
+        alert(err?.message||"יצירת ה-PDF נכשלה.");
+      }finally{
+        btn.disabled=false;
+        btn.innerHTML=original;
+        stage.innerHTML="";
+        urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
+      }
+    }
+
+    $("exportFamilyPdf").onclick=exportFamilyBookPdf;
+
+    function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
+    function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
+    $("menuBtn").onclick=openDrawer;$("drawerClose").onclick=closeDrawer;$("drawerShade").onclick=closeDrawer;
+    $("drawerJourney").onclick=()=>{closeDrawer();$("journeyMap").scrollIntoView({behavior:"smooth"})};
+    $("drawerFlights").onclick=()=>{closeDrawer();$("flights").scrollIntoView({behavior:"smooth"})};
+    $("shareBtn").onclick=async()=>{try{if(navigator.share)await navigator.share({title:document.title,text:"המסע המשפחתי שלנו בתאילנד",url:location.href});else{await navigator.clipboard.writeText(location.href);alert("הקישור הועתק")}}catch{}};
+    $("navJourney").onclick=()=>$("journeyMap").scrollIntoView({behavior:"smooth"});
+    $("navPassport").onclick=()=>{renderPassportScreen();$("passportDialog").showModal()};
+    $("navHelp").onclick=()=>$("helpDialog").showModal();
+    $("navAlbum").onclick=async()=>{$("albumDialog").showModal();await loadOwnAlbum()};
+    document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).close());
+
+    function fillAdminDates(){
+      $("adminDate").innerHTML="";
+      for(let i=0;i<daysTotal;i++){const d=addDays(CONFIG.trip.startDate,i),o=document.createElement("option");o.value=d;o.textContent=`יום ${i+1} · ${fmtDate(d)}`;if(d===today)o.selected=true;$("adminDate").appendChild(o)}
+    }
+    async function adminLogin(){
+      hideNotice($("loginNotice"));
+      try{
+        await signInWithEmailAndPassword(auth,$("adminEmail").value.trim(),$("adminPassword").value);
+      }catch(err){setNotice($("loginNotice"),firebaseErrorText(err),"error")}
+    }
+
+    async function runHealthCheck(){
+      const notice=$("healthNotice");
+      try{
+        setNotice(notice,"מריץ בדיקות…","info");
+        $("healthAuth").textContent=auth?.currentUser?"🟢 תקין":"🔴 לא מחובר";
+
+        const firestoreStart=performance.now();
+        await getDocs(query(collection(db,"tasks")));
+        const firestoreMs=Math.round(performance.now()-firestoreStart);
+        $("healthFirestore").textContent=`🟢 ${firestoreMs}ms`;
+
+        let storageStatus="🟡 אין תמונה לבדיקה";
+        try{
+          const sampleSnap=await getDocs(query(collection(db,"uploads"),limit(1)));
+          if(!sampleSnap.empty){
+            const sample=sampleSnap.docs[0].data();
+            const blob=await fetchUploadBlob(sample);
+            storageStatus=blob?.size?`🟢 ${Math.round(blob.size/1024)}KB`:"🔴 קובץ ריק";
+          }
+        }catch(err){
+          storageStatus="🔴 שגיאה";
+          logDiagnostic("error","Storage health check failed",err?.message||String(err));
+        }
+        $("healthStorage").textContent=storageStatus;
+        $("healthVersion").textContent=`${APP_VERSION} / ${BUILD_ID}`;
+
+        logDiagnostic("info","Health check completed",{firestoreMs,storageStatus});
+        setNotice(notice,"בדיקת המערכת הסתיימה.","ok");
+      }catch(err){
+        logDiagnostic("error","Health check failed",err?.message||String(err));
+        setNotice(notice,`בדיקת המערכת נכשלה: ${err?.message||err}`,"error");
+      }
+    }
+
+    function emptyFlight(index=0){
+      return {id:`flight-${Date.now()}-${index}`,title:"טיסה",flightNumber:"",date:CONFIG.trip.startDate,time:"",from:"",to:"",via:"",icon:"✈️",status:"",note:""};
+    }
+
+    function renderAdminFlights(){
+      const box=$("adminFlightList");
+      if(!box) return;
+      box.innerHTML="";
+      CONFIG.flights.forEach((flight,index)=>{
+        const card=document.createElement("article");
+        card.className="flight-admin-card";
+        card.dataset.index=String(index);
+        card.innerHTML=`<div class="flight-admin-head"><strong>טיסה ${index+1}</strong><button type="button" class="btn danger small remove-flight">מחיקה</button></div>
+          <div class="flight-admin-fields">
+            <label class="field"><span>כותרת</span><input data-key="title" value="${esc(flight.title)}"></label>
+            <label class="field"><span>מספר טיסה</span><input data-key="flightNumber" value="${esc(flight.flightNumber)}" placeholder="למשל EK2471"></label>
+            <label class="field"><span>תאריך</span><input data-key="date" type="date" value="${esc(flight.date)}"></label>
+            <label class="field"><span>שעה</span><input data-key="time" type="time" value="${esc(flight.time)}"></label>
+            <label class="field"><span>מוצא</span><input data-key="from" value="${esc(flight.from)}"></label>
+            <label class="field"><span>יעד</span><input data-key="to" value="${esc(flight.to)}"></label>
+            <label class="field"><span>דרך</span><input data-key="via" value="${esc(flight.via)}" placeholder="אופציונלי"></label>
+            <label class="field"><span>סמל</span><input data-key="icon" value="${esc(flight.icon)}" maxlength="4"></label>
+            <label class="field"><span>סטטוס</span><input data-key="status" value="${esc(flight.status)}" placeholder="בזמן / עיכוב / נדחתה"></label>
+            <label class="field flight-admin-note"><span>הערה למשפחות</span><input data-key="note" value="${esc(flight.note)}" placeholder="למשל: ההמראה נדחתה בשעה"></label>
+          </div>`;
+        card.querySelector(".remove-flight").onclick=()=>{
+          if(CONFIG.flights.length<=1) return setNotice($("flightEditNotice"),"חייבת להישאר לפחות טיסה אחת.","error");
+          CONFIG.flights.splice(index,1);renderAdminFlights();
+        };
+        box.appendChild(card);
+      });
+    }
+
+    function readFlightsFromEditor(){
+      return [...document.querySelectorAll(".flight-admin-card")].map((card,index)=>{
+        const value=key=>card.querySelector(`[data-key="${key}"]`)?.value.trim()||"";
+        return {id:CONFIG.flights[index]?.id||`flight-${index+1}`,title:value("title")||"טיסה",flightNumber:value("flightNumber"),date:value("date"),time:value("time"),from:value("from"),to:value("to"),via:value("via"),icon:value("icon")||"✈️",status:value("status"),note:value("note")};
+      });
+    }
+
+    function validateFlights(flights){
+      if(!flights.length) return "יש להזין לפחות טיסה אחת.";
+      for(let i=0;i<flights.length;i++){
+        const f=flights[i];
+        if(!f.date||!f.time||!f.from||!f.to) return `בטיסה ${i+1} חובה למלא תאריך, שעה, מוצא ויעד.`;
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(f.date)) return `התאריך בטיסה ${i+1} אינו תקין.`;
+        if(!/^\d{2}:\d{2}$/.test(f.time)) return `השעה בטיסה ${i+1} אינה תקינה.`;
+      }
+      return "";
+    }
+
+    async function loadAdminFlights(){
+      try{
+        await loadRemoteFlights();
+      }finally{
+        renderAdminFlights();
+      }
+    }
+
+    async function saveAdminFlights(){
+      const notice=$("flightEditNotice");
+      const flights=readFlightsFromEditor();
+      const error=validateFlights(flights);
+      if(error) return setNotice(notice,error,"error");
+      const btn=$("saveFlightsBtn");
+      btn.disabled=true;
+      try{
+        await setDoc(doc(db,"settings","flights"),{items:flights,updatedAt:serverTimestamp(),updatedBy:currentUser?.email||"admin"},{merge:true});
+        CONFIG.flights=normalizeFlights(flights);
+        renderAdminFlights();
+        logDiagnostic("info","Flights updated",{count:CONFIG.flights.length});
+        setNotice(notice,"הטיסות נשמרו ומופיעות לכל המשפחות ✅","ok");
+      }catch(err){
+        logDiagnostic("error","Flights save failed",err?.message||String(err));
+        setNotice(notice,firebaseErrorText(err),"error");
+      }finally{btn.disabled=false}
+    }
+
+    function addAdminFlight(){
+      CONFIG.flights.push(emptyFlight(CONFIG.flights.length));
+      renderAdminFlights();
+      $("adminFlightList").lastElementChild?.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+
+    function restoreDefaultFlights(){
+      if(!confirm("לשחזר בעורך את נתוני הטיסות המקוריים? השינוי יישמר רק לאחר לחיצה על שמירה.")) return;
+      CONFIG.flights=normalizeFlights(DEFAULT_FLIGHTS.map(f=>({...f})));
+      renderAdminFlights();
+      setNotice($("flightEditNotice"),"נתוני ברירת המחדל נטענו לעורך. לחצו שמירה כדי לפרסם.","info");
+    }
+
+    async function loadAdminTasks(){
+      const snap=await getDocs(collection(db,"tasks"));
+      const tasks=[];
+      snap.forEach(d=>tasks.push({id:d.id,...d.data()}));
+      tasks.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+      remoteTasks=tasks.length?tasks:[...(CONFIG.seedTasks||[])];
+      renderAdminTaskList();
+    }
+
+    function renderAdminTaskList(){
+      const box=$("adminTaskList");
+      if(!box) return;
+      box.innerHTML="";
+      remoteTasks.forEach(task=>{
+        const row=document.createElement("div");
+        row.className="task-admin-row";
+        row.innerHTML=`<div><strong>${task.sortOrder===0?"נתב״ג":`משימה ${task.sortOrder}`} · ${esc(task.title)}</strong><small>${fmtDate(task.date)} · ${esc(task.destination||"")} · ${task.puzzlePiece?`חלק ${task.puzzlePiece}`:"ללא פאזל"} · ${task.active===false?"כבויה":"פעילה"}</small></div><button class="btn ghost small">עריכה</button>`;
+        row.querySelector("button").onclick=()=>fillTaskEditor(task);
+        box.appendChild(row);
+      });
+    }
+
+    function fillTaskEditor(task){
+      $("taskEditId").value=task.id||"";
+      $("taskEditDate").value=task.date||"";
+      $("taskEditDestination").value=task.destination||"";
+      $("taskEditTitle").value=task.title||"";
+      $("taskEditDescription").value=task.description||"";
+      $("taskEditMinPhotos").value=task.minPhotos||1;
+      $("taskEditPhotoRule").value=task.photoRule||"fixed";
+      $("taskEditPuzzlePiece").value=task.puzzlePiece??"";
+      $("taskEditSortOrder").value=task.sortOrder??0;
+      $("taskEditActive").checked=task.active!==false;
+      hideNotice($("taskEditNotice"));
+    }
+
+    async function saveEditedTask(){
+      const id=$("taskEditId").value.trim();
+      if(!id) return setNotice($("taskEditNotice"),"בחרו משימה מהרשימה.","error");
+      const puzzleRaw=$("taskEditPuzzlePiece").value.trim();
+      const task={
+        date:$("taskEditDate").value,
+        destination:$("taskEditDestination").value.trim(),
+        title:$("taskEditTitle").value.trim(),
+        description:$("taskEditDescription").value.trim(),
+        minPhotos:Math.max(1,Number($("taskEditMinPhotos").value||1)),
+        photoRule:$("taskEditPhotoRule").value,
+        puzzlePiece:puzzleRaw===""?null:Number(puzzleRaw),
+        sortOrder:Number($("taskEditSortOrder").value||0),
+        active:$("taskEditActive").checked,
+        updatedAt:serverTimestamp()
+      };
+      await setDoc(doc(db,"tasks",id),task,{merge:true});
+      setNotice($("taskEditNotice"),"המשימה נשמרה ותופיע למשפחות בסריקה הבאה ✅","ok");
+      await loadAdminTasks();
+    }
+
+    async function seedApprovedTasks(){
+      const btn=$("seedTasksBtn");
+      const original=btn.textContent;
+      btn.disabled=true;btn.textContent="טוען…";
+      try{
+        for(const task of CONFIG.seedTasks||[]){
+          const {id,...data}=task;
+          await setDoc(doc(db,"tasks",id),{...data,updatedAt:serverTimestamp()},{merge:true});
+        }
+        await loadAdminTasks();
+        alert("כל המשימות המאושרות נטענו ל-Firebase.");
+      }finally{
+        btn.disabled=false;btn.textContent=original;
+      }
+    }
+
+    async function loadAnnouncementEditor(){
+      const snap=await getDoc(doc(db,"settings","announcement"));
+      const data=snap.exists()?snap.data():{};
+      $("announcementText").value=data.text||"";
+      $("announcementActive").checked=Boolean(data.active);
+    }
+
+    async function saveAnnouncement(){
+      await setDoc(doc(db,"settings","announcement"),{
+        text:$("announcementText").value.trim(),
+        active:$("announcementActive").checked,
+        updatedAt:serverTimestamp()
+      },{merge:true});
+      setNotice($("announcementNotice"),"ההודעה נשמרה ותופיע לכל המשפחות בסריקה הבאה ✅","ok");
+    }
+
+    let adminRealtimeUnsubscribe=null;
+    async function loadAdmin(){
+      const date=$("adminDate").value;
+      $("adminRows").innerHTML=`<div class="notice info">טוען התקדמות משפחות…</div>`;
+      $("adminGallery").innerHTML="";
+      setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
+      try{
+        const [doneSnap,uploadsSnap]=await Promise.all([
+          getDocs(collection(db,"completions")),
+          getDocs(collection(db,"uploads"))
+        ]);
+        const completions=[],allUploads=[],dayPhotos=[];
+        doneSnap.forEach(d=>completions.push({id:d.id,...d.data()}));
+        uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allUploads.push(x);if(x.tripDate===date)dayPhotos.push(x)});
+        const totalPieces=CONFIG.puzzle.totalPieces||8;
+        const totalCompleted=completions.length;
+        const uniquePieces=new Set(completions.map(c=>`${c.familyId}:${c.puzzlePiece}`).filter(x=>!x.endsWith(':null')&&!x.endsWith(':undefined'))).size;
+        $("statScans").textContent=uniquePieces;
+        $("statDone").textContent=totalCompleted;
+        $("statPhotos").textContent=dayPhotos.length;
+        $("adminRows").innerHTML=CONFIG.families.map(f=>{
+          const familyDone=completions.filter(c=>c.familyId===f.id).sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||""));
+          const pieces=new Set(familyDone.map(c=>c.puzzlePiece).filter(n=>Number.isInteger(n)));
+          const percent=Math.round((pieces.size/totalPieces)*100);
+          const last=familyDone.slice().sort((a,b)=>(b.completedAt?.toMillis?.()||0)-(a.completedAt?.toMillis?.()||0))[0];
+          const taskRows=remoteTasks.filter(t=>t.puzzlePiece).map(t=>{
+            const done=familyDone.find(c=>c.taskId===t.id || c.tripDate===t.date);
+            return `<div class="family-task-row"><span>${done?"✅":"⏳"} ${esc(t.title)}</span><span>${done?fmtTime(done.completedAt):"טרם הושלמה"}</span></div>`;
+          }).join("");
+          return `<article class="family-progress-card" data-family="${f.id}">
+            <div class="family-progress-head"><strong>משפחת ${esc(f.name)}</strong><span class="family-progress-count">${pieces.size}/${totalPieces}</span></div>
+            <div class="family-progress-bar"><div style="width:${percent}%"></div></div>
+            <div class="family-progress-meta"><span>${familyDone.length} משימות הושלמו</span><span>${last?`עדכון ${fmtTime(last.completedAt)}`:"ללא השלמות"}</span></div>
+            <div class="family-detail">${taskRows||'<div class="notice info">אין משימות להצגה.</div>'}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn secondary small family-trip-zip" data-family="${f.id}">ZIP מלא</button></div></div>
+          </article>`;
+        }).join("");
+        document.querySelectorAll(".family-progress-card").forEach(card=>card.addEventListener("click",e=>{if(e.target.closest("button"))return;card.classList.toggle("open")}));
+        document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=()=>downloadFullTripZip(b.dataset.family));
+        dayPhotos.sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
+        if(!dayPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
+        else{
+          hideNotice($("adminGalleryNotice"));
+          dayPhotos.forEach(p=>{const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber)}</strong>${esc(p.caption||"")}</div>`;$("adminGallery").appendChild(card)});
+        }
+        $("downloadAllZip").onclick=()=>downloadZip(date,"all",dayPhotos);
+      }catch(err){
+        console.error(err);
+        $("adminRows").innerHTML=`<div class="notice error">${esc(firebaseErrorText(err))}</div>`;
+        setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error");
+      }
+    }
+
+    function startAdminRealtime(){
+      if(adminRealtimeUnsubscribe) adminRealtimeUnsubscribe();
+      adminRealtimeUnsubscribe=onSnapshot(collection(db,"completions"),()=>{
+        if(!$("adminDashboard").classList.contains("hidden")) loadAdmin();
+      },err=>console.warn("Admin realtime unavailable",err));
+    }
+
+    async function fetchAllTripData(){
+      const [uploadsSnap,completionsSnap,scansSnap]=await Promise.all([
+        getDocs(collection(db,"uploads")),
+        getDocs(collection(db,"completions")),
+        getDocs(collection(db,"scans"))
+      ]);
+      const uploads=[],completions=[],scans=[];
+      uploadsSnap.forEach(d=>uploads.push({id:d.id,...d.data()}));
+      completionsSnap.forEach(d=>completions.push({id:d.id,...d.data()}));
+      scansSnap.forEach(d=>scans.push({id:d.id,...d.data()}));
+      uploads.sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||"") || (a.familyName||"").localeCompare(b.familyName||""));
+      return {uploads,completions,scans};
+    }
+
+    function csvEscape(value){
+      const s=String(value??"");
+      return `"${s.replaceAll('"','""')}"`;
+    }
+
+    function buildTripCsv(data){
+      const rows=[["familyId","familyName","tripDate","dayNumber","caption","storagePath","createdAt"]];
+      data.uploads.forEach(p=>rows.push([
+        p.familyId,p.familyName,p.tripDate,p.dayNumber,p.caption,p.storagePath,
+        p.createdAt?.toDate?.().toISOString?.()||""
+      ]));
+      return rows.map(r=>r.map(csvEscape).join(",")).join("\r\n");
+    }
+
+    async function downloadFullTripZip(familyFilter="all"){
+      const buttons=[...document.querySelectorAll("button")];
+      buttons.forEach(b=>b.disabled=true);
+      try{
+        const data=await fetchAllTripData();
+        const uploads=familyFilter==="all"
+          ? data.uploads
+          : data.uploads.filter(p=>p.familyId===familyFilter);
+
+        if(!uploads.length){
+          alert("אין תמונות להורדה.");
+          return;
+        }
+
+        const zip=new JSZip();
+        const familyMap=new Map(CONFIG.families.map(f=>[f.id,f.name]));
+
+        for(let i=0;i<uploads.length;i++){
+          const p=uploads[i];
+          const dayNum=String(p.dayNumber||1).padStart(2,"0");
+          const dayFolder=`יום-${dayNum}-${p.tripDate}`;
+          const familyName=p.familyName||familyMap.get(p.familyId)||p.familyId;
+          const familyFolder=`משפחת-${familyName}`;
+          const blob=await fetchUploadBlob(p);
+          const fileName=`${String(i+1).padStart(4,"0")}.jpg`;
+          zip.folder(dayFolder).folder(familyFolder).file(fileName,blob);
+        }
+
+        zip.file("סיכום-העלאות.csv",buildTripCsv({...data,uploads}));
+        zip.file("README.txt",
+`Thailand 2026
+מבנה הקובץ:
+יום-XX-YYYY-MM-DD/
+  משפחת-שם/
+    תמונות
+
+גרסת אתר: ${APP_VERSION}
+`);
+
+        const result=await zip.generateAsync({
+          type:"blob",
+          compression:"DEFLATE",
+          compressionOptions:{level:6}
+        });
+
+        const suffix=familyFilter==="all"?"כל-הטיול":`משפחת-${familyMap.get(familyFilter)||familyFilter}`;
+        triggerBlobDownload(result,`Thailand-2026-${suffix}.zip`);
+      }catch(err){
+        console.error(err);
+        alert(`הורדת ZIP נכשלה: ${err?.message||firebaseErrorText(err)}`);
+      }finally{
+        buttons.forEach(b=>b.disabled=false);
+      }
+    }
+
+    async function downloadZip(date,label,photos){
+      if(!photos.length)return alert("אין תמונות להורדה.");
+      const btns=[...document.querySelectorAll("button")];btns.forEach(b=>b.disabled=true);
+      try{
+        const zip=new JSZip(),info=[];
+        for(let i=0;i<photos.length;i++){
+          const p=photos[i],blob=await fetchUploadBlob(p);
+          const folder=zip.folder(`משפחת-${p.familyName}/${p.tripDate}`);
+          folder.file(`${String(i+1).padStart(3,"0")}.jpg`,blob);
+          info.push(`${p.familyName} | ${p.tripDate} | ${p.caption||""}`);
+        }
+        zip.file("פרטי-העלאות.txt",info.join("\n"));
+        const result=await zip.generateAsync({type:"blob",compression:"DEFLATE",compressionOptions:{level:6}});
+        triggerBlobDownload(result,`Thailand-2026-${label}-${date}.zip`);
+      }catch(err){
+        console.error(err);
+        alert(`הורדת ZIP נכשלה: ${err?.message||firebaseErrorText(err)}`);
+      }
+      finally{btns.forEach(b=>b.disabled=false)}
+    }
+
+    async function boot(){
+      runVersionMigration();
+
+      const updateStarted=await checkForAppUpdate();
+      if(updateStarted) return;
+
+      scheduleUpdateChecks();
+
+      try{
+        await loadTripConfig();
+      }catch(err){
+        console.error(err);
+        document.body.innerHTML=`<main style="max-width:600px;margin:60px auto;padding:24px;font-family:Arial;text-align:center"><h1>שגיאה בטעינת האתר</h1><p>${esc(err.message)}</p><p>ודאו שהקובץ trip-config.json הועלה לצד index.html.</p></main>`;
+        return;
+      }
+      initSplash();
+      if(isAdminRoute){
+        $("familyApp").classList.add("hidden");$("adminApp").classList.remove("hidden");fillAdminDates();
+        await initFirebase();
+        onAuthStateChanged(auth,user=>{
+          if(user?.email?.toLowerCase()===CONFIG.adminEmail.toLowerCase()){
+            currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;
+            loadAdmin();loadAdminTasks();loadAnnouncementEditor();loadAdminFlights();
+          }else{
+            $("adminDashboard").classList.add("hidden");$("adminLogin").classList.remove("hidden");
+            if(user&&user.email)setNotice($("loginNotice"),"המשתמש מחובר אך אינו מוגדר כמנהל.","error");
+          }
+        });
+        $("loginBtn").onclick=adminLogin;$("adminPassword").addEventListener("keydown",e=>{if(e.key==="Enter")adminLogin()});
+        $("logoutBtn").onclick=()=>signOut(auth);
+        $("refreshAdmin").onclick=loadAdmin;
+        $("adminDate").onchange=loadAdmin;
+        $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
+        $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
+        $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));
+        $("saveAnnouncement").onclick=()=>saveAnnouncement().catch(err=>setNotice($("announcementNotice"),firebaseErrorText(err),"error"));
+        $("runHealthCheck").onclick=runHealthCheck;
+        $("downloadDiagnostics").onclick=downloadDiagnostics;
+        $("addFlightBtn").onclick=addAdminFlight;
+        $("restoreFlightsBtn").onclick=restoreDefaultFlights;
+        $("saveFlightsBtn").onclick=saveAdminFlights;
+      }else{
+        renderFamily();await initFirebase();
+        updatePdfAvailability();
+        setInterval(updatePdfAvailability,60000);
+        if(today>=CONFIG.trip.startDate&&today<=CONFIG.trip.endDate)setTimeout(()=>$("journeyMap")?.scrollIntoView({behavior:"smooth",block:"start"}),450);
+      }
+    }
+    boot();
+  </script>
+</body>
+</html>

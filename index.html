@@ -737,8 +737,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.3.3-PHOTO-ONLY-HOTFIX";
-    const BUILD_ID = "20260731.02";
+    const APP_VERSION = "7.4.0";
+    const BUILD_ID = "20260731.74";
 
     let CONFIG = {
       firebase: {
@@ -839,6 +839,7 @@
       if(!response.ok) throw new Error(`לא ניתן לטעון את trip-config.json (${response.status})`);
       const tripConfig=await response.json();
       CONFIG={...CONFIG,...tripConfig};
+      normalizeTripConfigV74();
       DEFAULT_FLIGHTS=(CONFIG.flights||[]).map(f=>({...f}));
       CONFIG.flights=normalizeFlights(CONFIG.flights||[]);
 
@@ -852,6 +853,26 @@
       today=currentTripDate();
       familyImage=CONFIG.familyImages[family.id] || CONFIG.familyImages.sadeh;
       remoteTasks=[...(CONFIG.seedTasks||[])].filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    }
+
+    function normalizeTripConfigV74(){
+      // 7.4: keep the external config backwards-compatible while applying the new trip rules.
+      CONFIG.upload={...(CONFIG.upload||{}),maxFiles:15};
+
+      const renameHotel=name=>String(name||"")
+        .replace(/La Vela Khao Lak/gi,"The Sands Khao Lak")
+        .replace(/La Vela/gi,"The Sands Khao Lak");
+
+      CONFIG.hotels=(CONFIG.hotels||[]).map(h=>({
+        ...h,
+        name:renameHotel(h.name),
+        shortName:renameHotel(h.shortName),
+        mapsQuery:/La Vela/i.test(String(h.mapsQuery||"")) ? "The Sands Khao Lak Thailand" : h.mapsQuery
+      }));
+      CONFIG.mapStops=(CONFIG.mapStops||[]).map(stop=>({
+        ...stop,
+        hotel:renameHotel(stop.hotel)
+      }));
     }
 
     function normalizeFlights(flights){
@@ -964,18 +985,35 @@
       setTimeout(()=>splash.remove(),4600);
     }
 
+    function dayNumberFor(date){
+      return Math.floor((parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+    }
+
+    function getTripState(date=currentTripDate()){
+      const before=date<CONFIG.trip.startDate;
+      const after=date>CONFIG.trip.endDate;
+      const inTrip=!before&&!after;
+      const rawDay=dayNumberFor(date);
+      const dayNumber=inTrip?rawDay:(before?0:daysTotal);
+      const dayIndex=Math.max(0,Math.min(daysTotal-1,dayNumber-1));
+      const progress=before?0:after?100:Math.round((dayIndex/Math.max(1,daysTotal-1))*100);
+      const hotel=hotelFor(date)||null;
+      const flight=flightFor(date)||null;
+      const stopIndex=getStopIndexForDate(date);
+      const stop=CONFIG.mapStops?.[stopIndex]||null;
+      return {date,before,after,inTrip,dayNumber,dayIndex,progress,hotel,flight,stopIndex,stop};
+    }
+
     function updateTripProgress(){
-      let percent=0,sub="מתכוננים למסע";
-      if(today<CONFIG.trip.startDate){percent=0;sub=`יוצאים לדרך ב־${fmtDate(CONFIG.trip.startDate)}`;}
-      else if(today>CONFIG.trip.endDate){percent=100;sub="המסע הושלם!";}
-      else{
-        const dayIndex=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000);
-        percent=Math.max(0,Math.min(100,Math.round((dayIndex/(daysTotal-1))*100)));
-        sub=`יום ${dayIndex+1} מתוך ${daysTotal}`;
-      }
-      $("tripProgressPercent").textContent=`${percent}%`;
+      const trip=getTripState(today);
+      const sub=trip.before
+        ? `יוצאים לדרך ב־${fmtDate(CONFIG.trip.startDate)}`
+        : trip.after
+          ? "המסע הושלם!"
+          : `יום ${trip.dayNumber} מתוך ${daysTotal}`;
+      $("tripProgressPercent").textContent=`${trip.progress}%`;
       $("tripProgressSub").textContent=sub;
-      requestAnimationFrame(()=>$("tripProgressFill").style.width=`${percent}%`);
+      requestAnimationFrame(()=>$("tripProgressFill").style.width=`${trip.progress}%`);
     }
 
     function currentTripDate(){
@@ -1000,8 +1038,7 @@
       const released=tasks.filter(taskIsReleased);
       const chosen=released.find(t=>!completed.has(t.date)) || released.at(-1);
       if(chosen){
-        const num=Math.round((parseDate(chosen.date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
-        openDay(chosen.date,num);
+        openDay(chosen.date,dayNumberFor(chosen.date));
         return;
       }
       if(tasks.length){
@@ -1149,17 +1186,29 @@
       return "future";
     }
 
-    function currentStopIndex(){
+    function getStopIndexForDate(date){
       let idx=0;
-      CONFIG.mapStops.forEach((s,i)=>{ if(today>=s.date) idx=i; });
+      (CONFIG.mapStops||[]).forEach((s,i)=>{ if(date>=s.date) idx=i; });
       return idx;
+    }
+
+    function currentStopIndex(){
+      return getTripState(today).stopIndex;
+    }
+
+    function hotelDayRange(hotel){
+      if(!hotel) return "";
+      const first=Math.max(1,dayNumberFor(hotel.startDate));
+      const last=Math.min(daysTotal,dayNumberFor(addDays(hotel.endDate,-1)));
+      return first===last?`יום ${first}`:`ימים ${first}–${last}`;
     }
 
     function renderInteractiveMap(){
       const box=$("mapStops");
       if(!box) return;
       box.innerHTML="";
-      const currentIdx=currentStopIndex();
+      const trip=getTripState(today);
+      const currentIdx=trip.stopIndex;
 
       CONFIG.mapStops.forEach((stop,index)=>{
         const state=stopState(stop);
@@ -1169,13 +1218,14 @@
         wrap.style.top=`${stop.y}%`;
 
         const hotel=CONFIG.hotels.find(h=>h.shortName===stop.hotel);
-        wrap.innerHTML=`<div class="map-day-badge">${stop.day}</div>
+        const dayLabel=hotel?hotelDayRange(hotel):`יום ${stop.day}`;
+        wrap.innerHTML=`<div class="map-day-badge" title="${esc(dayLabel)}">${hotel?dayNumberFor(hotel.startDate):stop.day}</div>
           <div class="map-stop-card" role="button" tabindex="0">
             <div class="map-stop-head">
               <span class="map-stop-icon">${stop.icon}</span>
               <div>
                 <strong>${esc(stop.name)}</strong>
-                <small>${fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small>
+                <small>${hotel?`${esc(dayLabel)} · ${fmtDate(hotel.startDate)}–${fmtDate(addDays(hotel.endDate,-1))}`:fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small>
               </div>
             </div>
             <div class="map-stop-actions">
@@ -1222,23 +1272,24 @@
       renderToday();renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();renderFlights();updateTripProgress();updatePdfAvailability();
     }
     function renderToday(){
-      if(today<CONFIG.trip.startDate){
-        $("todayTitle").textContent="הטיול עוד לא התחיל";$("todaySubtitle").textContent=`מתחילים ב־${fmtDate(CONFIG.trip.startDate)}`;$("openTodayBtn").disabled=true;return;
+      const trip=getTripState(today);
+      const button=$("openTodayBtn");
+      if(trip.before){
+        $("todayTitle").textContent="הטיול עוד לא התחיל";
+        $("todaySubtitle").textContent=`מתחילים ב־${fmtDate(CONFIG.trip.startDate)}`;
+        button.disabled=true;
+        return;
       }
-      if(today>CONFIG.trip.endDate){
-        $("todayTitle").textContent="הטיול הסתיים";$("todaySubtitle").textContent="כל הזיכרונות נשמרו במערכת";$("openTodayBtn").disabled=true;return;
+      if(trip.after){
+        $("todayTitle").textContent="הטיול הסתיים";
+        $("todaySubtitle").textContent="כל הזיכרונות נשמרו במערכת";
+        button.disabled=true;
+        return;
       }
-      const idx=Math.round((parseDate(today)-parseDate(CONFIG.trip.startDate))/86400000)+1;
-      const h=hotelFor(today),f=flightFor(today);
-      $("todayTitle").textContent=`היום הוא יום ${idx} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
-      $("todaySubtitle").textContent=h?`${h.city} · ${h.shortName}`:f?`${f.title} · ${f.time}`:"יום מעבר";
-      const currentStop=CONFIG.mapStops[currentStopIndex()];
-      $("openTodayBtn").onclick=()=>{
-        const todayTask=taskFor(today);
-        if(todayTask?.id && taskIsReleased(todayTask)) openDay(today,idx);
-        else if(currentStop) openDestination(currentStop.name,today,idx);
-        else openDay(today,idx);
-      };
+      button.disabled=false;
+      $("todayTitle").textContent=`היום הוא יום ${trip.dayNumber} בטיול${CONFIG.testMode.enabled?" · מצב בדיקה":""}`;
+      $("todaySubtitle").textContent=trip.hotel?`${trip.hotel.city} · ${trip.hotel.shortName}`:trip.flight?`${trip.flight.title} · ${trip.flight.time}`:"יום מעבר";
+      button.onclick=()=>openDay(trip.date,trip.dayNumber);
     }
     function renderJourney(){
       const box=$("journey");box.innerHTML="";
@@ -1332,7 +1383,11 @@
     function renderFlights(){
       $("flights").innerHTML=CONFIG.flights.map(f=>`<article class="flight"><div class="flight-icon">${esc(f.icon)}</div><div><strong>${esc(f.title)}${f.flightNumber?` · ${esc(f.flightNumber)}`:""} · ${fmtDate(f.date)} · ${esc(f.time)}</strong><p>${esc(f.from)} ← ${esc(f.to)}${f.via?` · דרך ${esc(f.via)}`:""}</p>${flightExtraHtml(f)}</div></article>`).join("");
     }
-    function openDay(date,num){
+    function openDay(date,num=dayNumberFor(date)){
+      if(date>today){
+        alert(`יום ${num} ייפתח ב־${fmtDate(date)}.`);
+        return;
+      }
       const requestedTask=taskFor(date);
       if(requestedTask?.id && !taskIsReleased(requestedTask)){
         alert(`המשימה תיפתח ב־${fmtDate(requestedTask.date)}.`);

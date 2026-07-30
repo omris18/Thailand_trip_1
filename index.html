@@ -323,21 +323,36 @@
     .admin-announcement{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
     @media(max-width:800px){.task-admin-grid{grid-template-columns:1fr}.admin-announcement{grid-template-columns:1fr}.task-editor .two-cols{grid-template-columns:1fr}}
 
-    /* --- 7.3 family progress dashboard --- */
-    .family-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-    .family-progress-card{border:1px solid #e5e7eb;border-radius:18px;padding:14px;background:#fff;cursor:pointer;transition:.2s}
-    .family-progress-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,23,42,.1)}
+    /* --- 7.3.1 family progress dashboard --- */
+    .family-progress-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px}
+    .family-progress-card{border:1px solid #e5e7eb;border-radius:20px;padding:15px;background:#fff;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;overflow:hidden}
+    .family-progress-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.1);border-color:#c4b5fd}
+    .family-progress-card.open{grid-column:1/-1;border-color:#a78bfa;box-shadow:0 14px 34px rgba(109,40,217,.12)}
     .family-progress-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .family-progress-head strong{font-size:17px}.family-progress-count{font-weight:900;color:var(--purple)}
-    .family-progress-bar{height:11px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:10px 0 7px}
-    .family-progress-bar>div{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:999px}
-    .family-progress-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
-    .family-detail{margin-top:10px;padding-top:10px;border-top:1px solid #e5e7eb;display:none}
-    .family-progress-card.open .family-detail{display:block}
-    .family-task-row{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed #e5e7eb;font-size:13px}
-    .family-task-row:last-child{border-bottom:0}
-    .puzzle-fly-piece{position:fixed;z-index:10001;width:82px;height:82px;border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(15,23,42,.35);pointer-events:none;animation:puzzleFly 1.15s cubic-bezier(.2,.8,.2,1) forwards}
+    .family-progress-identity{display:flex;align-items:center;gap:10px;min-width:0}.family-progress-avatar{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#f1f5f9;border:1px solid #e5e7eb;flex:0 0 auto}
+    .family-progress-head strong{font-size:18px}.family-progress-count{font-weight:900;color:var(--purple);background:#f3e8ff;border-radius:999px;padding:5px 10px;white-space:nowrap}
+    .family-progress-bar{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:11px 0 10px}
+    .family-progress-bar>div{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:999px;transition:width .45s ease}
+    .family-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+    .family-metric{background:#f8fafc;border:1px solid #eef2f6;border-radius:13px;padding:8px;text-align:center;min-width:0}
+    .family-metric strong{display:block;font-size:17px;line-height:1.2}.family-metric span{display:block;color:var(--muted);font-size:10px;font-weight:800;margin-top:2px;white-space:nowrap}
+    .family-progress-meta{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;margin-top:10px;align-items:center}
+    .family-progress-toggle{font-weight:900;color:var(--purple);white-space:nowrap}
+    .family-detail{margin-top:13px;padding-top:13px;border-top:1px solid #e5e7eb;display:none;cursor:default}
+    .family-progress-card.open .family-detail{display:block;animation:pop .2s ease}
+    .family-detail-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+    .family-detail-head strong{font-size:14px}.family-detail-head span{color:var(--muted);font-size:12px}
+    .family-task-list{display:grid;gap:7px}
+    .family-task-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 11px;border:1px solid #e5e7eb;border-radius:13px;background:#f8fafc;font-size:13px}
+    .family-task-row.done{background:#f0fdf4;border-color:#bbf7d0}.family-task-row.future{opacity:.72}
+    .family-task-main{min-width:0}.family-task-main strong{display:block;font-size:13px;line-height:1.3}.family-task-main small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+    .family-task-status{text-align:left;font-weight:900;white-space:nowrap;font-size:12px}.family-task-status small{display:block;color:var(--muted);font-weight:700;margin-top:2px}
+    .family-detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .admin-gallery-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .admin-empty-state{grid-column:1/-1;text-align:center;padding:22px;border:2px dashed #d0d5dd;border-radius:17px;color:var(--muted);background:#f8fafc}
+    .puzzle-fly-piece{position:fixed;z-index:10001;width:82px;height:82px;border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(15,23,42,.35);pointer-events:none;animation:puzzleFly 1.15s cubic-bezier(.2,.8,.2,1) forwards;background-repeat:no-repeat}
     @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
+    @media(max-width:620px){.family-progress-grid{grid-template-columns:1fr}.family-progress-card.open{grid-column:auto}.family-task-row{grid-template-columns:1fr}.family-task-status{text-align:right}.family-progress-meta{align-items:flex-start;flex-direction:column}.family-metrics{grid-template-columns:repeat(3,1fr)}}
 
   </style>
 </head>
@@ -657,7 +672,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 7.3.0-HOTFIX · Build 20260730.01</p>
+            <p style="margin:0;color:var(--muted)">Version 7.3.1-DASHBOARD · Build 20260730.02</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -668,7 +683,7 @@
           <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
           <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
           <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">7.3.0-HOTFIX</strong><span>גרסה</span></div>
+          <div class="stat"><strong id="healthVersion">7.3.1-DASHBOARD</strong><span>גרסה</span></div>
         </div>
         <div id="healthNotice" class="notice info hidden"></div>
       </section>
@@ -682,8 +697,11 @@
       </section>
 
       <section class="admin-panel">
-        <h2>גלריית היום</h2>
-        <div id="adminGallery" class="gallery"></div>
+        <div class="admin-gallery-head">
+          <div><h2 id="adminGalleryTitle" style="margin-bottom:3px">גלריית היום</h2><p id="adminGallerySubtitle" style="margin:0;color:var(--muted)">התמונות בתאריך שנבחר</p></div>
+          <button id="showSelectedDayGallery" class="btn ghost small hidden">חזרה לגלריית התאריך</button>
+        </div>
+        <div id="adminGallery" class="gallery" style="margin-top:13px"></div>
         <div id="adminGalleryNotice" class="notice info">בחרו תאריך ולחצו רענון.</div>
       </section>
     </div>
@@ -719,8 +737,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "7.3.0-HOTFIX";
-    const BUILD_ID = "20260730.01";
+    const APP_VERSION = "7.3.1-DASHBOARD";
+    const BUILD_ID = "20260730.02";
 
     let CONFIG = {
       firebase: {
@@ -1967,6 +1985,9 @@
       tasks.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
       remoteTasks=tasks.length?tasks:[...(CONFIG.seedTasks||[])];
       renderAdminTaskList();
+      if(adminDataCache.completions.length||adminDataCache.uploads.length){
+        renderFamilyProgressDashboard(adminDataCache.completions,adminDataCache.uploads);
+      }
     }
 
     function renderAdminTaskList(){
@@ -2049,9 +2070,161 @@
       setNotice($("announcementNotice"),"ההודעה נשמרה ותופיע לכל המשפחות בסריקה הבאה ✅","ok");
     }
 
-    let adminRealtimeUnsubscribe=null;
-    async function loadAdmin(){
+    let adminRealtimeUnsubscribers=[];
+    let adminDataCache={completions:[],uploads:[]};
+    let adminGalleryMode={type:"date",familyId:null};
+    let openAdminFamilyId=null;
+
+    const millis=value=>value?.toMillis?.() || value?.toDate?.()?.getTime?.() || (value?new Date(value).getTime():0) || 0;
+    const normalizedPiece=value=>{
+      const n=Number(value);
+      return Number.isInteger(n)&&n>=1&&n<=Number(CONFIG.puzzle?.totalPieces||8)?n:null;
+    };
+
+    function activeAdminTasks(){
+      return [...remoteTasks].filter(t=>t.active!==false).sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+    }
+
+    function completionForTask(familyDone,task){
+      return familyDone.find(c=>
+        (task.id&&c.taskId&&c.taskId===task.id) ||
+        (task.date&&c.tripDate===task.date) ||
+        (normalizedPiece(task.puzzlePiece)!==null&&normalizedPiece(c.puzzlePiece)===normalizedPiece(task.puzzlePiece))
+      );
+    }
+
+    function uploadsForTask(familyUploads,task){
+      return familyUploads.filter(p=>
+        (task.id&&p.taskId&&p.taskId===task.id) ||
+        (task.date&&p.tripDate===task.date)
+      );
+    }
+
+    function renderAdminGallery(items,{title,subtitle,emptyMessage,showBack=false}={}){
+      const gallery=$("adminGallery");
+      gallery.innerHTML="";
+      $("adminGalleryTitle").textContent=title||"גלריית היום";
+      $("adminGallerySubtitle").textContent=subtitle||"התמונות בתאריך שנבחר";
+      $("showSelectedDayGallery").classList.toggle("hidden",!showBack);
+      const sorted=[...items].sort((a,b)=>millis(b.createdAt)-millis(a.createdAt));
+      if(!sorted.length){
+        setNotice($("adminGalleryNotice"),emptyMessage||"אין תמונות להצגה.","info");
+        return;
+      }
+      hideNotice($("adminGalleryNotice"));
+      sorted.forEach(p=>{
+        const card=document.createElement("article");
+        card.className="photo-card";
+        card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber||"—")}</strong><span>${p.tripDate?fmtDate(p.tripDate):""}</span>${p.caption?`<div style="margin-top:4px">${esc(p.caption)}</div>`:""}</div>`;
+        gallery.appendChild(card);
+      });
+    }
+
+    function renderSelectedDayGallery(){
+      adminGalleryMode={type:"date",familyId:null};
       const date=$("adminDate").value;
+      const photos=adminDataCache.uploads.filter(p=>p.tripDate===date);
+      renderAdminGallery(photos,{
+        title:`גלריית היום · ${fmtDate(date)}`,
+        subtitle:`${photos.length} תמונות מכל המשפחות`,
+        emptyMessage:"אין תמונות בתאריך שנבחר."
+      });
+      $("statPhotos").textContent=adminDataCache.uploads.length;
+      $("downloadAllZip").onclick=()=>downloadZip(date,"all",photos);
+    }
+
+    function showFamilyGallery(familyId,{scroll=true}={}){
+      const selectedFamily=CONFIG.families.find(f=>f.id===familyId);
+      if(!selectedFamily) return;
+      adminGalleryMode={type:"family",familyId};
+      const photos=adminDataCache.uploads.filter(p=>p.familyId===familyId);
+      renderAdminGallery(photos,{
+        title:`גלריית משפחת ${selectedFamily.name}`,
+        subtitle:`${photos.length} תמונות לאורך כל הטיול`,
+        emptyMessage:`משפחת ${selectedFamily.name} עדיין לא העלתה תמונות.`,
+        showBack:true
+      });
+      if(scroll) $("adminGallery")?.scrollIntoView({behavior:"smooth",block:"start"});
+    }
+
+    function renderFamilyProgressDashboard(completions,allUploads){
+      const totalPieces=Number(CONFIG.puzzle?.totalPieces||8);
+      const tasks=activeAdminTasks();
+      const puzzleTasks=tasks.filter(t=>normalizedPiece(t.puzzlePiece)!==null);
+      const totalUniquePieces=new Set(completions.map(c=>`${c.familyId}:${normalizedPiece(c.puzzlePiece)}`).filter(x=>!x.endsWith(":null"))).size;
+
+      $("statFamilies").textContent=CONFIG.families.length;
+      $("statScans").textContent=totalUniquePieces;
+      $("statDone").textContent=completions.length;
+      $("statPhotos").textContent=allUploads.length;
+
+      $("adminRows").innerHTML=CONFIG.families.map(f=>{
+        const familyDone=completions.filter(c=>c.familyId===f.id).sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||""));
+        const familyUploads=allUploads.filter(p=>p.familyId===f.id);
+        const pieces=new Set(familyDone.map(c=>normalizedPiece(c.puzzlePiece)).filter(n=>n!==null));
+        const completedTaskIds=new Set(tasks.filter(t=>completionForTask(familyDone,t)).map(t=>t.id||t.date));
+        const percent=Math.min(100,Math.round((pieces.size/Math.max(1,totalPieces))*100));
+        const lastCompletion=familyDone.slice().sort((a,b)=>millis(b.completedAt)-millis(a.completedAt))[0];
+        const lastUpload=familyUploads.slice().sort((a,b)=>millis(b.createdAt)-millis(a.createdAt))[0];
+        const lastActivity=millis(lastCompletion?.completedAt)>=millis(lastUpload?.createdAt)?lastCompletion?.completedAt:lastUpload?.createdAt;
+
+        const taskRows=tasks.map(task=>{
+          const done=completionForTask(familyDone,task);
+          const taskUploads=uploadsForTask(familyUploads,task);
+          const piece=normalizedPiece(task.puzzlePiece);
+          const isFuture=task.date&&task.date>today;
+          const stateClass=done?"done":isFuture?"future":"";
+          const stateLabel=done?"✅ הושלמה":isFuture?"🔒 עתידית":"⏳ ממתינה";
+          const secondary=done?fmtTime(done.completedAt):(isFuture&&task.date?fmtDate(task.date):"טרם הושלמה");
+          const taskLabel=task.sortOrder===0?"משימת נתב״ג":`משימה ${task.sortOrder||""}`;
+          return `<div class="family-task-row ${stateClass}">
+            <div class="family-task-main"><strong>${stateLabel} · ${esc(task.title||taskLabel)}</strong><small>${esc(task.destination||"")}${piece?` · חלק פאזל ${piece}`:" · ללא חלק פאזל"} · ${taskUploads.length} תמונות</small></div>
+            <div class="family-task-status">${done?"בוצעה":""}<small>${secondary}</small></div>
+          </div>`;
+        }).join("");
+
+        const familyImageUrl=CONFIG.familyImages?.[f.id]||"";
+        const isOpen=openAdminFamilyId===f.id;
+        return `<article class="family-progress-card${isOpen?" open":""}" data-family="${f.id}" aria-expanded="${isOpen}">
+          <div class="family-progress-head"><div class="family-progress-identity">${familyImageUrl?`<img class="family-progress-avatar" src="${esc(familyImageUrl)}" alt="משפחת ${esc(f.name)}" loading="lazy">`:""}<strong>משפחת ${esc(f.name)}</strong></div><span class="family-progress-count">🧩 ${pieces.size}/${totalPieces}</span></div>
+          <div class="family-progress-bar" aria-label="${percent}% התקדמות"><div style="width:${percent}%"></div></div>
+          <div class="family-metrics">
+            <div class="family-metric"><strong>${completedTaskIds.size}/${tasks.length}</strong><span>משימות</span></div>
+            <div class="family-metric"><strong>${pieces.size}</strong><span>חותמות</span></div>
+            <div class="family-metric"><strong>${familyUploads.length}</strong><span>תמונות</span></div>
+          </div>
+          <div class="family-progress-meta"><span>${lastActivity?`פעילות אחרונה: ${fmtTime(lastActivity)}`:"עדיין אין פעילות"}</span><span class="family-progress-toggle">${isOpen?"סגירת פירוט ▴":"לחצו לפירוט ▾"}</span></div>
+          <div class="family-detail">
+            <div class="family-detail-head"><strong>פירוט כל המשימות</strong><span>${pieces.size}/${puzzleTasks.length||totalPieces} חלקי פאזל נפתחו</span></div>
+            <div class="family-task-list">${taskRows||'<div class="admin-empty-state">אין משימות להצגה.</div>'}</div>
+            <div class="family-detail-actions">
+              <button type="button" class="btn secondary small family-gallery-btn" data-family="${f.id}">🖼️ גלריית המשפחה</button>
+              <button type="button" class="btn ghost small family-trip-zip" data-family="${f.id}">📦 ZIP מלא</button>
+            </div>
+          </div>
+        </article>`;
+      }).join("");
+
+      document.querySelectorAll(".family-progress-card").forEach(card=>card.addEventListener("click",e=>{
+        if(e.target.closest("button")||e.target.closest("a")) return;
+        const open=card.classList.toggle("open");
+        openAdminFamilyId=open?card.dataset.family:null;
+        card.setAttribute("aria-expanded",String(open));
+        const toggle=card.querySelector(".family-progress-toggle");
+        if(toggle) toggle.textContent=open?"סגירת פירוט ▴":"לחצו לפירוט ▾";
+      }));
+      document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=e=>{e.stopPropagation();downloadFullTripZip(b.dataset.family)});
+      document.querySelectorAll(".family-gallery-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();showFamilyGallery(b.dataset.family)});
+    }
+
+    function renderAdminData(completions,uploads){
+      adminDataCache={completions:[...completions],uploads:[...uploads]};
+      renderFamilyProgressDashboard(adminDataCache.completions,adminDataCache.uploads);
+      if(adminGalleryMode.type==="family"&&adminGalleryMode.familyId) showFamilyGallery(adminGalleryMode.familyId,{scroll:false});
+      else renderSelectedDayGallery();
+    }
+
+    async function loadAdmin(){
       $("adminRows").innerHTML=`<div class="notice info">טוען התקדמות משפחות…</div>`;
       $("adminGallery").innerHTML="";
       setNotice($("adminGalleryNotice"),"טוען תמונות…","info");
@@ -2060,40 +2233,10 @@
           getDocs(collection(db,"completions")),
           getDocs(collection(db,"uploads"))
         ]);
-        const completions=[],allUploads=[],dayPhotos=[];
+        const completions=[],uploads=[];
         doneSnap.forEach(d=>completions.push({id:d.id,...d.data()}));
-        uploadsSnap.forEach(d=>{const x={id:d.id,...d.data()};allUploads.push(x);if(x.tripDate===date)dayPhotos.push(x)});
-        const totalPieces=CONFIG.puzzle.totalPieces||8;
-        const totalCompleted=completions.length;
-        const uniquePieces=new Set(completions.map(c=>`${c.familyId}:${c.puzzlePiece}`).filter(x=>!x.endsWith(':null')&&!x.endsWith(':undefined'))).size;
-        $("statScans").textContent=uniquePieces;
-        $("statDone").textContent=totalCompleted;
-        $("statPhotos").textContent=dayPhotos.length;
-        $("adminRows").innerHTML=CONFIG.families.map(f=>{
-          const familyDone=completions.filter(c=>c.familyId===f.id).sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||""));
-          const pieces=new Set(familyDone.map(c=>c.puzzlePiece).filter(n=>Number.isInteger(n)));
-          const percent=Math.round((pieces.size/totalPieces)*100);
-          const last=familyDone.slice().sort((a,b)=>(b.completedAt?.toMillis?.()||0)-(a.completedAt?.toMillis?.()||0))[0];
-          const taskRows=remoteTasks.filter(t=>t.puzzlePiece).map(t=>{
-            const done=familyDone.find(c=>c.taskId===t.id || c.tripDate===t.date);
-            return `<div class="family-task-row"><span>${done?"✅":"⏳"} ${esc(t.title)}</span><span>${done?fmtTime(done.completedAt):"טרם הושלמה"}</span></div>`;
-          }).join("");
-          return `<article class="family-progress-card" data-family="${f.id}">
-            <div class="family-progress-head"><strong>משפחת ${esc(f.name)}</strong><span class="family-progress-count">${pieces.size}/${totalPieces}</span></div>
-            <div class="family-progress-bar"><div style="width:${percent}%"></div></div>
-            <div class="family-progress-meta"><span>${familyDone.length} משימות הושלמו</span><span>${last?`עדכון ${fmtTime(last.completedAt)}`:"ללא השלמות"}</span></div>
-            <div class="family-detail">${taskRows||'<div class="notice info">אין משימות להצגה.</div>'}<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn secondary small family-trip-zip" data-family="${f.id}">ZIP מלא</button></div></div>
-          </article>`;
-        }).join("");
-        document.querySelectorAll(".family-progress-card").forEach(card=>card.addEventListener("click",e=>{if(e.target.closest("button"))return;card.classList.toggle("open")}));
-        document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=()=>downloadFullTripZip(b.dataset.family));
-        dayPhotos.sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));
-        if(!dayPhotos.length)setNotice($("adminGalleryNotice"),"אין תמונות בתאריך שנבחר.","info");
-        else{
-          hideNotice($("adminGalleryNotice"));
-          dayPhotos.forEach(p=>{const card=document.createElement("article");card.className="photo-card";card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber)}</strong>${esc(p.caption||"")}</div>`;$("adminGallery").appendChild(card)});
-        }
-        $("downloadAllZip").onclick=()=>downloadZip(date,"all",dayPhotos);
+        uploadsSnap.forEach(d=>uploads.push({id:d.id,...d.data()}));
+        renderAdminData(completions,uploads);
       }catch(err){
         console.error(err);
         $("adminRows").innerHTML=`<div class="notice error">${esc(firebaseErrorText(err))}</div>`;
@@ -2101,11 +2244,27 @@
       }
     }
 
+    function stopAdminRealtime(){
+      adminRealtimeUnsubscribers.forEach(unsubscribe=>{try{unsubscribe()}catch{}});
+      adminRealtimeUnsubscribers=[];
+    }
+
     function startAdminRealtime(){
-      if(adminRealtimeUnsubscribe) adminRealtimeUnsubscribe();
-      adminRealtimeUnsubscribe=onSnapshot(collection(db,"completions"),()=>{
-        if(!$("adminDashboard").classList.contains("hidden")) loadAdmin();
-      },err=>console.warn("Admin realtime unavailable",err));
+      stopAdminRealtime();
+      const snapshots={completions:null,uploads:null};
+      const renderWhenReady=()=>{
+        if(snapshots.completions&&snapshots.uploads&&!$("adminDashboard").classList.contains("hidden")){
+          renderAdminData(snapshots.completions,snapshots.uploads);
+        }
+      };
+      adminRealtimeUnsubscribers.push(onSnapshot(collection(db,"completions"),snap=>{
+        snapshots.completions=snap.docs.map(d=>({id:d.id,...d.data()}));
+        renderWhenReady();
+      },err=>console.warn("Admin completions realtime unavailable",err)));
+      adminRealtimeUnsubscribers.push(onSnapshot(collection(db,"uploads"),snap=>{
+        snapshots.uploads=snap.docs.map(d=>({id:d.id,...d.data()}));
+        renderWhenReady();
+      },err=>console.warn("Admin uploads realtime unavailable",err)));
     }
 
     async function fetchAllTripData(){
@@ -2234,8 +2393,13 @@
         onAuthStateChanged(auth,user=>{
           if(user?.email?.toLowerCase()===CONFIG.adminEmail.toLowerCase()){
             currentUser=user;$("adminLogin").classList.add("hidden");$("adminDashboard").classList.remove("hidden");$("adminUserLabel").textContent=user.email;
-            loadAdmin();loadAdminTasks();loadAnnouncementEditor();loadAdminFlights();
+            Promise.all([loadAdminTasks(),loadAnnouncementEditor()]).then(()=>{
+              loadAdmin();
+              startAdminRealtime();
+            }).catch(err=>console.error("Admin initialization failed",err));
+            loadAdminFlights();
           }else{
+            stopAdminRealtime();
             $("adminDashboard").classList.add("hidden");$("adminLogin").classList.remove("hidden");
             if(user&&user.email)setNotice($("loginNotice"),"המשתמש מחובר אך אינו מוגדר כמנהל.","error");
           }
@@ -2243,7 +2407,8 @@
         $("loginBtn").onclick=adminLogin;$("adminPassword").addEventListener("keydown",e=>{if(e.key==="Enter")adminLogin()});
         $("logoutBtn").onclick=()=>signOut(auth);
         $("refreshAdmin").onclick=loadAdmin;
-        $("adminDate").onchange=loadAdmin;
+        $("adminDate").onchange=()=>{adminGalleryMode={type:"date",familyId:null};renderSelectedDayGallery()};
+        $("showSelectedDayGallery").onclick=renderSelectedDayGallery;
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
         $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
         $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));

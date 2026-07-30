@@ -755,8 +755,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.0.2-debug";
-    const BUILD_ID = "20260731.802";
+    const APP_VERSION = "8.0.3-debug";
+    const BUILD_ID = "20260731.803";
 
     let CONFIG = {
       firebase: {
@@ -1395,7 +1395,7 @@
       }
       $("movingPlane").classList.toggle("hidden",trip.after);
       $("movingPlaneLabel").textContent="";
-      $("mapStatusText").textContent=trip.before?"עוד מעט יוצאים לדרך":trip.after?"🏆 המסע הושלם · ספר הזיכרונות מחכה לכם":`יום ${trip.dayNumber} מתוך ${daysTotal} · ${areaForDate(trip.date)}`;
+      $("mapStatusText").textContent=trip.before?"עוד מעט יוצאים לדרך":trip.after?"🏆 המסע הושלם · ספר הזיכרונות מחכה לכם":`יום ${trip.dayNumber} מתוך ${daysTotal} · ${destinationForDate(trip.date)?.name || "תאילנד"}`;
       const progress=trip.before?0:trip.after?1:activeIndex/Math.max(1,stops.length-1);
       $("routeProgress").style.strokeDashoffset=String(1-progress);
     }

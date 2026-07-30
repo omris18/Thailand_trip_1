@@ -421,8 +421,8 @@
     }
   ],
   "release": {
-    "version": "7.2.0-GOLD",
-    "build": "20260725.01",
+    "version": "7.4.0",
+    "build": "20260731.74",
     "channel": "gold"
   }
 }

@@ -224,6 +224,24 @@
     }
 
 
+    /* --- Version 7.4: 25 daily journey stops --- */
+    .journey-map{min-height:1320px}
+    .route-svg{inset:76px 0 0;height:calc(100% - 76px)}
+    .daily-map-stop{position:absolute;z-index:3;transform:translate(-50%,-50%);text-align:center}
+    .daily-node{position:relative;width:42px;height:42px;border:4px solid #fff;border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(145deg,#38bdf8,#0369a1);color:#fff;font-weight:900;font-size:14px;box-shadow:0 7px 17px rgba(15,23,42,.22);cursor:pointer}
+    .daily-map-stop.future .daily-node{background:linear-gradient(145deg,#cbd5e1,#64748b)}
+    .daily-map-stop.today .daily-node{background:linear-gradient(145deg,#facc15,#f97316);transform:scale(1.18);box-shadow:0 0 0 6px rgba(249,115,22,.18),0 8px 20px rgba(15,23,42,.24)}
+    .daily-map-stop.done .daily-node{background:linear-gradient(145deg,#34d399,#15803d)}
+    .daily-map-stop.has-photos .daily-node:after{content:"📷";position:absolute;left:-12px;bottom:-10px;font-size:14px;background:#fff;border-radius:50%;width:23px;height:23px;display:grid;place-items:center;box-shadow:0 3px 8px rgba(15,23,42,.2)}
+    .daily-task-mark{position:absolute;right:-12px;top:-11px;width:23px;height:23px;border-radius:50%;display:grid;place-items:center;background:#fff;font-size:14px;box-shadow:0 3px 8px rgba(15,23,42,.2)}
+    .daily-lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:13px}
+    .daily-area-label{position:absolute;z-index:2;transform:translate(-50%,-50%);background:rgba(255,255,255,.94);border-radius:999px;padding:5px 10px;font-size:10px;font-weight:900;white-space:nowrap;box-shadow:0 5px 14px rgba(15,23,42,.13)}
+    .daily-date-tip{position:absolute;top:45px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.94);padding:3px 6px;border-radius:999px;font-size:9px;font-weight:800;color:#475467;white-space:nowrap;box-shadow:0 3px 8px rgba(15,23,42,.12)}
+    .map-legend{gap:10px;flex-wrap:wrap}.map-legend .photo i{background:#0284c7}.map-legend .task i{background:#7c3aed}
+    @media(max-width:430px){.journey-map{min-height:1260px}.daily-node{width:38px;height:38px;font-size:13px}.daily-date-tip{font-size:8px;top:41px}.daily-area-label{font-size:9px;padding:4px 8px}}
+
+
     /* --- Puzzle & reminder upgrades --- */
     .passport-puzzle-section{margin-top:20px;background:#fff;border:1px solid #eadfc7;border-radius:20px;padding:14px}
     .passport-puzzle-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
@@ -439,7 +457,7 @@
         <div id="mapStops"></div>
         <div id="movingPlane" class="map-plane">✈️</div>
         <div id="movingPlaneLabel" class="map-plane-label">משפחתנו בדרך</div>
-        <div class="map-legend"><span class="done"><i></i>עברנו</span><span class="now"><i></i>אנחנו כאן</span><span class="next"><i></i>בהמשך</span></div>
+        <div class="map-legend"><span class="done"><i></i>הושלם</span><span class="now"><i></i>היום</span><span class="task"><i></i>משימה</span><span class="photo"><i></i>תמונות</span><span class="next"><i></i>עתידי</span></div>
       </section>
 
       <section class="panel">
@@ -672,7 +690,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 7.3.1-DASHBOARD · Build 20260730.02</p>
+            <p style="margin:0;color:var(--muted)">Version 7.4.0 · Build 20260731.74</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -683,7 +701,7 @@
           <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
           <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
           <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">7.3.1-DASHBOARD</strong><span>גרסה</span></div>
+          <div class="stat"><strong id="healthVersion">7.4.0</strong><span>גרסה</span></div>
         </div>
         <div id="healthNotice" class="notice info hidden"></div>
       </section>
@@ -779,6 +797,7 @@
     let localCompletedKey="";
     let localUploadsKey="";
     let completed=new Set();
+    let photoDates=new Set();
     let activeDate=null,activeDayNum=1,selectedFiles=[],currentUser=null;
     let today="";
     let familyImage="";
@@ -1160,17 +1179,24 @@
     async function loadFamilyCompletions(){
       if(!currentUser) return;
       try{
-        const q=query(collection(db,"completions"),where("familyId","==",family.id));
-        const snap=await getDocs(q);
+        const [completionSnap,uploadSnap]=await Promise.all([
+          getDocs(query(collection(db,"completions"),where("familyId","==",family.id))),
+          getDocs(query(collection(db,"uploads"),where("familyId","==",family.id)))
+        ]);
         completed=new Set();
         completedPuzzlePieces=new Set();
-        snap.forEach(d=>{
+        photoDates=new Set();
+        completionSnap.forEach(d=>{
           const data=d.data();
           if(!data.taskId) return;
           completed.add(data.tripDate);
           if(Number.isInteger(data.puzzlePiece) && data.puzzlePiece>=1 && data.puzzlePiece<=8){
             completedPuzzlePieces.add(data.puzzlePiece);
           }
+        });
+        uploadSnap.forEach(d=>{
+          const date=d.data()?.tripDate;
+          if(date) photoDates.add(date);
         });
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
         renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
@@ -1203,62 +1229,69 @@
       return first===last?`יום ${first}`:`ימים ${first}–${last}`;
     }
 
+    function dailyMapPoints(){
+      const xs=[18,38,62,82,70,48,25,16,34,58,82,72,49,25,17,37,62,82,69,45,22,17,39,64,82];
+      return Array.from({length:daysTotal},(_,i)=>({x:xs[i%xs.length],y:8+(i*(84/Math.max(1,daysTotal-1)))}));
+    }
+
+    function areaForDate(date){
+      const hotel=hotelFor(date);
+      if(hotel) return hotel.city;
+      const flight=flightFor(date);
+      return flight?.from||flight?.to||"ישראל";
+    }
+
     function renderInteractiveMap(){
       const box=$("mapStops");
       if(!box) return;
       box.innerHTML="";
       const trip=getTripState(today);
-      const currentIdx=trip.stopIndex;
+      const points=dailyMapPoints();
+      const routeHeight=1240;
+      const svg=$("routeSvg");
+      svg.setAttribute("viewBox",`0 0 600 ${routeHeight}`);
+      const pathD=points.map((p,i)=>`${i?"L":"M"} ${Math.round(p.x*6)} ${Math.round(p.y/100*routeHeight)}`).join(" ");
+      [$("routeBase"),svg.querySelector(".route-dash"),$("routeProgress")].forEach(path=>path?.setAttribute("d",pathD));
 
-      CONFIG.mapStops.forEach((stop,index)=>{
-        const state=stopState(stop);
+      let previousArea="";
+      points.forEach((point,i)=>{
+        const date=addDays(CONFIG.trip.startDate,i);
+        const task=taskFor(date);
+        const realTask=isRealTask(task);
+        const state=stateFor(date);
+        const hasPhotos=photoDates.has(date);
+        const area=areaForDate(date);
+        if(area!==previousArea){
+          const label=document.createElement("div");
+          label.className="daily-area-label";
+          label.style.left=`${Math.max(18,Math.min(82,point.x+(point.x<50?16:-16)))}%`;
+          label.style.top=`${Math.max(8,point.y-1.5)}%`;
+          label.textContent=area;
+          box.appendChild(label);
+          previousArea=area;
+        }
         const wrap=document.createElement("div");
-        wrap.className=`map-stop ${state}`;
-        wrap.style.left=`${stop.x}%`;
-        wrap.style.top=`${stop.y}%`;
-
-        const hotel=CONFIG.hotels.find(h=>h.shortName===stop.hotel);
-        const dayLabel=hotel?hotelDayRange(hotel):`יום ${stop.day}`;
-        wrap.innerHTML=`<div class="map-day-badge" title="${esc(dayLabel)}">${hotel?dayNumberFor(hotel.startDate):stop.day}</div>
-          <div class="map-stop-card" role="button" tabindex="0">
-            <div class="map-stop-head">
-              <span class="map-stop-icon">${stop.icon}</span>
-              <div>
-                <strong>${esc(stop.name)}</strong>
-                <small>${hotel?`${esc(dayLabel)} · ${fmtDate(hotel.startDate)}–${fmtDate(addDays(hotel.endDate,-1))}`:fmtDate(stop.date)}${stop.hotel?` · ${esc(stop.hotel)}`:""}</small>
-              </div>
-            </div>
-            <div class="map-stop-actions">
-              <button class="map-mini-btn open-stop-day">פתחו את היום</button>
-              ${hotel?`<a class="map-mini-btn" href="${mapsUrl(hotel)}" target="_blank" rel="noopener noreferrer">ניווט</a>`:""}
-            </div>
-          </div>`;
-
-        const open=()=>openDestination(stop.name,stop.date,stop.day);
-        wrap.querySelector(".open-stop-day").onclick=open;
-        wrap.querySelector(".map-stop-card").addEventListener("keydown",e=>{
-          if(e.key==="Enter") open();
-        });
+        wrap.className=`daily-map-stop ${state}${hasPhotos?" has-photos":""}`;
+        wrap.style.left=`${point.x}%`;
+        wrap.style.top=`${point.y}%`;
+        const statusText=state==="future"?"יום עתידי":state==="today"?"היום":completed.has(date)?"המשימה הושלמה":"יום שעבר";
+        wrap.innerHTML=`<button type="button" class="daily-node" aria-label="יום ${i+1}, ${fmtDate(date)}, ${statusText}">
+          ${state==="future"?'<span class="daily-lock">🔒</span>':`<span>${i+1}</span>`}
+          ${realTask?`<span class="daily-task-mark" title="יש משימה">${completed.has(date)?"✅":"🎯"}</span>`:""}
+        </button><span class="daily-date-tip">${fmtDate(date).slice(0,5)}</span>`;
+        wrap.querySelector("button").onclick=()=>openDay(date,i+1);
         box.appendChild(wrap);
       });
 
-      const stop=CONFIG.mapStops[currentIdx] || CONFIG.mapStops[0];
-      if(!stop) return;
-
-      $("movingPlane").style.left=`${stop.x}%`;
-      $("movingPlane").style.top=`${stop.y}%`;
-      $("movingPlaneLabel").style.left=`${stop.x}%`;
-      $("movingPlaneLabel").style.top=`${stop.y}%`;
-      $("movingPlaneLabel").textContent=`משפחת ${family.name} כאן`;
-
-      $("mapStatusText").textContent=
-        today<CONFIG.trip.startDate
-          ?"עוד מעט יוצאים לדרך"
-          :today>CONFIG.trip.endDate
-            ?"המסע הושלם"
-            :`כעת באזור ${stop.name}`;
-
-      const progress=Math.max(0,Math.min(1,currentIdx/(CONFIG.mapStops.length-1)));
+      const planeIndex=trip.before?0:trip.after?daysTotal-1:trip.dayIndex;
+      const planePoint=points[planeIndex]||points[0];
+      $("movingPlane").style.left=`${planePoint.x}%`;
+      $("movingPlane").style.top=`${planePoint.y}%`;
+      $("movingPlaneLabel").style.left=`${planePoint.x}%`;
+      $("movingPlaneLabel").style.top=`${planePoint.y}%`;
+      $("movingPlaneLabel").textContent=trip.inTrip?`יום ${trip.dayNumber} · משפחת ${family.name}`:`משפחת ${family.name}`;
+      $("mapStatusText").textContent=trip.before?"עוד מעט יוצאים לדרך":trip.after?"המסע הושלם":`יום ${trip.dayNumber} מתוך ${daysTotal} · ${areaForDate(trip.date)}`;
+      const progress=trip.before?0:trip.after?1:trip.dayIndex/Math.max(1,daysTotal-1);
       $("routeProgress").style.strokeDashoffset=String(1-progress);
     }
 
@@ -1495,6 +1528,7 @@
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
+      photoDates.add(activeDate);
       renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
       if(realTask){animatePuzzlePiece(activeTask?.puzzlePiece);confetti();}
       showSuccess(realTask);

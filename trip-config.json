@@ -99,7 +99,7 @@
       "x": 22,
       "y": 34,
       "day": 8,
-      "hotel": "La Vela Khao Lak"
+      "hotel": "The Sands Khao Lak"
     },
     {
       "id": "krabi",
@@ -161,11 +161,11 @@
       "mapsQuery": "Four Points by Sheraton Phuket Patong Beach Resort"
     },
     {
-      "shortName": "La Vela Khao Lak",
+      "shortName": "The Sands Khao Lak",
       "city": "קאו לאק",
       "startDate": "2026-08-02",
       "endDate": "2026-08-04",
-      "mapsQuery": "La Vela Khao Lak"
+      "mapsQuery": "The Sands Khao Lak"
     },
     {
       "shortName": "Dusit Thani Krabi",
@@ -305,7 +305,7 @@
     }
   ],
   "upload": {
-    "maxFiles": 8,
+    "maxFiles": 15,
     "maxWidth": 1600,
     "quality": 0.82,
     "maxBytes": 2500000

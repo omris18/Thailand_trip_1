@@ -362,6 +362,15 @@
     .family-task-status{text-align:left;font-weight:900;white-space:nowrap;font-size:12px}.family-task-status small{display:block;color:var(--muted);font-weight:700;margin-top:2px}
     .family-detail-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     .admin-gallery-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .admin-gallery-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:15px}
+    .admin-gallery-toolbar .selection-count{font-weight:900;color:var(--purple);margin-inline-end:auto}
+    .photo-card.selectable{position:relative;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+    .photo-card.selectable:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(15,23,42,.12)}
+    .photo-card.selected{border:3px solid var(--purple);box-shadow:0 0 0 4px rgba(109,40,217,.14)}
+    .photo-select{position:absolute;z-index:3;top:8px;right:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.95);border:2px solid #cbd5e1;color:#64748b;font-weight:900;box-shadow:0 5px 14px rgba(15,23,42,.18)}
+    .photo-card.selected .photo-select{background:var(--purple);border-color:var(--purple);color:#fff}
+    .photo-delete-progress{font-size:12px;color:var(--muted);font-weight:800}
+
     .admin-empty-state{grid-column:1/-1;text-align:center;padding:22px;border:2px dashed #d0d5dd;border-radius:17px;color:var(--muted);background:#f8fafc}
     .puzzle-fly-piece{position:fixed;z-index:10001;width:82px;height:82px;border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(15,23,42,.35);pointer-events:none;animation:puzzleFly 1.15s cubic-bezier(.2,.8,.2,1) forwards;background-repeat:no-repeat}
     @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
@@ -756,6 +765,13 @@
           <div><h2 id="adminGalleryTitle" style="margin-bottom:3px">גלריית היום</h2><p id="adminGallerySubtitle" style="margin:0;color:var(--muted)">התמונות בתאריך שנבחר</p></div>
           <button id="showSelectedDayGallery" class="btn ghost small hidden">חזרה לגלריית התאריך</button>
         </div>
+        <div id="adminGalleryToolbar" class="admin-gallery-toolbar hidden">
+          <button id="selectAllGalleryPhotos" class="btn ghost small" type="button">☑️ בחירת הכול</button>
+          <button id="clearGallerySelection" class="btn ghost small" type="button">ביטול בחירה</button>
+          <span id="gallerySelectionCount" class="selection-count">לא נבחרו תמונות</span>
+          <span id="galleryDeleteProgress" class="photo-delete-progress"></span>
+          <button id="deleteSelectedGalleryPhotos" class="btn danger small" type="button" disabled>🗑️ מחיקת נבחרות</button>
+        </div>
         <div id="adminGallery" class="gallery" style="margin-top:13px"></div>
         <div id="adminGalleryNotice" class="notice info">בחרו תאריך ולחצו רענון.</div>
       </section>
@@ -783,16 +799,16 @@
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
     import {
       getFirestore, collection, addDoc, setDoc, doc, getDocs, getDoc, query, where,
-      orderBy, limit, serverTimestamp, Timestamp, onSnapshot
+      orderBy, limit, serverTimestamp, Timestamp, onSnapshot, deleteDoc
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
     import {
-      getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob
+      getStorage, ref, uploadBytesResumable, getDownloadURL, getBlob, deleteObject
     } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
     import JSZip from "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm";
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.1.1-admin-operations";
+    const APP_VERSION = "8.1.2-admin-gallery-bulk-delete";
     const BUILD_ID = "20260806.811";
 
     let CONFIG = {
@@ -2363,6 +2379,8 @@
 
     let adminRealtimeUnsubscribers=[];
     let adminDataCache={completions:[],uploads:[]};
+    let adminGalleryItems=[];
+    let selectedAdminPhotoIds=new Set();
     let adminGalleryMode={type:"date",familyId:null};
     let openAdminFamilyId=null;
 
@@ -2391,24 +2409,93 @@
       );
     }
 
+    function updateAdminGallerySelectionUi(){
+      const toolbar=$("adminGalleryToolbar");
+      const count=selectedAdminPhotoIds.size;
+      toolbar.classList.toggle("hidden",adminGalleryItems.length===0);
+      $("gallerySelectionCount").textContent=count?`${count} תמונות נבחרו`:"לא נבחרו תמונות";
+      $("deleteSelectedGalleryPhotos").disabled=count===0;
+      $("clearGallerySelection").disabled=count===0;
+      $("selectAllGalleryPhotos").textContent=count===adminGalleryItems.length&&count>0?"☐ ביטול בחירת הכול":"☑️ בחירת הכול";
+    }
+
+    function toggleAdminPhotoSelection(id,force){
+      const shouldSelect=typeof force==="boolean"?force:!selectedAdminPhotoIds.has(id);
+      if(shouldSelect) selectedAdminPhotoIds.add(id); else selectedAdminPhotoIds.delete(id);
+      const card=document.querySelector(`.photo-card[data-upload-id="${CSS.escape(id)}"]`);
+      if(card){
+        card.classList.toggle("selected",shouldSelect);
+        const marker=card.querySelector(".photo-select");
+        if(marker) marker.textContent=shouldSelect?"✓":"";
+      }
+      updateAdminGallerySelectionUi();
+    }
+
+    async function deleteSelectedAdminPhotos(){
+      const selected=adminGalleryItems.filter(p=>selectedAdminPhotoIds.has(p.id));
+      if(!selected.length) return;
+      const families=[...new Set(selected.map(p=>p.familyName||p.familyId).filter(Boolean))].join(", ");
+      const ok=confirm(`למחוק לצמיתות ${selected.length} תמונות${families?` של ${families}`:""}?\n\nהמחיקה תסיר גם את הקובץ מ־Storage וגם את הרשומה מ־Firestore. לא ניתן לבטל פעולה זו.`);
+      if(!ok) return;
+      const button=$("deleteSelectedGalleryPhotos");
+      const progress=$("galleryDeleteProgress");
+      button.disabled=true;
+      let deleted=0,failed=[];
+      for(let i=0;i<selected.length;i++){
+        const photo=selected[i];
+        progress.textContent=`מוחק ${i+1} מתוך ${selected.length}...`;
+        try{
+          if(photo.storagePath){
+            try{await deleteObject(ref(storage,photo.storagePath));}
+            catch(err){
+              if(err?.code!=="storage/object-not-found") throw err;
+            }
+          }
+          await deleteDoc(doc(db,"uploads",photo.id));
+          deleted++;
+          selectedAdminPhotoIds.delete(photo.id);
+        }catch(err){
+          console.error("Failed deleting upload",photo.id,err);
+          failed.push(`${photo.familyName||photo.familyId||"משפחה"} · יום ${photo.dayNumber||"—"}`);
+        }
+      }
+      progress.textContent="";
+      if(failed.length){
+        setNotice($("adminGalleryNotice"),`נמחקו ${deleted} תמונות. ${failed.length} תמונות לא נמחקו: ${failed.join(", ")}.`,"error");
+      }else{
+        setNotice($("adminGalleryNotice"),`נמחקו בהצלחה ${deleted} תמונות. שימו לב: מחיקת תמונות אינה מבטלת אוטומטית משימה שכבר סומנה כהושלמה.`,"ok");
+      }
+      await loadAdminData();
+      if(adminGalleryMode.type==="family") showFamilyGallery(adminGalleryMode.familyId); else renderSelectedDayGallery();
+    }
+
     function renderAdminGallery(items,{title,subtitle,emptyMessage,showBack=false}={}){
       const gallery=$("adminGallery");
       gallery.innerHTML="";
+      adminGalleryItems=[...items];
+      selectedAdminPhotoIds.clear();
       $("adminGalleryTitle").textContent=title||"גלריית היום";
       $("adminGallerySubtitle").textContent=subtitle||"התמונות בתאריך שנבחר";
       $("showSelectedDayGallery").classList.toggle("hidden",!showBack);
       const sorted=[...items].sort((a,b)=>millis(b.createdAt)-millis(a.createdAt));
       if(!sorted.length){
+        $("adminGalleryToolbar").classList.add("hidden");
         setNotice($("adminGalleryNotice"),emptyMessage||"אין תמונות להצגה.","info");
         return;
       }
       hideNotice($("adminGalleryNotice"));
       sorted.forEach(p=>{
         const card=document.createElement("article");
-        card.className="photo-card";
-        card.innerHTML=`<a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber||"—")}</strong><span>${p.tripDate?fmtDate(p.tripDate):""}</span>${p.caption?`<div style="margin-top:4px">${esc(p.caption)}</div>`:""}</div>`;
+        card.className="photo-card selectable";
+        card.dataset.uploadId=p.id;
+        card.innerHTML=`<span class="photo-select" aria-hidden="true"></span><a href="${esc(p.downloadUrl)}" target="_blank" rel="noopener"><img src="${esc(p.downloadUrl)}" loading="lazy" alt="משפחת ${esc(p.familyName)}"></a><div class="photo-meta"><strong>משפחת ${esc(p.familyName)} · יום ${esc(p.dayNumber||"—")}</strong><span>${p.tripDate?fmtDate(p.tripDate):""}</span>${p.caption?`<div style="margin-top:4px">${esc(p.caption)}</div>`:""}</div>`;
+        card.addEventListener("click",event=>{
+          if(event.target.closest("a")) return;
+          toggleAdminPhotoSelection(p.id);
+        });
         gallery.appendChild(card);
       });
+      updateAdminGallerySelectionUi();
     }
 
     function renderSelectedDayGallery(){
@@ -2775,7 +2862,15 @@
         $("logoutBtn").onclick=()=>signOut(auth);
         $("refreshAdmin").onclick=loadAdmin;
         $("adminDate").onchange=()=>{adminGalleryMode={type:"date",familyId:null};renderSelectedDayGallery()};
-        $("showSelectedDayGallery").onclick=renderSelectedDayGallery;
+        $("selectAllGalleryPhotos").onclick=()=>{
+      const selectAll=selectedAdminPhotoIds.size!==adminGalleryItems.length;
+      adminGalleryItems.forEach(p=>toggleAdminPhotoSelection(p.id,selectAll));
+    };
+    $("clearGallerySelection").onclick=()=>{
+      [...selectedAdminPhotoIds].forEach(id=>toggleAdminPhotoSelection(id,false));
+    };
+    $("deleteSelectedGalleryPhotos").onclick=deleteSelectedAdminPhotos;
+    $("showSelectedDayGallery").onclick=renderSelectedDayGallery;
         $("downloadTripZip").onclick=()=>downloadFullTripZip("all");
         $("saveTaskBtn").onclick=()=>saveEditedTask().catch(err=>setNotice($("taskEditNotice"),firebaseErrorText(err),"error"));
         $("seedTasksBtn").onclick=()=>seedApprovedTasks().catch(err=>alert(firebaseErrorText(err)));

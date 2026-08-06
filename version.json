@@ -1,5 +1,5 @@
 {
-  "version": "8.1.1-admin-operations",
-  "build": "20260806.811",
-  "channel": "admin-operations"
+  "version": "8.1.2-admin-gallery-bulk-delete",
+  "build": "20260806.812",
+  "channel": "admin-gallery"
 }

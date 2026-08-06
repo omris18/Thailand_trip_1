@@ -367,17 +367,6 @@
     @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
     @media(max-width:620px){.family-progress-grid{grid-template-columns:1fr}.family-progress-card.open{grid-column:auto}.family-task-row{grid-template-columns:1fr}.family-task-status{text-align:right}.family-progress-meta{align-items:flex-start;flex-direction:column}.family-metrics{grid-template-columns:repeat(3,1fr)}}
 
-    /* --- 8.1 Recovery Center --- */
-    .recovery-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
-    .recovery-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .recovery-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:14px}
-    .recovery-summary-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:15px;padding:11px}
-    .recovery-summary-card strong{display:block;font-size:22px}.recovery-summary-card span{font-size:11px;color:var(--muted);font-weight:800}
-    .recovery-report{margin-top:12px;max-height:300px;overflow:auto;border:1px solid #e5e7eb;border-radius:15px;background:#f8fafc;padding:10px}
-    .recovery-report-row{padding:8px 9px;border-bottom:1px solid #e5e7eb;font-size:13px}.recovery-report-row:last-child{border-bottom:0}
-    .recovery-report-row.ok{color:#166534}.recovery-report-row.warn{color:#92400e}.recovery-report-row.info{color:#344054}
-    .repair-needed{background:#fff7ed!important;border-color:#fdba74!important}
-
   </style>
 </head>
 <body>
@@ -701,7 +690,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 8.1.0 · Build 20260806.810</p>
+            <p style="margin:0;color:var(--muted)">Version 8.0.0 · Build 20260731.80</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -712,23 +701,9 @@
           <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
           <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
           <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">8.1.0</strong><span>גרסה</span></div>
+          <div class="stat"><strong id="healthVersion">8.0.0</strong><span>גרסה</span></div>
         </div>
         <div id="healthNotice" class="notice info hidden"></div>
-      </section>
-
-      <section class="admin-panel" id="recoveryCenter">
-        <div class="recovery-head">
-          <div><h2 style="margin-bottom:3px">🛠️ מרכז שחזור</h2><p style="margin:0;color:var(--muted)">מאתר תמונות שהועלו ללא סימון השלמת משימה ומתקן את הסנכרון.</p></div>
-          <div class="recovery-actions"><button id="scanRecovery" class="btn ghost">🔎 בדיקת חוסרים</button><button id="repairAllFamilies" class="btn primary">🔧 תיקון כל המשפחות</button></div>
-        </div>
-        <div class="recovery-summary">
-          <div class="recovery-summary-card"><strong id="recoveryIssues">0</strong><span>משימות שניתן לתקן</span></div>
-          <div class="recovery-summary-card"><strong id="recoveryInsufficient">0</strong><span>משימות ללא מספיק תמונות</span></div>
-          <div class="recovery-summary-card"><strong id="recoveryHealthy">0</strong><span>משפחות מסונכרנות</span></div>
-        </div>
-        <div id="recoveryNotice" class="notice info hidden"></div>
-        <div id="recoveryReport" class="recovery-report hidden"></div>
       </section>
 
       <section class="admin-panel">
@@ -780,8 +755,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.1.0";
-    const BUILD_ID = "20260806.810";
+    const APP_VERSION = "8.0.3-debug";
+    const BUILD_ID = "20260731.803";
 
     let CONFIG = {
       firebase: {
@@ -2388,107 +2363,6 @@
       if(scroll) $("adminGallery")?.scrollIntoView({behavior:"smooth",block:"start"});
     }
 
-    function adminRequiredPhotoCount(task,familyRecord){
-      if(task?.photoRule==="perFamilyMember") return Math.max(1,Number(familyRecord?.memberCount||1));
-      return Math.max(1,Number(task?.minPhotos||1));
-    }
-
-    function recoveryStateForFamily(familyId){
-      const familyRecord=CONFIG.families.find(f=>f.id===familyId);
-      if(!familyRecord) return {family:null,repairable:[],insufficient:[],complete:[]};
-      const completions=adminDataCache.completions.filter(c=>c.familyId===familyId&&Boolean(c.taskId));
-      const uploads=adminDataCache.uploads.filter(p=>p.familyId===familyId&&p.isSimulation!==true);
-      const result={family:familyRecord,repairable:[],insufficient:[],complete:[]};
-      activeAdminTasks().forEach(task=>{
-        const done=completionForTask(completions,task);
-        const taskUploads=uploadsForTask(uploads,task);
-        const required=adminRequiredPhotoCount(task,familyRecord);
-        if(done) result.complete.push({task,completion:done,uploads:taskUploads,required});
-        else if(taskUploads.length>=required) result.repairable.push({task,uploads:taskUploads,required});
-        else result.insufficient.push({task,uploads:taskUploads,required});
-      });
-      return result;
-    }
-
-    function scanRecoveryState({showReport=false}={}){
-      const states=CONFIG.families.map(f=>recoveryStateForFamily(f.id));
-      const repairable=states.reduce((n,x)=>n+x.repairable.length,0);
-      const insufficient=states.reduce((n,x)=>n+x.insufficient.filter(x=>x.uploads.length>0).length,0);
-      const healthy=states.filter(x=>x.repairable.length===0).length;
-      $("recoveryIssues").textContent=repairable;
-      $("recoveryInsufficient").textContent=insufficient;
-      $("recoveryHealthy").textContent=healthy;
-      if(showReport){
-        const rows=[];
-        states.forEach(state=>{
-          state.repairable.forEach(item=>rows.push(`<div class="recovery-report-row warn">⚠️ משפחת ${esc(state.family.name)} · ${esc(item.task.title||item.task.id)} — נמצאו ${item.uploads.length}/${item.required} תמונות, חסר completion.</div>`));
-          state.insufficient.filter(item=>item.uploads.length>0).forEach(item=>rows.push(`<div class="recovery-report-row info">ℹ️ משפחת ${esc(state.family.name)} · ${esc(item.task.title||item.task.id)} — ${item.uploads.length}/${item.required} תמונות בלבד.</div>`));
-        });
-        $("recoveryReport").innerHTML=rows.join("")||'<div class="recovery-report-row ok">✅ לא נמצאו חוסרי סנכרון.</div>';
-        $("recoveryReport").classList.remove("hidden");
-      }
-      return states;
-    }
-
-    async function repairFamilyProgress(familyId,{silent=false}={}){
-      const state=recoveryStateForFamily(familyId);
-      if(!state.family) throw new Error("המשפחה לא נמצאה.");
-      const repaired=[];
-      for(const item of state.repairable){
-        const sorted=[...item.uploads].sort((a,b)=>millis(b.createdAt)-millis(a.createdAt));
-        const latest=sorted[0]||{};
-        const caption=sorted.map(x=>x.caption).find(Boolean)||"";
-        const task=item.task;
-        if(!task.date) continue;
-        await setDoc(doc(db,"completions",`${familyId}_${task.date}`),{
-          familyId,
-          familyName:state.family.name,
-          tripDate:task.date,
-          dayNumber:Number(latest.dayNumber||Math.floor((parseDate(task.date)-parseDate(CONFIG.trip.startDate))/86400000)+1),
-          completedByUid:latest.uid||currentUser?.uid||"admin-repair",
-          caption,
-          photoCount:item.uploads.length,
-          taskId:task.id||null,
-          puzzlePiece:normalizedPiece(task.puzzlePiece),
-          isSimulation:false,
-          repairedBy:currentUser?.email||"admin",
-          repairedAt:serverTimestamp(),
-          completedAt:serverTimestamp()
-        },{merge:true});
-        repaired.push(item);
-      }
-      if(!silent){
-        const message=repaired.length
-          ? `תוקנו ${repaired.length} משימות עבור משפחת ${state.family.name}.`
-          : `לא נמצא חוסר שניתן לתקן עבור משפחת ${state.family.name}.`;
-        setNotice($("recoveryNotice"),message,repaired.length?"ok":"info");
-      }
-      return {family:state.family,repaired};
-    }
-
-    async function repairAllFamilyProgress(){
-      const button=$("repairAllFamilies");
-      const original=button.innerHTML;
-      button.disabled=true;button.innerHTML='<span class="spinner"></span> מתקן…';
-      hideNotice($("recoveryNotice"));
-      const report=[];
-      try{
-        for(const familyRecord of CONFIG.families){
-          const result=await repairFamilyProgress(familyRecord.id,{silent:true});
-          report.push(`<div class="recovery-report-row ${result.repaired.length?"ok":"info"}">${result.repaired.length?"✅":"ℹ️"} משפחת ${esc(familyRecord.name)} — ${result.repaired.length?`תוקנו ${result.repaired.length} משימות`:"לא נדרש תיקון"}.</div>`);
-        }
-        $("recoveryReport").innerHTML=report.join("");
-        $("recoveryReport").classList.remove("hidden");
-        setNotice($("recoveryNotice"),"בדיקת השחזור הסתיימה בהצלחה.","ok");
-        await loadAdmin();
-      }catch(err){
-        console.error(err);
-        setNotice($("recoveryNotice"),firebaseErrorText(err),"error");
-      }finally{
-        button.disabled=false;button.innerHTML=original;
-      }
-    }
-
     function renderFamilyProgressDashboard(completions,allUploads){
       completions=completions.filter(c=>Boolean(c.taskId));
       const totalPieces=Number(CONFIG.puzzle?.totalPieces||8);
@@ -2527,10 +2401,8 @@
         }).join("");
 
         const familyImageUrl=CONFIG.familyImages?.[f.id]||"";
-        const recoveryState=recoveryStateForFamily(f.id);
-        const needsRepair=recoveryState.repairable.length>0;
         const isOpen=openAdminFamilyId===f.id;
-        return `<article class="family-progress-card${isOpen?" open":""}${needsRepair?" repair-needed":""}" data-family="${f.id}" aria-expanded="${isOpen}">
+        return `<article class="family-progress-card${isOpen?" open":""}" data-family="${f.id}" aria-expanded="${isOpen}">
           <div class="family-progress-head"><div class="family-progress-identity">${familyImageUrl?`<img class="family-progress-avatar" src="${esc(familyImageUrl)}" alt="משפחת ${esc(f.name)}" loading="lazy">`:""}<strong>משפחת ${esc(f.name)}</strong></div><span class="family-progress-count">🧩 ${pieces.size}/${totalPieces}</span></div>
           <div class="family-progress-bar" aria-label="${percent}% התקדמות"><div style="width:${percent}%"></div></div>
           <div class="family-metrics">
@@ -2543,7 +2415,6 @@
             <div class="family-detail-head"><strong>פירוט כל המשימות</strong><span>${pieces.size}/${puzzleTasks.length||totalPieces} חלקי פאזל נפתחו</span></div>
             <div class="family-task-list">${taskRows||'<div class="admin-empty-state">אין משימות להצגה.</div>'}</div>
             <div class="family-detail-actions">
-              <button type="button" class="btn primary small family-repair-btn" data-family="${f.id}">🔧 ${needsRepair?`תיקון ${recoveryState.repairable.length} משימות`:"בדיקת סנכרון"}</button>
               <button type="button" class="btn secondary small family-gallery-btn" data-family="${f.id}">🖼️ גלריית המשפחה</button>
               <button type="button" class="btn ghost small family-trip-zip" data-family="${f.id}">📦 ZIP מלא</button>
             </div>
@@ -2561,14 +2432,6 @@
       }));
       document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=e=>{e.stopPropagation();downloadFullTripZip(b.dataset.family)});
       document.querySelectorAll(".family-gallery-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();showFamilyGallery(b.dataset.family)});
-      document.querySelectorAll(".family-repair-btn").forEach(b=>b.onclick=async e=>{
-        e.stopPropagation();
-        const original=b.innerHTML;b.disabled=true;b.innerHTML='<span class="spinner"></span> בודק…';
-        try{await repairFamilyProgress(b.dataset.family);await loadAdmin()}
-        catch(err){console.error(err);setNotice($("recoveryNotice"),firebaseErrorText(err),"error")}
-        finally{b.disabled=false;b.innerHTML=original}
-      });
-      scanRecoveryState();
     }
 
     function renderAdminData(completions,uploads){
@@ -2772,8 +2635,6 @@
         $("addFlightBtn").onclick=addAdminFlight;
         $("restoreFlightsBtn").onclick=restoreDefaultFlights;
         $("saveFlightsBtn").onclick=saveAdminFlights;
-        $("scanRecovery").onclick=()=>scanRecoveryState({showReport:true});
-        $("repairAllFamilies").onclick=repairAllFamilyProgress;
       }else{
         try{
           setInitStage("render-family","מכין את המסך המשפחתי…");

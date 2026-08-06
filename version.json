@@ -1,5 +1,4 @@
 {
-  "version": "8.1.0",
-  "build": "20260806.810",
-  "channel": "recovery"
+  "version": "8.0.3-debug",
+  "build": "20260731.803"
 }

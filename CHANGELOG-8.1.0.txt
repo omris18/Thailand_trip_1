@@ -1,0 +1,8 @@
+Thailand Trip 8.1.0 — Recovery Center
+
+- Added Recovery Center to the admin dashboard.
+- Added automatic detection of uploaded photos without completion records.
+- Added Repair Family button to every family card.
+- Added Repair All Families.
+- Completion repair restores task, puzzle piece and passport stamp through the existing completion model.
+- Existing photos and Firebase data are not deleted or reset.

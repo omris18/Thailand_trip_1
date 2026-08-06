@@ -715,33 +715,41 @@
         </div>
       </details>
 
-      <section class="admin-panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <div>
-            <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 8.0.4 · Build 20260806.804</p>
+      <details class="admin-panel admin-collapsible" id="adminHealthSection">
+        <summary>
+          <div class="admin-collapsible-summary-main"><h2>🩺 Health Center</h2><p>בדיקת Authentication, Firestore, Storage וגרסת האתר.</p></div>
+        </summary>
+        <div class="admin-collapsible-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <p style="margin:0;color:var(--muted)">Version 8.1.1 · Build 20260806.811</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
+              <button id="downloadDiagnostics" class="btn secondary">הורדת Diagnostics</button>
+            </div>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
-            <button id="downloadDiagnostics" class="btn secondary">הורדת Diagnostics</button>
+          <div id="healthGrid" class="stats" style="margin-top:14px">
+            <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
+            <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
+            <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
+            <div class="stat"><strong id="healthVersion">8.1.1</strong><span>גרסה</span></div>
           </div>
+          <div id="healthNotice" class="notice info hidden"></div>
         </div>
-        <div id="healthGrid" class="stats" style="margin-top:14px">
-          <div class="stat"><strong id="healthAuth">—</strong><span>Authentication</span></div>
-          <div class="stat"><strong id="healthFirestore">—</strong><span>Firestore</span></div>
-          <div class="stat"><strong id="healthStorage">—</strong><span>Storage</span></div>
-          <div class="stat"><strong id="healthVersion">8.0.0</strong><span>גרסה</span></div>
-        </div>
-        <div id="healthNotice" class="notice info hidden"></div>
-      </section>
+      </details>
 
-      <section class="admin-panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <div><h2 style="margin-bottom:3px">🧩 התקדמות משפחות</h2><p style="margin:0;color:var(--muted)">לחיצה על משפחה מציגה משימות, חלקי פאזל וזמני השלמה.</p></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button id="repairAllFamilies" class="btn secondary small">🔧 תיקון כל המשפחות</button><span class="badge ok">מתעדכן בזמן אמת</span></div>
+      <details class="admin-panel admin-collapsible" id="adminRecoverySection" open>
+        <summary>
+          <div class="admin-collapsible-summary-main"><h2>🔧 Recovery Center</h2><p>התקדמות משפחות, Repair Family ו־Repair All.</p></div>
+        </summary>
+        <div class="admin-collapsible-body">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+            <div><h3 style="margin:0">🧩 התקדמות משפחות</h3><p style="margin:3px 0 0;color:var(--muted)">פתח משפחה כדי לראות משימות ולבצע תיקון סנכרון נקודתי.</p></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button id="repairAllFamilies" class="btn secondary small">🔧 תיקון כל המשפחות</button><span class="badge ok">מתעדכן בזמן אמת</span></div>
+          </div>
+          <div id="repairNotice" class="notice info hidden"></div>
+          <div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
         </div>
-        <div id="repairNotice" class="notice info hidden"></div><div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
-      </section>
+      </details>
 
       <section class="admin-panel">
         <div class="admin-gallery-head">
@@ -784,8 +792,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.1.0-admin-ux";
-    const BUILD_ID = "20260806.810";
+    const APP_VERSION = "8.1.1-admin-operations";
+    const BUILD_ID = "20260806.811";
 
     let CONFIG = {
       firebase: {

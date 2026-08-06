@@ -367,6 +367,32 @@
     @keyframes puzzleFly{0%{left:50%;top:50%;transform:translate(-50%,-50%) scale(.45) rotate(-18deg);opacity:0}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(8deg)}100%{left:50%;top:18%;transform:translate(-50%,-50%) scale(.65) rotate(0);opacity:0}}
     @media(max-width:620px){.family-progress-grid{grid-template-columns:1fr}.family-progress-card.open{grid-column:auto}.family-task-row{grid-template-columns:1fr}.family-task-status{text-align:right}.family-progress-meta{align-items:flex-start;flex-direction:column}.family-metrics{grid-template-columns:repeat(3,1fr)}}
 
+    /* --- 8.1 Admin compact sections --- */
+    .admin-collapsible{padding:0;overflow:hidden}
+    .admin-collapsible>summary{list-style:none;cursor:pointer;padding:17px;display:flex;align-items:center;justify-content:space-between;gap:12px;user-select:none}
+    .admin-collapsible>summary::-webkit-details-marker{display:none}
+    .admin-collapsible>summary:after{content:"פתיחה ▼";font-size:12px;font-weight:900;color:var(--purple);background:#f3e8ff;border-radius:999px;padding:6px 10px;white-space:nowrap}
+    .admin-collapsible[open]>summary:after{content:"סגירה ▲"}
+    .admin-collapsible>summary:hover{background:#faf7ff}
+    .admin-collapsible-summary-main{min-width:0}
+    .admin-collapsible-summary-main h2{margin:0 0 2px}
+    .admin-collapsible-summary-main p{margin:0;color:var(--muted);font-size:13px}
+    .admin-collapsible-body{padding:0 17px 17px;border-top:1px solid #eef2f6}
+    .admin-section-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+    .flight-admin-card{padding:0;overflow:hidden}
+    .flight-admin-card>summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900}
+    .flight-admin-card>summary::-webkit-details-marker{display:none}
+    .flight-admin-card>summary:after{content:"עריכה ▼";font-size:11px;color:var(--purple);background:#ede9fe;border-radius:999px;padding:5px 9px}
+    .flight-admin-card[open]>summary:after{content:"סגירה ▲"}
+    .flight-admin-card-body{padding:0 14px 14px;border-top:1px solid var(--line)}
+    .flight-admin-compact{display:flex;align-items:center;gap:8px;min-width:0}
+    .flight-admin-compact span{color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+    @media(max-width:520px){
+      .admin-collapsible>summary{padding:14px}.admin-collapsible-body{padding:0 12px 14px}.admin-collapsible-summary-main p{font-size:11px}
+      .admin-collapsible>summary:after{font-size:0;padding:7px;width:30px;height:30px;display:grid;place-items:center}.admin-collapsible>summary:after{content:"▼"}.admin-collapsible[open]>summary:after{content:"▲"}
+      .flight-admin-compact{flex-direction:column;align-items:flex-start;gap:1px}.flight-admin-card>summary{padding:11px 12px}
+    }
+
   </style>
 </head>
 <body>
@@ -639,21 +665,24 @@
         <div id="announcementNotice" class="notice info hidden"></div>
       </section>
 
-      <section class="admin-panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <div><h2 style="margin-bottom:2px">✈️ ניהול טיסות</h2><p style="margin:0;color:var(--muted)">השינויים נשמרים ב־Firebase ומופיעים מיד לכל המשפחות ובספר ה־PDF.</p></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="addFlightBtn" class="btn secondary">＋ הוספת טיסה</button><button id="restoreFlightsBtn" class="btn ghost">שחזור נתוני ברירת מחדל</button></div>
+      <details class="admin-panel admin-collapsible" id="adminFlightsSection">
+        <summary>
+          <div class="admin-collapsible-summary-main"><h2>✈️ ניהול טיסות</h2><p>עריכת זמני טיסות, מספרים והערות למשפחות.</p></div>
+        </summary>
+        <div class="admin-collapsible-body">
+          <div class="admin-section-actions"><button id="addFlightBtn" class="btn secondary">＋ הוספת טיסה</button><button id="restoreFlightsBtn" class="btn ghost">שחזור נתוני ברירת מחדל</button></div>
+          <div id="adminFlightList" class="flight-admin-list"></div>
+          <button id="saveFlightsBtn" class="btn primary full" style="margin-top:14px">💾 שמירת כל הטיסות</button>
+          <div id="flightEditNotice" class="notice info hidden"></div>
         </div>
-        <div id="adminFlightList" class="flight-admin-list"></div>
-        <button id="saveFlightsBtn" class="btn primary full" style="margin-top:14px">💾 שמירת כל הטיסות</button>
-        <div id="flightEditNotice" class="notice info hidden"></div>
-      </section>
+      </details>
 
-      <section class="admin-panel">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <div><h2 style="margin-bottom:2px">🎯 ניהול משימות</h2><p style="margin:0;color:var(--muted)">כל שינוי נשמר ב־Firebase ומופיע למשפחות בסריקה הבאה.</p></div>
-          <button id="seedTasksBtn" class="btn secondary">טעינת המשימות המאושרות</button>
-        </div>
+      <details class="admin-panel admin-collapsible" id="adminTasksSection">
+        <summary>
+          <div class="admin-collapsible-summary-main"><h2>🎯 ניהול משימות</h2><p>פתיחה לעריכה, שינוי מלל ודרישות תמונות.</p></div>
+        </summary>
+        <div class="admin-collapsible-body">
+        <div class="admin-section-actions"><button id="seedTasksBtn" class="btn secondary">טעינת המשימות המאושרות</button></div>
         <div class="task-admin-grid" style="margin-top:15px">
           <div id="adminTaskList" class="task-list"></div>
           <div class="task-editor">
@@ -683,14 +712,14 @@
             <div id="taskEditNotice" class="notice info hidden"></div>
           </div>
         </div>
-      </section>
-
+        </div>
+      </details>
 
       <section class="admin-panel">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div>
             <h2 style="margin-bottom:4px">🩺 בדיקת מערכת</h2>
-            <p style="margin:0;color:var(--muted)">Version 8.0.0 · Build 20260731.80</p>
+            <p style="margin:0;color:var(--muted)">Version 8.0.4 · Build 20260806.804</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
@@ -709,9 +738,9 @@
       <section class="admin-panel">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
           <div><h2 style="margin-bottom:3px">🧩 התקדמות משפחות</h2><p style="margin:0;color:var(--muted)">לחיצה על משפחה מציגה משימות, חלקי פאזל וזמני השלמה.</p></div>
-          <span class="badge ok">מתעדכן בזמן אמת</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button id="repairAllFamilies" class="btn secondary small">🔧 תיקון כל המשפחות</button><span class="badge ok">מתעדכן בזמן אמת</span></div>
         </div>
-        <div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
+        <div id="repairNotice" class="notice info hidden"></div><div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
       </section>
 
       <section class="admin-panel">
@@ -755,8 +784,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.0.3-debug";
-    const BUILD_ID = "20260731.803";
+    const APP_VERSION = "8.1.0-admin-ux";
+    const BUILD_ID = "20260806.810";
 
     let CONFIG = {
       firebase: {
@@ -1596,14 +1625,43 @@
       if(e.target.files?.length) mergeSelectedFiles(e.target.files);
     });
 
+    function delay(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
+
+    async function withRetry(label,operation,{attempts=3,baseDelay=700}={}){
+      let lastError;
+      for(let attempt=1;attempt<=attempts;attempt++){
+        try{
+          console.info(`[${label}] attempt ${attempt}/${attempts}`);
+          return await operation(attempt);
+        }catch(err){
+          lastError=err;
+          console.warn(`[${label}] attempt ${attempt} failed`,err);
+          if(attempt<attempts) await delay(baseDelay*Math.pow(2,attempt-1));
+        }
+      }
+      throw lastError||new Error(`${label} failed`);
+    }
+
+    async function saveAndVerifyCompletion(completionId,payload){
+      const completionRef=doc(db,"completions",completionId);
+      await withRetry("COMPLETION_WRITE",()=>setDoc(completionRef,payload,{merge:true}));
+      const saved=await withRetry("COMPLETION_VERIFY",()=>getDoc(completionRef));
+      if(!saved.exists()) throw new Error("התמונות נשמרו, אך לא ניתן היה לאמת את השלמת המשימה.");
+      return saved.data();
+    }
+
     async function uploadFiles(files,caption,isSimulation=false){
       if(!currentUser) throw new Error("אין חיבור משתמש ל־Firebase.");
       const required=requiredPhotoCount(activeTask);
       if(files.length<required) throw new Error(`המשימה דורשת לפחות ${required} ${required===1?"תמונה":"תמונות"}.`);
       const uploadId=crypto.randomUUID(),photoDocs=[];
+      const realTask=isRealTask(activeTask);
       $("uploadProgressWrap").classList.remove("hidden");
+      setNotice($("taskNotice"),`מתחיל העלאה של ${files.length} תמונות…`,"info");
+
       for(let i=0;i<files.length;i++){
         const file=files[i];
+        setNotice($("taskNotice"),`מעלה תמונה ${i+1} מתוך ${files.length}…`,"info");
         const blob=isSimulation?file:await compressImage(file);
         const path=`trip-photos/${family.id}/${activeDate}/${uploadId}-${String(i+1).padStart(2,"0")}.jpg`;
         const storageRef=ref(storage,path);
@@ -1614,26 +1672,32 @@
             $("uploadProgress").style.width=`${Math.round(base+part)}%`;
           },reject,resolve);
         });
-        const url=await getDownloadURL(storageRef);
+        const url=await withRetry("DOWNLOAD_URL",()=>getDownloadURL(storageRef));
         const data={familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,uid:currentUser.uid,storagePath:path,downloadUrl:url,caption:caption||"",taskId:activeTask?.id||null,puzzlePiece:activeTask?.puzzlePiece||null,isSimulation,createdAt:serverTimestamp()};
-        const refDoc=await addDoc(collection(db,"uploads"),data);photoDocs.push({id:refDoc.id,...data,downloadUrl:url});
+        const uploadDocId=`${uploadId}_${String(i+1).padStart(2,"0")}`;
+        await withRetry("UPLOAD_METADATA",()=>setDoc(doc(db,"uploads",uploadDocId),data,{merge:true}));
+        photoDocs.push({id:uploadDocId,...data,downloadUrl:url});
       }
-      const realTask=isRealTask(activeTask);
+
       if(realTask){
-        await setDoc(doc(db,"completions",`${family.id}_${activeDate}`),{
+        setNotice($("taskNotice"),"התמונות נשמרו. מסנכרן את השלמת המשימה…","info");
+        const payload={
           familyId:family.id,familyName:family.name,tripDate:activeDate,dayNumber:activeDayNum,
           completedByUid:currentUser.uid,caption:caption||"",photoCount:files.length,
           taskId:activeTask.id,puzzlePiece:activeTask?.puzzlePiece||null,
           isSimulation,completedAt:serverTimestamp()
-        },{merge:true});
+        };
+        await saveAndVerifyCompletion(`${family.id}_${activeDate}`,payload);
         completed.add(activeDate);
         if(Number.isInteger(activeTask?.puzzlePiece)) completedPuzzlePieces.add(activeTask.puzzlePiece);
         localStorage.setItem(localCompletedKey,JSON.stringify([...completed]));
       }
+
       const local=JSON.parse(localStorage.getItem(localUploadsKey)||"[]");
       local.push(...photoDocs.map(x=>({tripDate:x.tripDate,downloadUrl:x.downloadUrl,caption:x.caption,isSimulation:x.isSimulation})));
       localStorage.setItem(localUploadsKey,JSON.stringify(local.slice(-100)));
       photoDates.add(activeDate);
+      $("uploadProgress").style.width="100%";
       renderInteractiveMap();renderPassport();renderPassportScreen();renderFamilyPuzzle();
       if(realTask){animatePuzzlePiece(activeTask?.puzzlePiece);confetti();}
       showSuccess(realTask);
@@ -2112,10 +2176,12 @@
       if(!box) return;
       box.innerHTML="";
       CONFIG.flights.forEach((flight,index)=>{
-        const card=document.createElement("article");
+        const card=document.createElement("details");
         card.className="flight-admin-card";
         card.dataset.index=String(index);
-        card.innerHTML=`<div class="flight-admin-head"><strong>טיסה ${index+1}</strong><button type="button" class="btn danger small remove-flight">מחיקה</button></div>
+        const routeLabel=[flight.flightNumber,flight.from&&flight.to?`${flight.from} ← ${flight.to}`:"",flight.date?fmtDate(flight.date):"",flight.time].filter(Boolean).join(" · ");
+        card.innerHTML=`<summary><div class="flight-admin-compact"><strong>${esc(flight.title||`טיסה ${index+1}`)}</strong><span>${esc(routeLabel||`טיסה ${index+1}`)}</span></div></summary>
+          <div class="flight-admin-card-body"><div class="flight-admin-head"><strong>פרטי טיסה ${index+1}</strong><button type="button" class="btn danger small remove-flight">מחיקה</button></div>
           <div class="flight-admin-fields">
             <label class="field"><span>כותרת</span><input data-key="title" value="${esc(flight.title)}"></label>
             <label class="field"><span>מספר טיסה</span><input data-key="flightNumber" value="${esc(flight.flightNumber)}" placeholder="למשל EK2471"></label>
@@ -2127,8 +2193,9 @@
             <label class="field"><span>סמל</span><input data-key="icon" value="${esc(flight.icon)}" maxlength="4"></label>
             <label class="field"><span>סטטוס</span><input data-key="status" value="${esc(flight.status)}" placeholder="בזמן / עיכוב / נדחתה"></label>
             <label class="field flight-admin-note"><span>הערה למשפחות</span><input data-key="note" value="${esc(flight.note)}" placeholder="למשל: ההמראה נדחתה בשעה"></label>
-          </div>`;
-        card.querySelector(".remove-flight").onclick=()=>{
+          </div></div>`;
+        card.querySelector(".remove-flight").onclick=(event)=>{
+          event.preventDefault();event.stopPropagation();
           if(CONFIG.flights.length<=1) return setNotice($("flightEditNotice"),"חייבת להישאר לפחות טיסה אחת.","error");
           CONFIG.flights.splice(index,1);renderAdminFlights();
         };
@@ -2184,7 +2251,7 @@
     function addAdminFlight(){
       CONFIG.flights.push(emptyFlight(CONFIG.flights.length));
       renderAdminFlights();
-      $("adminFlightList").lastElementChild?.scrollIntoView({behavior:"smooth",block:"center"});
+      const newCard=$("adminFlightList").lastElementChild;if(newCard){newCard.open=true;newCard.scrollIntoView({behavior:"smooth",block:"center"})}
     }
 
     function restoreDefaultFlights(){
@@ -2363,6 +2430,71 @@
       if(scroll) $("adminGallery")?.scrollIntoView({behavior:"smooth",block:"start"});
     }
 
+    function requiredPhotoCountForFamily(task,familyConfig){
+      if(task?.photoRule==="perFamilyMember") return Math.max(1,Number(familyConfig?.memberCount||1));
+      return Math.max(1,Number(task?.minPhotos||1));
+    }
+
+    function repairCandidatesForFamily(familyId){
+      const familyConfig=CONFIG.families.find(f=>f.id===familyId);
+      if(!familyConfig) return [];
+      const tasks=activeAdminTasks();
+      const familyDone=adminDataCache.completions.filter(c=>c.familyId===familyId&&c.taskId);
+      const familyUploads=adminDataCache.uploads.filter(p=>p.familyId===familyId);
+      return tasks.map(task=>{
+        const done=completionForTask(familyDone,task);
+        const uploads=uploadsForTask(familyUploads,task);
+        const required=requiredPhotoCountForFamily(task,familyConfig);
+        return {familyConfig,task,done,uploads,required,repairable:!done&&uploads.length>=required};
+      }).filter(x=>x.repairable);
+    }
+
+    async function repairFamily(familyId,{silent=false}={}){
+      const candidates=repairCandidatesForFamily(familyId);
+      const familyConfig=CONFIG.families.find(f=>f.id===familyId);
+      if(!familyConfig) throw new Error("המשפחה לא נמצאה.");
+      if(!candidates.length){
+        if(!silent) setNotice($("repairNotice"),`לא נמצאו משימות חסרות שניתן לתקן למשפחת ${familyConfig.name}.`,"info");
+        return {familyId,repaired:0};
+      }
+      let repaired=0;
+      for(const item of candidates){
+        const {task,uploads}=item;
+        const latest=[...uploads].sort((a,b)=>millis(b.createdAt)-millis(a.createdAt))[0]||{};
+        const completionId=`${familyId}_${task.date}`;
+        const payload={
+          familyId,familyName:familyConfig.name,tripDate:task.date,dayNumber:dayNumberFor(task.date),
+          completedByUid:latest.uid||currentUser?.uid||"admin-repair",caption:latest.caption||"",photoCount:uploads.length,
+          taskId:task.id,puzzlePiece:task.puzzlePiece||null,isSimulation:false,
+          repairedByAdmin:true,repairedAt:serverTimestamp(),completedAt:serverTimestamp()
+        };
+        await saveAndVerifyCompletion(completionId,payload);
+        repaired++;
+      }
+      await loadAdmin();
+      if(!silent) setNotice($("repairNotice"),`✅ משפחת ${familyConfig.name}: תוקנו ${repaired} משימות.`,"ok");
+      return {familyId,repaired};
+    }
+
+    async function repairAllFamilies(){
+      const btn=$("repairAllFamilies");
+      const original=btn.innerHTML;
+      try{
+        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> בודק…';
+        setNotice($("repairNotice"),"בודק תמונות ומשימות של כל המשפחות…","info");
+        let total=0;
+        for(const f of CONFIG.families){
+          const result=await repairFamily(f.id,{silent:true});
+          total+=result.repaired;
+        }
+        await loadAdmin();
+        setNotice($("repairNotice"),total?`✅ תוקנו ${total} משימות חסרות.`:"לא נמצאו חוסרי סנכרון שניתן לתקן.",total?"ok":"info");
+      }catch(err){
+        console.error("Repair all failed",err);
+        setNotice($("repairNotice"),firebaseErrorText(err),"error");
+      }finally{btn.disabled=false;btn.innerHTML=original;}
+    }
+
     function renderFamilyProgressDashboard(completions,allUploads){
       completions=completions.filter(c=>Boolean(c.taskId));
       const totalPieces=Number(CONFIG.puzzle?.totalPieces||8);
@@ -2415,6 +2547,7 @@
             <div class="family-detail-head"><strong>פירוט כל המשימות</strong><span>${pieces.size}/${puzzleTasks.length||totalPieces} חלקי פאזל נפתחו</span></div>
             <div class="family-task-list">${taskRows||'<div class="admin-empty-state">אין משימות להצגה.</div>'}</div>
             <div class="family-detail-actions">
+              <button type="button" class="btn primary small family-repair-btn" data-family="${f.id}">🔧 תיקון סנכרון</button>
               <button type="button" class="btn secondary small family-gallery-btn" data-family="${f.id}">🖼️ גלריית המשפחה</button>
               <button type="button" class="btn ghost small family-trip-zip" data-family="${f.id}">📦 ZIP מלא</button>
             </div>
@@ -2432,6 +2565,13 @@
       }));
       document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=e=>{e.stopPropagation();downloadFullTripZip(b.dataset.family)});
       document.querySelectorAll(".family-gallery-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();showFamilyGallery(b.dataset.family)});
+      document.querySelectorAll(".family-repair-btn").forEach(b=>b.onclick=async e=>{
+        e.stopPropagation();
+        const original=b.innerHTML;
+        try{b.disabled=true;b.innerHTML='<span class="spinner"></span> מתקן…';await repairFamily(b.dataset.family);}
+        catch(err){console.error("Family repair failed",err);setNotice($("repairNotice"),firebaseErrorText(err),"error");}
+        finally{b.disabled=false;b.innerHTML=original;}
+      });
     }
 
     function renderAdminData(completions,uploads){
@@ -2460,6 +2600,8 @@
         setNotice($("adminGalleryNotice"),firebaseErrorText(err),"error");
       }
     }
+
+    $("repairAllFamilies")?.addEventListener("click",repairAllFamilies);
 
     function stopAdminRealtime(){
       adminRealtimeUnsubscribers.forEach(unsubscribe=>{try{unsubscribe()}catch{}});

@@ -361,7 +361,7 @@
     .family-progress-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.1);border-color:#c4b5fd}
     .family-progress-card.open{grid-column:1/-1;border-color:#a78bfa;box-shadow:0 14px 34px rgba(109,40,217,.12)}
     .family-progress-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-    .family-progress-identity{display:flex;align-items:center;gap:10px;min-width:0}.family-progress-avatar{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#f1f5f9;border:1px solid #e5e7eb;flex:0 0 auto}
+    .family-progress-identity{display:flex;align-items:center;gap:10px;min-width:0}.family-progress-avatar{width:48px;height:48px;border-radius:14px;object-fit:cover;background:#f1f5f9;border:1px solid #e5e7eb;flex:0 0 auto}.family-progress-avatar-fallback{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:#eef2ff;font-size:25px;flex:0 0 auto}.family-progress-avatar-fallback.hidden{display:none}
     .family-progress-head strong{font-size:18px}.family-progress-count{font-weight:900;color:var(--purple);background:#f3e8ff;border-radius:999px;padding:5px 10px;white-space:nowrap}
     .family-progress-bar{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:11px 0 10px}
     .family-progress-bar>div{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:999px;transition:width .45s ease}
@@ -827,7 +827,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.2.2-book-preview-fix";
+    const APP_VERSION = "8.2.3-admin-family-images";
     const BUILD_ID = "20260816.820";
 
     let CONFIG = {
@@ -2109,7 +2109,7 @@
       const stage=$("pdfBookStage");
       const original=btn.innerHTML;
       try{
-        if(!pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+        if(!forceUnlock && !pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
         btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
         status.textContent="אוסף את רגעי המסע ומעצב את הספר…";stage.innerHTML="";
 
@@ -2567,6 +2567,17 @@
       if(scroll) $("adminGallery")?.scrollIntoView({behavior:"smooth",block:"start"});
     }
 
+    function adminFamilyImageUrl(familyConfig){
+      const raw=CONFIG.familyImages?.[familyConfig?.id];
+      if(typeof raw==="string" && raw.trim()) return raw.trim();
+      if(raw && typeof raw==="object"){
+        const candidate=raw.url||raw.src||raw.path||raw.image||raw.file||"";
+        if(typeof candidate==="string" && candidate.trim()) return candidate.trim();
+      }
+      const direct=familyConfig?.image||familyConfig?.imageUrl||familyConfig?.photo||familyConfig?.photoUrl||"";
+      return typeof direct==="string" ? direct.trim() : "";
+    }
+
     function requiredPhotoCountForFamily(task,familyConfig){
       if(task?.photoRule==="perFamilyMember") return Math.max(1,Number(familyConfig?.memberCount||1));
       return Math.max(1,Number(task?.minPhotos||1));
@@ -2669,10 +2680,10 @@
           </div>`;
         }).join("");
 
-        const familyImageUrl=CONFIG.familyImages?.[f.id]||"";
+        const familyImageUrl=adminFamilyImageUrl(f);
         const isOpen=openAdminFamilyId===f.id;
         return `<article class="family-progress-card${isOpen?" open":""}" data-family="${f.id}" aria-expanded="${isOpen}">
-          <div class="family-progress-head"><div class="family-progress-identity">${familyImageUrl?`<img class="family-progress-avatar" src="${esc(familyImageUrl)}" alt="משפחת ${esc(f.name)}" loading="lazy">`:""}<strong>משפחת ${esc(f.name)}</strong></div><span class="family-progress-count">🧩 ${pieces.size}/${totalPieces}</span></div>
+          <div class="family-progress-head"><div class="family-progress-identity">${familyImageUrl?`<img class="family-progress-avatar" src="${esc(familyImageUrl)}" alt="משפחת ${esc(f.name)}" loading="eager" decoding="async" onerror="this.style.display='none';this.nextElementSibling?.classList.remove('hidden')"><span class="family-progress-avatar-fallback hidden">👨‍👩‍👧‍👦</span>`:`<span class="family-progress-avatar-fallback">👨‍👩‍👧‍👦</span>`}<strong>משפחת ${esc(f.name)}</strong></div><span class="family-progress-count">🧩 ${pieces.size}/${totalPieces}</span></div>
           <div class="family-progress-bar" aria-label="${percent}% התקדמות"><div style="width:${percent}%"></div></div>
           <div class="family-metrics">
             <div class="family-metric"><strong>${completedTaskIds.size}/${tasks.length}</strong><span>משימות</span></div>

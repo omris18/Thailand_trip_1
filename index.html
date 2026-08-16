@@ -575,7 +575,9 @@
       <div id="bookProgressStage" class="book-progress-stage">מתחיל…</div>
       <div id="bookProgressPercent" class="book-progress-percent">0%</div>
       <div class="book-progress-track"><div id="bookProgressFill" class="book-progress-fill"></div></div>
-      <div id="bookProgressDetail" class="book-progress-detail">נא להשאיר את החלון פתוח עד לסיום</div>
+      <div id="bookProgressDetail" class="book-progress-detail">אפשר לעזוב את המסך ולחזור אחר כך — השרת ממשיך להכין את הספר.</div>
+      <a id="bookProgressDownload" class="btn primary full hidden" href="#" target="_blank" rel="noopener" style="margin-top:16px">📥 פתיחת / הורדת הספר</a>
+      <button id="bookProgressClose" class="btn ghost full" style="margin-top:9px">סגירה</button>
     </div>
   </div>
 
@@ -851,8 +853,8 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.2.4-book-progress";
-    const BUILD_ID = "20260816.820";
+    const APP_VERSION = "8.3.0-server-book";
+    const BUILD_ID = "20260817.830";
 
     let CONFIG = {
       firebase: {
@@ -2117,9 +2119,13 @@
       const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));return items;
     }
 
+    let activeBookBuildUnsubscribe=null;
+
     function showBookProgress(){
       $("bookProgressOverlay")?.classList.add("show");
-      updateBookProgress(0,"מתחיל להכין את הספר…","");
+      const dl=$("bookProgressDownload");
+      if(dl){dl.classList.add("hidden");dl.removeAttribute("href")}
+      updateBookProgress(0,"שולח בקשה לשרת…","אפשר לעזוב את המסך ולחזור אחר כך — השרת ממשיך להכין את הספר.");
     }
 
     function updateBookProgress(percent,stage,detail=""){
@@ -2127,120 +2133,90 @@
       if($("bookProgressPercent")) $("bookProgressPercent").textContent=`${safe}%`;
       if($("bookProgressFill")) $("bookProgressFill").style.width=`${safe}%`;
       if($("bookProgressStage") && stage) $("bookProgressStage").textContent=stage;
-      if($("bookProgressDetail")) $("bookProgressDetail").textContent=detail||"נא להשאיר את החלון פתוח עד לסיום";
+      if($("bookProgressDetail")) $("bookProgressDetail").textContent=detail||"השרת מכין את הספר המלא עם כל התמונות.";
     }
 
-    function hideBookProgress(delay=900){
-      setTimeout(()=>$("bookProgressOverlay")?.classList.remove("show"),delay);
+    function closeBookProgress(){ $("bookProgressOverlay")?.classList.remove("show") }
+    $("bookProgressClose").onclick=closeBookProgress;
+
+    function makeRequestId(){
+      return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
-    async function exportFamilyBookPdf(options={}){
-      const {forceUnlock=false,familyOverride=null,preview=false,triggerButton=null}=options||{};
-      const originalFamily=family;
-      const originalFamilyImage=familyImage;
-      if(familyOverride){
-        const target=CONFIG.families.find(f=>f.id===familyOverride);
-        if(!target) throw new Error("המשפחה שנבחרה לא נמצאה.");
-        family=target;
-        familyImage=CONFIG.familyImages?.[target.id]||CONFIG.familyImages?.sadeh||originalFamilyImage;
-      }
+    async function requestServerFamilyBook(targetFamilyId,{forceUnlock=false,triggerButton=null}={}){
+      if(!forceUnlock && !pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+      if(!currentUser) throw new Error("לא קיים משתמש מחובר. רעננו את העמוד ונסו שוב.");
+      const target=CONFIG.families.find(f=>f.id===targetFamilyId);
+      if(!target) throw new Error("המשפחה שנבחרה לא נמצאה.");
+
       const btn=triggerButton||$("exportFamilyPdf");
+      const original=btn?.innerHTML||"";
       const status=$("pdfExportStatus");
-      const urlsToRevoke=[];
-      const stage=$("pdfBookStage");
-      const original=btn.innerHTML;
+      const requestId=makeRequestId();
+      const requestedAtMs=Date.now();
+      const buildRef=doc(db,"bookBuilds",targetFamilyId);
+      const jobRef=doc(db,"bookJobs",targetFamilyId);
+      let sawFreshStatus=false;
+
+      if(activeBookBuildUnsubscribe){try{activeBookBuildUnsubscribe()}catch{} activeBookBuildUnsubscribe=null}
+      showBookProgress();
+      updateBookProgress(1,`בודק את הספר של משפחת ${target.name}…`,"בודק אם נוספו, נמחקו או הוחלפו תמונות מאז הספר האחרון.");
+      if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין בשרת…'}
+      if(status) status.textContent="הבקשה נשלחת למנוע הספר בשרת…";
+
+      activeBookBuildUnsubscribe=onSnapshot(buildRef,snap=>{
+        if(!snap.exists()) return;
+        const data=snap.data()||{};
+        const fresh=Number(data.lastCheckedClientRequestMs||0)>=requestedAtMs;
+        if(fresh || data.status==='building') sawFreshStatus=true;
+        if(!sawFreshStatus) return;
+
+        const pct=Number(data.progress||0);
+        const photoText=data.photoCount!=null?`${data.photoCount} תמונות`:"כל התמונות";
+        const pageText=data.totalPages?` · עמוד ${Math.min(data.pageCount||0,data.totalPages)} מתוך ${data.totalPages}`:"";
+        updateBookProgress(pct,data.stage||"מכין את הספר…",`${photoText}${pageText}`);
+        if(status) status.textContent=`${data.stage||"מכין את הספר…"} (${Math.round(pct)}%)`;
+
+        if(data.status==='ready' && data.downloadUrl && fresh){
+          updateBookProgress(100,"הספר מוכן! 🎉",`${data.photoCount||0} תמונות · ${data.pageCount||data.totalPages||""} עמודים`);
+          const dl=$("bookProgressDownload");
+          if(dl){dl.href=data.downloadUrl;dl.classList.remove("hidden")}
+          if(status) status.textContent="הספר המלא מוכן להורדה ✅";
+          if(btn){btn.disabled=false;btn.innerHTML="📥 פתיחת הספר המוכן";btn.onclick=()=>window.open(data.downloadUrl,"_blank","noopener")}
+          try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
+        }else if(data.status==='error' && fresh){
+          updateBookProgress(100,"יצירת הספר נעצרה",data.error||"אירעה שגיאה בשרת.");
+          if(status) status.textContent=data.error||"יצירת הספר נכשלה.";
+          if(btn){btn.disabled=false;btn.innerHTML=original}
+          try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
+        }
+      },err=>{
+        console.error("Book build listener failed",err);
+        updateBookProgress(100,"לא ניתן לקבל את מצב הספר",firebaseErrorText(err));
+        if(btn){btn.disabled=false;btn.innerHTML=original}
+      });
+
       try{
-        if(!forceUnlock && !pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
-        showBookProgress();
-        updateBookProgress(3,`אוסף את נתוני משפחת ${family.name}…`,"טוען נתונים מ-Firebase");
-        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
-        status.textContent="אוסף את רגעי המסע ומעצב את הספר…";stage.innerHTML="";
-
-        const [uploads,completions]=await Promise.all([fetchFamilyBookUploads(family.id),fetchFamilyBookCompletions(family.id)]);
-        if(!uploads.length) throw new Error("עדיין אין תמונות ליצירת הספר.");
-        updateBookProgress(8,`נמצאו ${uploads.length} תמונות`,"מתחיל להוריד את התמונות באיכות מלאה");
-        const stats=bookStats(uploads,completions);
-
-        const enriched=[];
-        for(let i=0;i<uploads.length;i++){
-          status.textContent=`טוען תמונות לספר ${i+1} מתוך ${uploads.length}…`;
-          const imagePct=8+((i+1)/Math.max(1,uploads.length))*37;
-          updateBookProgress(
-            imagePct,
-            `טוען תמונות ${i+1} מתוך ${uploads.length}`,
-            "שלב 1 מתוך 3 · איסוף חומרי הספר"
-          );
-          const url=await blobUrlForUpload(uploads[i],urlsToRevoke);
-          enriched.push({...uploads[i],_url:url});
-        }
-        updateBookProgress(47,"מסדר את התמונות לפי ימים ויעדים…","שלב 2 מתוך 3 · בניית העיצוב");
-        const byDate=new Map();enriched.forEach(p=>{if(!byDate.has(p.tripDate))byDate.set(p.tripDate,[]);byDate.get(p.tripDate).push(p)});
-        const photoDates=[...byDate.keys()].filter(Boolean).sort();
-        const coverItem=bookAutoHero(enriched,2);
-        const pages=[createBookCover(coverItem?coverItem._url:familyImage,stats),createIntroPage(stats),createFlightsPage(),createFullRoutePage()];
-        const allPhotoUrls=enriched.map(x=>x._url);
-
-        let previousDestinationId=null,chapter=0;
-        for(const date of photoDates){
-          const destination=destinationForDate(date);
-          if(destination?.id!==previousDestinationId){
-            chapter++;
-            const destinationItems=enriched.filter(p=>destinationForDate(p.tripDate)?.id===destination?.id);
-            pages.push(createDestinationOpener(destination,destinationItems,chapter));
-            previousDestinationId=destination?.id;
-          }
-          const dayNum=Math.round((parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
-          const dayUploads=byDate.get(date)||[];
-          const maxPerPage=Math.max(1,Math.min(4,Number(CONFIG.pdfBook?.maxPhotosPerPage||4)));
-          for(let j=0;j<dayUploads.length;j+=maxPerPage){
-            const chunk=dayUploads.slice(j,j+maxPerPage);
-            pages.push(createBookDayPage(date,dayNum,chunk,chunk.map(x=>x._url),Math.floor(j/maxPerPage)));
-          }
-        }
-        if(allPhotoUrls.length>4) pages.push(createCollagePage(allPhotoUrls));
-        pages.push(createFinalPage(stats));
-        pages.forEach(p=>stage.appendChild(p));
-        updateBookProgress(53,`נבנו ${pages.length} עמודים`,"מכין את העמודים לרינדור PDF");
-        await waitForBookImages(stage);
-        updateBookProgress(57,"כל התמונות מוכנות","שלב 3 מתוך 3 · יצירת קובץ PDF");
-
-        const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
-        for(let i=0;i<pages.length;i++){
-          status.textContent=`מעצב עמוד ${i+1} מתוך ${pages.length}…`;
-          const renderPct=57+((i+1)/Math.max(1,pages.length))*38;
-          updateBookProgress(
-            renderPct,
-            `מעצב עמוד ${i+1} מתוך ${pages.length}`,
-            `כבר הושלמו ${i} עמודים`
-          );
-          const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-          const renderScale=mobile?0.84:1.10;
-          const canvas=await html2canvas(pages[i],{scale:renderScale,useCORS:true,backgroundColor:"#ffffff",logging:false,imageTimeout:18000,removeContainer:true,width:794,height:1123,windowWidth:794,windowHeight:1123});
-          const image=canvas.toDataURL("image/jpeg",mobile?.72:.80);
-          if(i>0)pdf.addPage("a4","portrait");
-          pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
-          canvas.width=1;canvas.height=1;await new Promise(r=>setTimeout(r,100));
-        }
-        updateBookProgress(98,"מסיים את קובץ ה-PDF…","עוד רגע ההורדה מתחילה");
-        status.textContent="מוריד את ספר המסע…";
-        triggerBlobDownload(
-          pdf.output("blob"),
-          `${preview?"PREVIEW-":""}Thailand-2026-משפחת-${family.name}.pdf`
-        );
-        updateBookProgress(100,"הספר מוכן! 🎉","ההורדה אמורה להתחיל עכשיו");
-        status.textContent="ספר המסע המעוצב נוצר והורד בהצלחה ✅";
+        await setDoc(jobRef,{
+          familyId:targetFamilyId,
+          requestId,
+          requestedAtMs,
+          requestedByUid:currentUser.uid,
+          requestedByEmail:currentUser.email||null,
+          requestedByAdmin:Boolean(forceUnlock),
+          requestedAt:serverTimestamp()
+        },{merge:true});
       }catch(err){
-        updateBookProgress(100,"יצירת הספר נעצרה",err?.message||"אירעה שגיאה");
-        console.error(err);status.textContent=err?.message||"יצירת ה-PDF נכשלה.";alert(err?.message||"יצירת ה-PDF נכשלה.");
-      }finally{
-        btn.disabled=false;btn.innerHTML=original;stage.innerHTML="";urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
-        family=originalFamily;
-        familyImage=originalFamilyImage;
-        hideBookProgress();
+        try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
+        if(btn){btn.disabled=false;btn.innerHTML=original}
+        closeBookProgress();
+        throw err;
       }
     }
 
-    $("exportFamilyPdf").onclick=()=>exportFamilyBookPdf();
+    $("exportFamilyPdf").onclick=()=>requestServerFamilyBook(family.id).catch(err=>{
+      console.error(err);alert(firebaseErrorText(err));
+    });
 
     function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
     function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
@@ -2782,7 +2758,8 @@
       document.querySelectorAll(".family-gallery-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();showFamilyGallery(b.dataset.family)});
       document.querySelectorAll(".family-book-preview-btn").forEach(b=>b.onclick=async e=>{
         e.stopPropagation();
-        await exportFamilyBookPdf({forceUnlock:true,familyOverride:b.dataset.family,preview:true,triggerButton:b});
+        try{await requestServerFamilyBook(b.dataset.family,{forceUnlock:true,triggerButton:b})}
+        catch(err){console.error("Server book preview failed",err);alert(firebaseErrorText(err))}
       });
       document.querySelectorAll(".family-repair-btn").forEach(b=>b.onclick=async e=>{
         e.stopPropagation();

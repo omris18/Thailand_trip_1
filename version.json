@@ -1,5 +1,5 @@
 {
-  "version": "8.2.4-book-progress",
-  "build": "20260817.824",
-  "channel": "cinematic-book-progress"
+  "version": "8.3.0-server-book",
+  "build": "20260817.830",
+  "channel": "server-book-engine"
 }

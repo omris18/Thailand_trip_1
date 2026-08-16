@@ -749,7 +749,7 @@
         </summary>
         <div class="admin-collapsible-body">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-            <p style="margin:0;color:var(--muted)">Version 8.2.0 · Build 20260816.820</p>
+            <p style="margin:0;color:var(--muted)">Version 8.2.1 · Build 20260816.820</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button id="runHealthCheck" class="btn primary">הרצת בדיקה</button>
               <button id="downloadDiagnostics" class="btn secondary">הורדת Diagnostics</button>
@@ -775,6 +775,7 @@
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button id="repairAllFamilies" class="btn secondary small">🔧 תיקון כל המשפחות</button><span class="badge ok">מתעדכן בזמן אמת</span></div>
           </div>
           <div id="repairNotice" class="notice info hidden"></div>
+          <div class="notice info" style="margin-top:10px">📖 <strong>Preview Book:</strong> פתחו כרטיס משפחה ולחצו „תצוגה מקדימה לספר”. במנהל בלבד הנעילה של 19.08 נעקפת לצורך בדיקה; הכפתור המשפחתי הרגיל נשאר נעול.</div>
           <div id="adminRows" class="family-progress-grid" style="margin-top:14px"></div>
         </div>
       </details>
@@ -827,7 +828,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.2.0-cinematic-book";
+    const APP_VERSION = "8.2.1-book-preview";
     const BUILD_ID = "20260816.820";
 
     let CONFIG = {
@@ -1913,8 +1914,8 @@
       return route;
     }
 
-    async function fetchFamilyBookUploads(){
-      const snap=await getDocs(query(collection(db,"uploads"),where("familyId","==",family.id)));
+    async function fetchFamilyBookUploads(targetFamilyId=family.id){
+      const snap=await getDocs(query(collection(db,"uploads"),where("familyId","==",targetFamilyId)));
       const items=[];
       snap.forEach(d=>items.push({id:d.id,...d.data()}));
       items.sort((a,b)=>(a.tripDate||"").localeCompare(b.tripDate||"") || ((a.createdAt?.toMillis?.()||0)-(b.createdAt?.toMillis?.()||0)));
@@ -2088,36 +2089,77 @@
       await Promise.all(images.map(img=>img.complete?Promise.resolve():new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;})));
       if(document.fonts?.ready) await document.fonts.ready;
     }
-    async function fetchFamilyBookCompletions(){
-      const snap=await getDocs(query(collection(db,"completions"),where("familyId","==",family.id)));
+    async function fetchFamilyBookCompletions(targetFamilyId=family.id){
+      const snap=await getDocs(query(collection(db,"completions"),where("familyId","==",targetFamilyId)));
       const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));return items;
     }
 
-    async function exportFamilyBookPdf(){
-      const btn=$("exportFamilyPdf");
+    async function exportFamilyBookPdf(options={}){
+      const {
+        forceUnlock=false,
+        familyOverride=null,
+        preview=false,
+        triggerButton=null
+      }=options||{};
+
+      const regularBtn=$("exportFamilyPdf");
+      const btn=triggerButton||regularBtn;
       const status=$("pdfExportStatus");
       const urlsToRevoke=[];
       const stage=$("pdfBookStage");
-      const original=btn.innerHTML;
+      const originalBtnHtml=btn?.innerHTML||"";
+      const originalFamily=family;
+      const originalFamilyImage=familyImage;
+
       try{
-        if(!pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
-        btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
-        status.textContent="אוסף את רגעי המסע ומעצב את הספר…";stage.innerHTML="";
+        if(!forceUnlock && !pdfIsUnlocked()){
+          throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+        }
 
-        const [uploads,completions]=await Promise.all([fetchFamilyBookUploads(),fetchFamilyBookCompletions()]);
-        if(!uploads.length) throw new Error("עדיין אין תמונות ליצירת הספר.");
+        if(familyOverride){
+          const target=CONFIG.families.find(f=>f.id===familyOverride);
+          if(!target) throw new Error("המשפחה שנבחרה לא נמצאה.");
+          family=target;
+          familyImage=CONFIG.familyImages?.[target.id]||CONFIG.familyImages?.sadeh||originalFamilyImage;
+        }
+
+        if(btn){
+          btn.disabled=true;
+          btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
+        }
+        if(status) status.textContent=preview
+          ? `מכין תצוגה מקדימה למשפחת ${family.name}…`
+          : "אוסף את רגעי המסע ומעצב את הספר…";
+        stage.innerHTML="";
+
+        const targetFamilyId=family.id;
+        const [uploads,completions]=await Promise.all([
+          fetchFamilyBookUploads(targetFamilyId),
+          fetchFamilyBookCompletions(targetFamilyId)
+        ]);
+        if(!uploads.length) throw new Error(`אין עדיין תמונות למשפחת ${family.name} ליצירת הספר.`);
+
         const stats=bookStats(uploads,completions);
-
         const enriched=[];
         for(let i=0;i<uploads.length;i++){
-          status.textContent=`טוען תמונות לספר ${i+1} מתוך ${uploads.length}…`;
+          if(status) status.textContent=`טוען תמונות לספר ${i+1} מתוך ${uploads.length}…`;
           const url=await blobUrlForUpload(uploads[i],urlsToRevoke);
           enriched.push({...uploads[i],_url:url});
         }
-        const byDate=new Map();enriched.forEach(p=>{if(!byDate.has(p.tripDate))byDate.set(p.tripDate,[]);byDate.get(p.tripDate).push(p)});
+
+        const byDate=new Map();
+        enriched.forEach(p=>{
+          if(!byDate.has(p.tripDate)) byDate.set(p.tripDate,[]);
+          byDate.get(p.tripDate).push(p);
+        });
         const photoDates=[...byDate.keys()].filter(Boolean).sort();
         const coverItem=bookAutoHero(enriched,2);
-        const pages=[createBookCover(coverItem?coverItem._url:familyImage,stats),createIntroPage(stats),createFlightsPage(),createFullRoutePage()];
+        const pages=[
+          createBookCover(coverItem?coverItem._url:familyImage,stats),
+          createIntroPage(stats),
+          createFlightsPage(),
+          createFullRoutePage()
+        ];
         const allPhotoUrls=enriched.map(x=>x._url);
 
         let previousDestinationId=null,chapter=0;
@@ -2129,41 +2171,97 @@
             pages.push(createDestinationOpener(destination,destinationItems,chapter));
             previousDestinationId=destination?.id;
           }
-          const dayNum=Math.round((parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000)+1;
+
+          const dayNum=Math.round(
+            (parseDate(date)-parseDate(CONFIG.trip.startDate))/86400000
+          )+1;
           const dayUploads=byDate.get(date)||[];
-          const maxPerPage=Math.max(1,Math.min(4,Number(CONFIG.pdfBook?.maxPhotosPerPage||4)));
+          const maxPerPage=Math.max(
+            1,
+            Math.min(4,Number(CONFIG.pdfBook?.maxPhotosPerPage||4))
+          );
+
           for(let j=0;j<dayUploads.length;j+=maxPerPage){
             const chunk=dayUploads.slice(j,j+maxPerPage);
-            pages.push(createBookDayPage(date,dayNum,chunk,chunk.map(x=>x._url),Math.floor(j/maxPerPage)));
+            pages.push(
+              createBookDayPage(
+                date,
+                dayNum,
+                chunk,
+                chunk.map(x=>x._url),
+                Math.floor(j/maxPerPage)
+              )
+            );
           }
         }
+
         if(allPhotoUrls.length>4) pages.push(createCollagePage(allPhotoUrls));
         pages.push(createFinalPage(stats));
         pages.forEach(p=>stage.appendChild(p));
         await waitForBookImages(stage);
 
-        const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+        const pdf=new jsPDF({
+          orientation:"portrait",
+          unit:"mm",
+          format:"a4",
+          compress:true
+        });
+
         for(let i=0;i<pages.length;i++){
-          status.textContent=`מעצב עמוד ${i+1} מתוך ${pages.length}…`;
+          if(status) status.textContent=`מעצב עמוד ${i+1} מתוך ${pages.length}…`;
           const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           const renderScale=mobile?0.84:1.10;
-          const canvas=await html2canvas(pages[i],{scale:renderScale,useCORS:true,backgroundColor:"#ffffff",logging:false,imageTimeout:18000,removeContainer:true,width:794,height:1123,windowWidth:794,windowHeight:1123});
+          const canvas=await html2canvas(pages[i],{
+            scale:renderScale,
+            useCORS:true,
+            backgroundColor:"#ffffff",
+            logging:false,
+            imageTimeout:18000,
+            removeContainer:true,
+            width:794,
+            height:1123,
+            windowWidth:794,
+            windowHeight:1123
+          });
           const image=canvas.toDataURL("image/jpeg",mobile?.72:.80);
-          if(i>0)pdf.addPage("a4","portrait");
+          if(i>0) pdf.addPage("a4","portrait");
           pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
-          canvas.width=1;canvas.height=1;await new Promise(r=>setTimeout(r,100));
+          canvas.width=1;
+          canvas.height=1;
+          await new Promise(r=>setTimeout(r,100));
         }
-        status.textContent="מוריד את ספר המסע…";
-        triggerBlobDownload(pdf.output("blob"),`Thailand-2026-משפחת-${family.name}.pdf`);
-        status.textContent="ספר המסע המעוצב נוצר והורד בהצלחה ✅";
+
+        if(status) status.textContent=preview
+          ? "מוריד PDF לתצוגה מקדימה…"
+          : "מוריד את ספר המסע…";
+
+        const prefix=preview?"PREVIEW-":"";
+        triggerBlobDownload(
+          pdf.output("blob"),
+          `${prefix}Thailand-2026-משפחת-${family.name}.pdf`
+        );
+
+        if(status) status.textContent=preview
+          ? `תצוגה מקדימה למשפחת ${family.name} נוצרה בהצלחה ✅`
+          : "ספר המסע המעוצב נוצר והורד בהצלחה ✅";
+
       }catch(err){
-        console.error(err);status.textContent=err?.message||"יצירת ה-PDF נכשלה.";alert(err?.message||"יצירת ה-PDF נכשלה.");
+        console.error(err);
+        if(status) status.textContent=err?.message||"יצירת ה-PDF נכשלה.";
+        alert(err?.message||"יצירת ה-PDF נכשלה.");
       }finally{
-        btn.disabled=false;btn.innerHTML=original;stage.innerHTML="";urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
+        if(btn){
+          btn.disabled=false;
+          btn.innerHTML=originalBtnHtml;
+        }
+        stage.innerHTML="";
+        urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
+        family=originalFamily;
+        familyImage=originalFamilyImage;
       }
     }
 
-    $("exportFamilyPdf").onclick=exportFamilyBookPdf;
+    $("exportFamilyPdf").onclick=()=>exportFamilyBookPdf();
 
     function openDrawer(){ $("drawer").classList.remove("hidden");$("drawerShade").classList.remove("hidden")}
     function closeDrawer(){ $("drawer").classList.add("hidden");$("drawerShade").classList.add("hidden")}
@@ -2674,6 +2772,7 @@
             <div class="family-task-list">${taskRows||'<div class="admin-empty-state">אין משימות להצגה.</div>'}</div>
             <div class="family-detail-actions">
               <button type="button" class="btn primary small family-repair-btn" data-family="${f.id}">🔧 תיקון סנכרון</button>
+              <button type="button" class="btn secondary small family-book-preview-btn" data-family="${f.id}">📖 תצוגה מקדימה לספר</button>
               <button type="button" class="btn secondary small family-gallery-btn" data-family="${f.id}">🖼️ גלריית המשפחה</button>
               <button type="button" class="btn ghost small family-trip-zip" data-family="${f.id}">📦 ZIP מלא</button>
             </div>
@@ -2691,6 +2790,26 @@
       }));
       document.querySelectorAll(".family-trip-zip").forEach(b=>b.onclick=e=>{e.stopPropagation();downloadFullTripZip(b.dataset.family)});
       document.querySelectorAll(".family-gallery-btn").forEach(b=>b.onclick=e=>{e.stopPropagation();showFamilyGallery(b.dataset.family)});
+      document.querySelectorAll(".family-book-preview-btn").forEach(b=>b.onclick=async e=>{
+        e.stopPropagation();
+        const original=b.innerHTML;
+        try{
+          b.disabled=true;
+          b.innerHTML='<span class="spinner"></span> מכין Preview…';
+          await exportFamilyBookPdf({
+            forceUnlock:true,
+            familyOverride:b.dataset.family,
+            preview:true,
+            triggerButton:b
+          });
+        }catch(err){
+          console.error("Book preview failed",err);
+          alert(err?.message||"יצירת התצוגה המקדימה נכשלה.");
+        }finally{
+          b.disabled=false;
+          b.innerHTML=original;
+        }
+      });
       document.querySelectorAll(".family-repair-btn").forEach(b=>b.onclick=async e=>{
         e.stopPropagation();
         const original=b.innerHTML;

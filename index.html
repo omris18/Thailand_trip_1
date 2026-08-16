@@ -260,6 +260,18 @@
     .pdf-export-card{background:linear-gradient(135deg,#ede9fe,#fdf2f8);border:1px solid #c4b5fd;border-radius:24px;padding:18px;margin:17px 0;box-shadow:var(--shadow)}
     .pdf-export-top{display:flex;gap:12px;align-items:center}.pdf-export-icon{font-size:38px}.pdf-export-card h3{margin:0}.pdf-export-card p{margin:4px 0 0;color:var(--muted);font-size:13px}
     .pdf-export-actions{margin-top:13px}.pdf-export-status{font-size:12px;color:#5b21b6;margin-top:9px;font-weight:700}
+
+    .book-progress-overlay{position:fixed;inset:0;z-index:10020;display:none;place-items:center;background:rgba(15,23,42,.68);backdrop-filter:blur(5px);padding:18px}
+    .book-progress-overlay.show{display:grid}
+    .book-progress-card{width:min(460px,94vw);background:#fff;border-radius:26px;padding:24px;box-shadow:0 25px 70px rgba(15,23,42,.35);text-align:center}
+    .book-progress-icon{font-size:48px;margin-bottom:5px}
+    .book-progress-card h3{margin:0 0 4px;font-size:23px}
+    .book-progress-stage{color:var(--muted);font-size:13px;min-height:39px;margin:8px 0 14px}
+    .book-progress-percent{font-size:42px;font-weight:900;color:var(--purple);line-height:1;margin:8px 0 12px}
+    .book-progress-track{height:14px;background:#ede9fe;border-radius:999px;overflow:hidden}
+    .book-progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink),var(--orange));border-radius:999px;transition:width .28s ease}
+    .book-progress-detail{font-size:11px;color:var(--muted);margin-top:10px;font-weight:700}
+
     .pdf-stage{position:fixed;left:-12000px;top:0;width:794px;z-index:-1000;background:#fff}
     .book-page{direction:rtl;width:794px;height:1123px;background:#fff;position:relative;overflow:hidden;font-family:"Heebo",Arial,sans-serif;color:#172033;padding:48px}
     .book-page:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,rgba(224,242,254,.5),transparent 34%,rgba(237,233,254,.45));pointer-events:none}
@@ -555,6 +567,18 @@
     <a href="?admin=1" class="btn ghost">🔐 כניסת מנהל</a>
   </aside>
 
+
+  <div id="bookProgressOverlay" class="book-progress-overlay" role="status" aria-live="polite" aria-label="התקדמות יצירת ספר">
+    <div class="book-progress-card">
+      <div class="book-progress-icon">📖</div>
+      <h3>מכין את ספר המסע</h3>
+      <div id="bookProgressStage" class="book-progress-stage">מתחיל…</div>
+      <div id="bookProgressPercent" class="book-progress-percent">0%</div>
+      <div class="book-progress-track"><div id="bookProgressFill" class="book-progress-fill"></div></div>
+      <div id="bookProgressDetail" class="book-progress-detail">נא להשאיר את החלון פתוח עד לסיום</div>
+    </div>
+  </div>
+
   <dialog id="dayDialog">
     <div class="modal">
       <button class="modal-close" data-close="dayDialog">✕</button>
@@ -827,7 +851,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.2.3-admin-family-images";
+    const APP_VERSION = "8.2.4-book-progress";
     const BUILD_ID = "20260816.820";
 
     let CONFIG = {
@@ -2093,6 +2117,23 @@
       const items=[];snap.forEach(d=>items.push({id:d.id,...d.data()}));return items;
     }
 
+    function showBookProgress(){
+      $("bookProgressOverlay")?.classList.add("show");
+      updateBookProgress(0,"מתחיל להכין את הספר…","");
+    }
+
+    function updateBookProgress(percent,stage,detail=""){
+      const safe=Math.max(0,Math.min(100,Math.round(Number(percent)||0)));
+      if($("bookProgressPercent")) $("bookProgressPercent").textContent=`${safe}%`;
+      if($("bookProgressFill")) $("bookProgressFill").style.width=`${safe}%`;
+      if($("bookProgressStage") && stage) $("bookProgressStage").textContent=stage;
+      if($("bookProgressDetail")) $("bookProgressDetail").textContent=detail||"נא להשאיר את החלון פתוח עד לסיום";
+    }
+
+    function hideBookProgress(delay=900){
+      setTimeout(()=>$("bookProgressOverlay")?.classList.remove("show"),delay);
+    }
+
     async function exportFamilyBookPdf(options={}){
       const {forceUnlock=false,familyOverride=null,preview=false,triggerButton=null}=options||{};
       const originalFamily=family;
@@ -2110,19 +2151,29 @@
       const original=btn.innerHTML;
       try{
         if(!forceUnlock && !pdfIsUnlocked()) throw new Error("ספר המסע יהיה זמין רק לאחר 19.08.2026 בשעה 10:00 לפי שעון דובאי.");
+        showBookProgress();
+        updateBookProgress(3,`אוסף את נתוני משפחת ${family.name}…`,"טוען נתונים מ-Firebase");
         btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין את הספר…';
         status.textContent="אוסף את רגעי המסע ומעצב את הספר…";stage.innerHTML="";
 
-        const [uploads,completions]=await Promise.all([fetchFamilyBookUploads(),fetchFamilyBookCompletions()]);
+        const [uploads,completions]=await Promise.all([fetchFamilyBookUploads(family.id),fetchFamilyBookCompletions(family.id)]);
         if(!uploads.length) throw new Error("עדיין אין תמונות ליצירת הספר.");
+        updateBookProgress(8,`נמצאו ${uploads.length} תמונות`,"מתחיל להוריד את התמונות באיכות מלאה");
         const stats=bookStats(uploads,completions);
 
         const enriched=[];
         for(let i=0;i<uploads.length;i++){
           status.textContent=`טוען תמונות לספר ${i+1} מתוך ${uploads.length}…`;
+          const imagePct=8+((i+1)/Math.max(1,uploads.length))*37;
+          updateBookProgress(
+            imagePct,
+            `טוען תמונות ${i+1} מתוך ${uploads.length}`,
+            "שלב 1 מתוך 3 · איסוף חומרי הספר"
+          );
           const url=await blobUrlForUpload(uploads[i],urlsToRevoke);
           enriched.push({...uploads[i],_url:url});
         }
+        updateBookProgress(47,"מסדר את התמונות לפי ימים ויעדים…","שלב 2 מתוך 3 · בניית העיצוב");
         const byDate=new Map();enriched.forEach(p=>{if(!byDate.has(p.tripDate))byDate.set(p.tripDate,[]);byDate.get(p.tripDate).push(p)});
         const photoDates=[...byDate.keys()].filter(Boolean).sort();
         const coverItem=bookAutoHero(enriched,2);
@@ -2149,11 +2200,19 @@
         if(allPhotoUrls.length>4) pages.push(createCollagePage(allPhotoUrls));
         pages.push(createFinalPage(stats));
         pages.forEach(p=>stage.appendChild(p));
+        updateBookProgress(53,`נבנו ${pages.length} עמודים`,"מכין את העמודים לרינדור PDF");
         await waitForBookImages(stage);
+        updateBookProgress(57,"כל התמונות מוכנות","שלב 3 מתוך 3 · יצירת קובץ PDF");
 
         const pdf=new jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
         for(let i=0;i<pages.length;i++){
           status.textContent=`מעצב עמוד ${i+1} מתוך ${pages.length}…`;
+          const renderPct=57+((i+1)/Math.max(1,pages.length))*38;
+          updateBookProgress(
+            renderPct,
+            `מעצב עמוד ${i+1} מתוך ${pages.length}`,
+            `כבר הושלמו ${i} עמודים`
+          );
           const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           const renderScale=mobile?0.84:1.10;
           const canvas=await html2canvas(pages[i],{scale:renderScale,useCORS:true,backgroundColor:"#ffffff",logging:false,imageTimeout:18000,removeContainer:true,width:794,height:1123,windowWidth:794,windowHeight:1123});
@@ -2162,15 +2221,22 @@
           pdf.addImage(image,"JPEG",0,0,210,297,undefined,"FAST");
           canvas.width=1;canvas.height=1;await new Promise(r=>setTimeout(r,100));
         }
+        updateBookProgress(98,"מסיים את קובץ ה-PDF…","עוד רגע ההורדה מתחילה");
         status.textContent="מוריד את ספר המסע…";
-        triggerBlobDownload(pdf.output("blob"),`Thailand-2026-משפחת-${family.name}.pdf`);
+        triggerBlobDownload(
+          pdf.output("blob"),
+          `${preview?"PREVIEW-":""}Thailand-2026-משפחת-${family.name}.pdf`
+        );
+        updateBookProgress(100,"הספר מוכן! 🎉","ההורדה אמורה להתחיל עכשיו");
         status.textContent="ספר המסע המעוצב נוצר והורד בהצלחה ✅";
       }catch(err){
+        updateBookProgress(100,"יצירת הספר נעצרה",err?.message||"אירעה שגיאה");
         console.error(err);status.textContent=err?.message||"יצירת ה-PDF נכשלה.";alert(err?.message||"יצירת ה-PDF נכשלה.");
       }finally{
         btn.disabled=false;btn.innerHTML=original;stage.innerHTML="";urlsToRevoke.forEach(url=>URL.revokeObjectURL(url));
         family=originalFamily;
         familyImage=originalFamilyImage;
+        hideBookProgress();
       }
     }
 

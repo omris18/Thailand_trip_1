@@ -1,6 +1,6 @@
 {
-  "version": "8.3.9.7-pdf-polish",
-  "build": "20260817.8397",
+  "version": "8.3.9.8-layout-hotels-destinations",
+  "build": "20260817.8398",
   "channel": "luxury-book",
-  "notes": "Live flight settings; exact map dates from hotel config; real hotel photos; no-face-crop photo panels; clean English stat labels"
+  "notes": "Map destination cells; bounded hotel cards with web property image + family image; English destination openers"
 }

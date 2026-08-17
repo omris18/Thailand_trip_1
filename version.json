@@ -1,6 +1,6 @@
 {
-  "version": "8.3.9.5-fresh-job",
-  "build": "20260817.8395",
+  "version": "8.3.9.6-premium-polish",
+  "build": "20260817.8396",
   "channel": "luxury-book",
-  "notes": "Fresh book job per click; stale sessions cannot attach or overwrite"
+  "notes": "Text containment + real flight details + safer crops + edge-only overlaps"
 }

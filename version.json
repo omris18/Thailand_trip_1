@@ -1,6 +1,6 @@
 {
-  "version": "8.3.9.8-layout-hotels-destinations",
-  "build": "20260817.8398",
+  "version": "8.3.10-grand-openers-session-cache",
+  "build": "20260817.8310",
   "channel": "luxury-book",
-  "notes": "Map destination cells; bounded hotel cards with web property image + family image; English destination openers"
+  "notes": "Grand destination openers + resume active session + server fingerprint cache reuse"
 }

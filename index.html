@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#6d28d9">
   <meta name="description" content="המסע המשפחתי שלנו בתאילנד 2026">
-  <meta name="app-build" content="8.3.9.8-premium-polish">
+  <meta name="app-build" content="8.3.10-premium-polish">
   <title>תאילנד 2026 – המסע המשפחתי</title>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -854,7 +854,7 @@
     import html2canvas from "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/+esm";
     import { jsPDF } from "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/+esm";
 
-    const APP_VERSION = "8.3.9.8-luxury-book";
+    const APP_VERSION = "8.3.10-luxury-book";
     const BUILD_ID = "20260817.830";
 
     let CONFIG = {
@@ -2153,50 +2153,69 @@
       const btn=triggerButton||$("exportFamilyPdf");
       const original=btn?.innerHTML||"";
       const status=$("pdfExportStatus");
-      const requestId=makeRequestId();
-      const requestedAtMs=Date.now();
       const buildRef=doc(db,"bookBuilds",targetFamilyId);
       const jobRef=doc(db,"bookJobs",targetFamilyId);
 
-      // 8.3.9.8: every click creates a NEW job. Never attach to an old session.
       if(activeBookBuildUnsubscribe){try{activeBookBuildUnsubscribe()}catch{} activeBookBuildUnsubscribe=null}
 
-      showBookProgress();
-      updateBookProgress(1,`פותח ריצה חדשה למשפחת ${target.name}…`,"הריצה הקודמת, אם הייתה, לא תחסום את הספר החדש.");
-      if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין ספר חדש…'}
-      if(status) status.textContent="נוצרה בקשה חדשה למנוע הספר…";
+      const attachToBuild=(acceptedRequestId)=>{
+        showBookProgress();
+        if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין ספר…'}
 
-      activeBookBuildUnsubscribe=onSnapshot(buildRef,snap=>{
-        if(!snap.exists()) return;
-        const data=snap.data()||{};
+        activeBookBuildUnsubscribe=onSnapshot(buildRef,snap=>{
+          if(!snap.exists()) return;
+          const data=snap.data()||{};
 
-        // This browser window only accepts updates belonging to THIS click.
-        if(String(data.requestId||"")!==requestId) return;
+          // Once attached to a real server owner, follow that build through refreshes.
+          if(acceptedRequestId && String(data.requestId||"")!==String(acceptedRequestId)) return;
 
-        const pct=Number(data.progress||0);
-        const photoText=data.photoCount!=null?`${data.photoCount} תמונות`:"כל התמונות";
-        const pageText=data.totalPages?` · עמוד ${Math.min(data.pageCount||0,data.totalPages)} מתוך ${data.totalPages}`:"";
-        updateBookProgress(pct,data.stage||"מכין את הספר…",`${photoText}${pageText}`);
-        if(status) status.textContent=`${data.stage||"מכין את הספר…"} (${Math.round(pct)}%)`;
+          const pct=Number(data.progress||0);
+          const photoText=data.photoCount!=null?`${data.photoCount} תמונות`:"כל התמונות";
+          const pageText=data.totalPages?` · עמוד ${Math.min(data.pageCount||0,data.totalPages)} מתוך ${data.totalPages}`:"";
+          updateBookProgress(pct,data.stage||"מכין את הספר…",`${photoText}${pageText}`);
+          if(status) status.textContent=`${data.stage||"מכין את הספר…"} (${Math.round(pct)}%)`;
 
-        if(data.status==='ready' && data.downloadUrl){
-          updateBookProgress(100,"הספר מוכן! 🎉",`${data.photoCount||0} תמונות · ${data.pageCount||data.totalPages||""} עמודים`);
-          const dl=$("bookProgressDownload");
-          if(dl){dl.href=data.downloadUrl;dl.classList.remove("hidden")}
-          if(status) status.textContent="הספר המלא מוכן להורדה ✅";
-          if(btn){btn.disabled=false;btn.innerHTML="📥 פתיחת הספר המוכן";btn.onclick=()=>window.open(data.downloadUrl,"_blank","noopener")}
-          try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
-        }else if(data.status==='error'){
-          updateBookProgress(100,"יצירת הספר נעצרה",data.error||"אירעה שגיאה בשרת.");
-          if(status) status.textContent=data.error||"יצירת הספר נכשלה.";
+          if(data.status==='ready' && data.downloadUrl){
+            updateBookProgress(100,"הספר מוכן! 🎉",`${data.photoCount||0} תמונות · ${data.pageCount||data.totalPages||""} עמודים`);
+            const dl=$("bookProgressDownload");
+            if(dl){dl.href=data.downloadUrl;dl.classList.remove("hidden")}
+            if(status) status.textContent="הספר המלא מוכן להורדה ✅";
+            if(btn){btn.disabled=false;btn.innerHTML="📥 פתיחת הספר המוכן";btn.onclick=()=>window.open(data.downloadUrl,"_blank","noopener")}
+            try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
+          }else if(data.status==='error'){
+            updateBookProgress(100,"יצירת הספר נעצרה",data.error||"אירעה שגיאה בשרת.");
+            if(status) status.textContent=data.error||"יצירת הספר נכשלה.";
+            if(btn){btn.disabled=false;btn.innerHTML=original}
+            try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
+          }
+        },err=>{
+          console.error("Book build listener failed",err);
+          updateBookProgress(100,"לא ניתן לקבל את מצב הספר",firebaseErrorText(err));
           if(btn){btn.disabled=false;btn.innerHTML=original}
-          try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
-        }
-      },err=>{
-        console.error("Book build listener failed",err);
-        updateBookProgress(100,"לא ניתן לקבל את מצב הספר",firebaseErrorText(err));
-        if(btn){btn.disabled=false;btn.innerHTML=original}
-      });
+        });
+      };
+
+      // First ask Firestore whether this family already has an active build.
+      const existingSnap=await getDoc(buildRef);
+      const existing=existingSnap.exists()?existingSnap.data():{};
+      const activeStatuses=new Set(["queued","checking","building","finalizing"]);
+      if(activeStatuses.has(String(existing.status||"")) && existing.requestId){
+        updateBookProgress(Number(existing.progress||1),existing.stage||"ממשיך את יצירת הספר הקיימת…","נמצאה ריצה פעילה בשרת.");
+        attachToBuild(String(existing.requestId));
+        return;
+      }
+
+      // No active build: send a lightweight check request.
+      // The server fingerprints the current uploads. If nothing changed, it returns
+      // the existing PDF immediately; otherwise it starts a new render.
+      const requestId=makeRequestId();
+      const requestedAtMs=Date.now();
+      showBookProgress();
+      updateBookProgress(1,`בודק את הספר של משפחת ${target.name}…`,"בודק אם התמונות או הסדר השתנו מאז הספר האחרון.");
+      if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> בודק ספר…'}
+      if(status) status.textContent="בודק מול השרת אם הספר עדיין מעודכן…";
+
+      attachToBuild(requestId);
 
       try{
         await setDoc(jobRef,{

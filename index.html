@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#6d28d9">
   <meta name="description" content="המסע המשפחתי שלנו בתאילנד 2026">
+  <meta name="app-build" content="8.3.9.5-fresh-job">
   <title>תאילנד 2026 – המסע המשפחתי</title>
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2156,35 +2157,21 @@
       const requestedAtMs=Date.now();
       const buildRef=doc(db,"bookBuilds",targetFamilyId);
       const jobRef=doc(db,"bookJobs",targetFamilyId);
-      let sawFreshStatus=false;
-      let attachOnly=false;
 
-      // 8.3.2: if a build is already running, attach to it. Never create a second job after refresh.
-      try{
-        const existingSnap=await getDoc(buildRef);
-        if(existingSnap.exists()){
-          const existing=existingSnap.data()||{};
-          if(existing.status==='building' || existing.status==='checking'){
-            attachOnly=true;
-            sawFreshStatus=true;
-          } else if(existing.status==='ready' && existing.downloadUrl){
-            sawFreshStatus=true;
-          }
-        }
-      }catch(e){ console.warn("Could not inspect existing book build",e); }
-
+      // 8.3.9.5: every click creates a NEW job. Never attach to an old session.
       if(activeBookBuildUnsubscribe){try{activeBookBuildUnsubscribe()}catch{} activeBookBuildUnsubscribe=null}
+
       showBookProgress();
-      updateBookProgress(1,`בודק את הספר של משפחת ${target.name}…`,"בודק אם נוספו, נמחקו או הוחלפו תמונות מאז הספר האחרון.");
-      if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין בשרת…'}
-      if(status) status.textContent="הבקשה נשלחת למנוע הספר בשרת…";
+      updateBookProgress(1,`פותח ריצה חדשה למשפחת ${target.name}…`,"הריצה הקודמת, אם הייתה, לא תחסום את הספר החדש.");
+      if(btn){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> מכין ספר חדש…'}
+      if(status) status.textContent="נוצרה בקשה חדשה למנוע הספר…";
 
       activeBookBuildUnsubscribe=onSnapshot(buildRef,snap=>{
         if(!snap.exists()) return;
         const data=snap.data()||{};
-        const fresh=attachOnly || Number(data.lastCheckedClientRequestMs||0)>=requestedAtMs;
-        if(fresh || data.status==='building' || data.status==='checking') sawFreshStatus=true;
-        if(!sawFreshStatus) return;
+
+        // This browser window only accepts updates belonging to THIS click.
+        if(String(data.requestId||"")!==requestId) return;
 
         const pct=Number(data.progress||0);
         const photoText=data.photoCount!=null?`${data.photoCount} תמונות`:"כל התמונות";
@@ -2192,14 +2179,14 @@
         updateBookProgress(pct,data.stage||"מכין את הספר…",`${photoText}${pageText}`);
         if(status) status.textContent=`${data.stage||"מכין את הספר…"} (${Math.round(pct)}%)`;
 
-        if(data.status==='ready' && data.downloadUrl && fresh){
+        if(data.status==='ready' && data.downloadUrl){
           updateBookProgress(100,"הספר מוכן! 🎉",`${data.photoCount||0} תמונות · ${data.pageCount||data.totalPages||""} עמודים`);
           const dl=$("bookProgressDownload");
           if(dl){dl.href=data.downloadUrl;dl.classList.remove("hidden")}
           if(status) status.textContent="הספר המלא מוכן להורדה ✅";
           if(btn){btn.disabled=false;btn.innerHTML="📥 פתיחת הספר המוכן";btn.onclick=()=>window.open(data.downloadUrl,"_blank","noopener")}
           try{activeBookBuildUnsubscribe?.()}catch{} activeBookBuildUnsubscribe=null;
-        }else if(data.status==='error' && fresh){
+        }else if(data.status==='error'){
           updateBookProgress(100,"יצירת הספר נעצרה",data.error||"אירעה שגיאה בשרת.");
           if(status) status.textContent=data.error||"יצירת הספר נכשלה.";
           if(btn){btn.disabled=false;btn.innerHTML=original}
@@ -2212,7 +2199,6 @@
       });
 
       try{
-        if(attachOnly) return;
         await setDoc(jobRef,{
           familyId:targetFamilyId,
           requestId,
@@ -2229,6 +2215,7 @@
         throw err;
       }
     }
+
 
     $("exportFamilyPdf").onclick=()=>requestServerFamilyBook(family.id).catch(err=>{
       console.error(err);alert(firebaseErrorText(err));
